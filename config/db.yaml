@@ -1,0 +1,69 @@
+# config/db.yaml — FUENTE ÚNICA DE VERDAD del proyecto NMR HSQC→Vector
+# Todos los scripts leen rutas, N y constantes de acá. Prohibido hardcodear en los .py.
+
+project:
+  name: "nmr-hsqc-to-vector"
+  cluster: "login-1"
+  user: "lpassaglia.iquir"
+  conda_env: "/home/lpassaglia.iquir/anaconda3/envs/NMR_env"
+  partition: "gpua10_hi"
+
+data:
+  base_dir: "/home/lpassaglia.iquir/DB_200k"
+  N: 202465                       # 144280 + 58185
+  # --- dataset de 2 canales (V3) — el que usan V8/V10/V11 ---
+  h5_v3:      "nmr_dataset_v3_202465.h5"      # hsqc (N,2,256,256)
+  labels_19v: "vectors_13c_19v_202465.npy"    # (N,19)
+  smiles:     "smiles_202465.npy"             # (N,)
+  # --- referencia histórica (144k), para comparaciones ---
+  base_dir_144k: "/home/lpassaglia.iquir/DB_144K"
+  N_144k: 144280
+
+model:
+  num_classes: 19
+  resolution: 256
+  hsqc_channels: 2
+  proj_dim: 512          # vec_c(256) + vec_h(256)
+  cond_dim: 8            # [total_signals, total_CH2, C,H,N,O,S,Hal]
+
+classes_19v:             # orden EXACTO — no reordenar (desalinea labels sin error)
+  - CH3          # 0
+  - CH2          # 1   (índice CH2)
+  - CH           # 2
+  - Cq           # 3
+  - CH3-O        # 4
+  - CH2-O        # 5   (índice CH2)
+  - CH-O         # 6
+  - Cq-O         # 7
+  - CH3-N        # 8
+  - CH2-N        # 9   (índice CH2)
+  - CH-N         # 10
+  - Cq-N         # 11
+  - "=CH2"       # 12  (índice CH2)
+  - "=CH/Ar"     # 13
+  - Cqsp2        # 14
+  - Aldeh        # 15
+  - Imina        # 16
+  - C-2X         # 17
+  - C-3X         # 18
+# índices usados para total_CH2 (condicionante y proyector de conteo): 1, 5, 9, 12
+
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  val_split: 0.1
+  seed: 42
+  scheduler:
+    patience: 8          # scheduler CORREGIDO — estándar irrenunciable
+    factor: 0.7
+
+system:
+  device: "cuda"
+  num_workers: 0         # 0 obligatorio con h5py (>0 deadlockea, GPU al 0%)
+  pin_memory: true
+
+# Valores que se PONEN A PRUEBA en los experimentos del workflow (docs/):
+regularization:
+  dropout: 0.25          # Exp B — reponer regularización perdida entre V6 y V9
+  weight_decay: 0.00001  # Exp B
