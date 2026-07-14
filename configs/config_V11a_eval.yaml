@@ -1,0 +1,17 @@
+# configs/config_V11a_eval.yaml
+# EXP A - Evaluacion del checkpoint V10 en modo CRUDO vs ASISTIDO.
+#
+# Este config solo lleva lo especifico de la evaluacion. Todo lo demas
+# (paths de datos, val_split, seed, num_workers y los nombres de las 19 clases)
+# sale de config/db.yaml, la fuente unica de verdad (CLAUDE.md, rule 3).
+#
+# El checkpoint se resuelve como:  <data.base_dir de db.yaml>/<dir>/<filename>
+# es decir: /home/lpassaglia.iquir/DB_200k/checkpoints_V10_202k/nmr_202k_v10_2ch_fm_19v_best.pth
+
+checkpoint:
+  dir: "checkpoints_V10_202k"                    # relativo a data.base_dir de db.yaml
+  filename: "nmr_202k_v10_2ch_fm_19v_best.pth"   # {experiment_name}_best.pth del V10
+
+evaluation:
+  eval_batch_size: 256
+  oraculo_modes: ["on", "off"]                   # informativo; --oraculo both corre ambos
