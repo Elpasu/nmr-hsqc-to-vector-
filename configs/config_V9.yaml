@@ -1,0 +1,23 @@
+experiment_name: "nmr_144k_v9_19v"
+
+paths:
+  base_dir: "/home/lpassaglia.iquir/DB_144K"
+  h5_filename: "nmr_dataset_144280.h5"
+  labels_filename: "vectors_13c_19v_144280.npy"
+  checkpoint_dir: "checkpoints_V9"
+
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  val_split: 0.1
+  optimizer: "Adam"
+  scheduler:
+    patience: 8       # era 3 -> demasiado agresivo, reaccionaba a ruido
+    factor: 0.7       # era 0.5 -> bajaba el LR demasiado rapido
+ 
+
+system:
+  device: "cuda"
+  num_workers: 4
+  pin_memory: true

@@ -1,0 +1,174 @@
+============================================================
+  EVALUACION V8 (17 CLASES, HSQC 2CH, SIN FM)
+============================================================
+-> Dispositivo: CUDA
+-> Set de validacion: 14428 moleculas
+
+============================================================
+  EXACT MATCH ACCURACY: 78.51%
+============================================================
+
+GRUPO      |    MAE  Estado
+----------------------------------------
+CH3        | 0.0114  [EXCELENTE]
+CH2        | 0.0433  [EXCELENTE]
+CH         | 0.0320  [EXCELENTE]
+Cq         | 0.0341  [EXCELENTE]
+CH3-O      | 0.0044  [EXCELENTE]
+CH2-O      | 0.0234  [EXCELENTE]
+CH-O       | 0.0351  [EXCELENTE]
+Cq-O       | 0.0348  [EXCELENTE]
+CH3-N      | 0.0059  [EXCELENTE]
+CH2-N      | 0.0540  [ACEPTABLE]
+CH-N       | 0.0357  [EXCELENTE]
+Cq-N       | 0.0233  [EXCELENTE]
+=CH2       | 0.0042  [EXCELENTE]
+=CH/Ar     | 0.0648  [ACEPTABLE]
+Cqsp2      | 0.0776  [ACEPTABLE]
+Aldeh      | 0.0039  [EXCELENTE]
+Imina      | 0.0143  [EXCELENTE]
+
+============================================================
+  ERRORES POR ENTORNO
+============================================================
+
+  Alifaticos (sp3)
+    Moleculas con error: 1521 / 14428  (10.5%)
+    MAE promedio:        0.0302
+      CH3       : MAE=0.0114 | Mol. con error: 160 (1.1%)
+      CH2       : MAE=0.0433 | Mol. con error: 613 (4.2%)
+      CH        : MAE=0.0320 | Mol. con error: 444 (3.1%)
+      Cq        : MAE=0.0341 | Mol. con error: 485 (3.4%)
+
+  Con oxigeno (sp3-O)
+    Moleculas con error: 1265 / 14428  (8.8%)
+    MAE promedio:        0.0244
+      CH3-O     : MAE=0.0044 | Mol. con error: 64 (0.4%)
+      CH2-O     : MAE=0.0234 | Mol. con error: 329 (2.3%)
+      CH-O      : MAE=0.0351 | Mol. con error: 490 (3.4%)
+      Cq-O      : MAE=0.0348 | Mol. con error: 490 (3.4%)
+
+  Con nitrogeno (sp3-N)
+    Moleculas con error: 1520 / 14428  (10.5%)
+    MAE promedio:        0.0297
+      CH3-N     : MAE=0.0059 | Mol. con error: 84 (0.6%)
+      CH2-N     : MAE=0.0540 | Mol. con error: 756 (5.2%)
+      CH-N      : MAE=0.0357 | Mol. con error: 499 (3.5%)
+      Cq-N      : MAE=0.0233 | Mol. con error: 328 (2.3%)
+
+  sp2
+    Moleculas con error: 1645 / 14428  (11.4%)
+    MAE promedio:        0.0329
+      =CH2      : MAE=0.0042 | Mol. con error: 61 (0.4%)
+      =CH/Ar    : MAE=0.0648 | Mol. con error: 923 (6.4%)
+      Cqsp2     : MAE=0.0776 | Mol. con error: 1100 (7.6%)
+      Aldeh     : MAE=0.0039 | Mol. con error: 56 (0.4%)
+      Imina     : MAE=0.0143 | Mol. con error: 206 (1.4%)
+
+============================================================
+  CONFUSION DE MULTIPLICIDAD
+============================================================
+
+  Moleculas con al menos un error de multiplicidad: 64 (0.4%)
+
+  Entorno Alifatico:
+  Real/Pred CH3 CH2  CH   Precision
+  ---------------------------------
+  CH3 14684   4  10       99.9%
+  CH2    322663   5      100.0%
+  CH    15   54077       99.5%
+
+  Entorno Con-O:
+  Real/Pred CH3-O CH2-O  CH-O   Precision
+  ---------------------------------------
+  CH3-O   3262     0     1      100.0%
+  CH2-O      0  4432     1      100.0%
+  CH-O       8     4  2453       99.5%
+
+  Entorno Con-N:
+  Real/Pred CH3-N CH2-N  CH-N   Precision
+  ---------------------------------------
+  CH3-N   1321     0     0      100.0%
+  CH2-N      0  3623     6       99.8%
+  CH-N       5     5  1226       99.2%
+
+============================================================
+  MAPA DE CONFUSIONES CRUZADAS
+============================================================
+
+  CH3        (falla en 1.1% mol) -> confunde con:
+      Cqsp2     :    44 senales  (41.5%)
+      =CH/Ar    :    17 senales  (16.0%)
+      Cq        :    14 senales  (13.2%)
+  CH2        (falla en 4.2% mol) -> confunde con:
+      CH2-N     :   231 senales  (72.4%)
+      Cqsp2     :    23 senales  (7.2%)
+      CH2-O     :    22 senales  (6.9%)
+  CH         (falla en 3.1% mol) -> confunde con:
+      CH-N      :   111 senales  (40.5%)
+      CH-O      :    40 senales  (14.6%)
+      Cqsp2     :    40 senales  (14.6%)
+  Cq         (falla en 3.4% mol) -> confunde con:
+      Cqsp2     :   130 senales  (42.8%)
+      Cq-O      :    47 senales  (15.5%)
+      =CH/Ar    :    32 senales  (10.5%)
+  CH3-O      (falla en 0.4% mol) -> confunde con:
+      Cqsp2     :    19 senales  (36.5%)
+      CH        :     7 senales  (13.5%)
+      CH-N      :     7 senales  (13.5%)
+  CH2-O      (falla en 2.3% mol) -> confunde con:
+      CH2-N     :    76 senales  (41.8%)
+      CH2       :    43 senales  (23.6%)
+      =CH2      :    17 senales  (9.3%)
+  CH-O       (falla en 3.4% mol) -> confunde con:
+      =CH/Ar    :   110 senales  (34.4%)
+      CH-N      :    79 senales  (24.7%)
+      CH        :    47 senales  (14.7%)
+  Cq-O       (falla en 3.4% mol) -> confunde con:
+      Cqsp2     :   180 senales  (56.1%)
+      Cq        :    37 senales  (11.5%)
+      CH2-N     :    18 senales  (5.6%)
+  CH3-N      (falla en 0.6% mol) -> confunde con:
+      CH3       :    38 senales  (48.1%)
+      Cqsp2     :    12 senales  (15.2%)
+      CH        :     7 senales  (8.9%)
+  CH2-N      (falla en 5.2% mol) -> confunde con:
+      CH2       :   327 senales  (53.7%)
+      CH2-O     :   142 senales  (23.3%)
+      Cqsp2     :    30 senales  (4.9%)
+  CH-N       (falla en 3.5% mol) -> confunde con:
+      CH        :   142 senales  (36.2%)
+      CH-O      :   116 senales  (29.6%)
+      CH2       :    33 senales  (8.4%)
+  Cq-N       (falla en 2.3% mol) -> confunde con:
+      Cq        :   119 senales  (30.7%)
+      Cq-O      :    86 senales  (22.2%)
+      Cqsp2     :    80 senales  (20.6%)
+  =CH2       (falla en 0.4% mol) -> confunde con:
+      CH2-O     :    38 senales  (70.4%)
+      Cq        :     4 senales  (7.4%)
+      =CH/Ar    :     4 senales  (7.4%)
+  =CH/Ar     (falla en 6.4% mol) -> confunde con:
+      Cqsp2     :   258 senales  (59.7%)
+      CH-O      :    69 senales  (16.0%)
+      Cq        :    22 senales  (5.1%)
+  Cqsp2      (falla en 7.6% mol) -> confunde con:
+      =CH/Ar    :   180 senales  (43.5%)
+      Cq-O      :   108 senales  (26.1%)
+      Cq        :    42 senales  (10.1%)
+  Aldeh      (falla en 0.4% mol) -> confunde con:
+      =CH/Ar    :    22 senales  (78.6%)
+      Cqsp2     :     4 senales  (14.3%)
+      Cq        :     1 senales  (3.6%)
+  Imina      (falla en 1.4% mol) -> confunde con:
+      =CH/Ar    :   156 senales  (66.7%)
+      Cqsp2     :    32 senales  (13.7%)
+      Aldeh     :    18 senales  (7.7%)
+
+============================================================
+  RESUMEN EJECUTIVO
+============================================================
+
+  EMA: 78.51%
+  TODOS LOS GRUPOS POR DEBAJO DE 0.1 MAE!
+  Errores de multiplicidad: 64 mol. (0.4%)
