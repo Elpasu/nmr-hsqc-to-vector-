@@ -12,7 +12,7 @@ data:
   base_dir: "/home/lpassaglia.iquir/DB_200k"
   N: 202465                       # 144280 + 58185
   # --- dataset de 2 canales (V3) — el que usan V8/V10/V11 ---
-  h5_v3:      "nmr_dataset_v3_202465.h5"      # hsqc (N,2,256,256)
+  h5_v3:      "nmr_dataset_v3_202465_fast.h5" # hsqc (N,2,256,256)
   labels_19v: "vectors_13c_19v_202465.npy"    # (N,19)
   smiles:     "smiles_202465.npy"             # (N,)
   # --- referencia histórica (144k), para comparaciones ---

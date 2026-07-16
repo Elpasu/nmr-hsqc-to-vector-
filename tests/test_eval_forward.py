@@ -60,7 +60,7 @@ def test_oraculo_doble_restriccion():
         # Prediccion cruda cercana al target (ruido |.|<0.5 -> floor en {t-1, t}).
         pred_raw = np.clip(target + rng.uniform(-0.4, 0.4, size=N_CLASSES), 0, None)
         pred_raw = pred_raw.astype(np.float32)
-        p = ajustar_conteo_doble_exacto(pred_raw, total, ch2, IDX_CH2, N_CLASSES)
+        p = ajustar_conteo_doble_exacto(pred_raw, total, ch2)
         assert (p >= 0).all()
         assert int(p.sum()) == total, (int(p.sum()), total)
         assert int(sum(p[i] for i in IDX_CH2)) == ch2, (sum(p[i] for i in IDX_CH2), ch2)
