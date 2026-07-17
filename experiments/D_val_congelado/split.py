@@ -26,7 +26,6 @@ import argparse
 from pathlib import Path
 
 import numpy as np
-import yaml
 from rdkit import Chem
 
 
@@ -86,6 +85,8 @@ def main():
     parser = argparse.ArgumentParser(description="Exp D: genera val_indices_frozen.npy")
     parser.add_argument("--config", type=str, default="config.yaml")
     args = parser.parse_args()
+
+    import yaml
 
     with open(args.config, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
