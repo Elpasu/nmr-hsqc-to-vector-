@@ -49,5 +49,17 @@ def find_duplicate_groups(canonical_smiles):
     return {smi: idxs for smi, idxs in groups.items() if len(idxs) > 1}
 
 
+def remove_leaking_from_train(train_idx, val_idx, canonical_smiles):
+    """Elimina de train cualquier indice cuyo SMILES canonico tambien este
+    en val. val_idx NUNCA se modifica (queda "congelado")."""
+    val_smiles_set = set(canonical_smiles[i] for i in val_idx)
+    clean_train_idx = np.array(
+        [i for i in train_idx if canonical_smiles[i] not in val_smiles_set],
+        dtype=np.int64,
+    )
+    n_removed = len(train_idx) - len(clean_train_idx)
+    return clean_train_idx, n_removed
+
+
 if __name__ == "__main__":
     pass
