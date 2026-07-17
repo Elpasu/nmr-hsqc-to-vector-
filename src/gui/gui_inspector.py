@@ -20,7 +20,7 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 
 # --- CONFIG ---
-PRED_FILE = "predictions_v10.parquet"   # el archivo que trajiste del cluster
+PRED_FILE = r"E:\Proyectos\SciTrix\nmr-hsqc-to-vector\docs\Runs\V10\predictions_v10.parquet"   # el archivo que trajiste del cluster
 CLASSES = ["CH3","CH2","CH","Cq","CH3-O","CH2-O","CH-O","Cq-O",
            "CH3-N","CH2-N","CH-N","Cq-N","=CH2","=CH/Ar","Cqsp2",
            "Aldeh","Imina","C-2X","C-3X"]
