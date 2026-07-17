@@ -39,12 +39,35 @@ confiables entre sí.
 
 ## Qué métrica esperás mover y cuánto
 
-Ninguna EMA debería moverse por una razón de aprendizaje — es el mismo
-checkpoint congelado. Se espera un cambio *pequeño* en el número (el val
-ahora es más chico, sin los 58k scaffolds nuevos, sin duplicados con fuga)
-respecto al 0.61% / 74.92% original. Un cambio grande (>5pp) sería señal de
-que el val original y el nuevo tienen dificultad muy distinta, y vale la
-pena investigarlo antes de seguir con B/C.
+**⚠️ Salvedad importante — "V10-on-frozen-val" no es un held-out limpio de V10.**
+El val congelado son las 14428 moléculas "originales" de las 144k, elegidas
+reproduciendo el `random_split(seed=42)` histórico de V6-V9 sobre el rango
+`[0, 144280)`. Pero el checkpoint que se re-evalúa acá
+(`nmr_202k_v10_2ch_fm_19v_best.pth`) fue entrenado con OTRO `random_split`,
+el de `train_v10.py` (seed=42 también, pero aplicado sobre las 202465
+moléculas completas — una permutación aleatoria distinta, sobre un rango
+distinto). Los dos splits no tienen relación estructural entre sí: comparten
+la seed, no la partición. En la práctica esto significa que ~90% de las
+14428 moléculas del val congelado ya fueron vistas por V10 durante su propio
+entrenamiento. El número "V10-on-frozen-val" es entonces una referencia
+aproximada / ancla, no una evaluación held-out honesta de V10 específicamente.
+
+Por eso, la heurística ingenua de "un cambio grande (>5pp) es sospechoso, hay
+que parar e investigar" no aplica tal cual a este número: un salto real y
+legítimo respecto al 0.61% / 74.92% original es **esperable** acá, justamente
+por este solapamiento train/val, y no es por sí solo señal de bug. La señal
+real de que algo está roto no es la magnitud del delta, sino que fallen las
+verificaciones que ya corre `split.py`: leak=0 (intersección train∩val por
+SMILES canónico) y los conteos de duplicados/SMILES inválidos reportados. Si
+esas verificaciones pasan, un EMA alto en "V10-on-frozen-val" es coherente
+con la contaminación descripta arriba, no un error.
+
+Exp B y Exp C, a diferencia de V10, SÍ van a excluir el val congelado de su
+propio entrenamiento — así que sus números sobre este mismo val van a ser
+evaluaciones held-out limpias y honestas. La comparación "B/C vs
+V10-on-frozen-val" hay que leerla con esta asimetría en mente: no es
+apples-to-apples estricto, es "número limpio de B/C" contra "ancla
+aproximada de V10".
 
 ## Criterio de éxito/fracaso
 

@@ -32,6 +32,15 @@ reentrena nada: reutiliza el checkpoint V10 ya entrenado.
 7. Cuando termine, revisar `expD_eval_<jobid>.out`: copiar la tabla
    "EMA CRUDA vs ASISTIDA" a `docs/Runs/RESULTS.md`, como fila nueva
    "V10-on-frozen-val (Exp D)".
+
+   > **⚠️ Importante:** "V10-on-frozen-val" no es un número limpio para
+   > V10 — V10 se entrenó sobre ~90% de estas moléculas (su split real fue
+   > otro `random_split` distinto, sobre las 202k completas), así que un
+   > salto grande respecto al 0.61% / 74.92% original es esperable y no es
+   > por sí solo una señal de error. Los experimentos B y C sí excluyen
+   > este val de su entrenamiento, así que sus números son limpios. Ver
+   > `RATIONALE.md`, sección "Qué métrica esperás mover y cuánto".
+
 8. Avisar a Claude Code con los números — con eso arrancamos Exp B.
 
 ## Nota

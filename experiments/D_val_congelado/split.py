@@ -70,7 +70,17 @@ def historical_val_indices_144k(n_144k=144280, val_split=0.1, seed=42):
     igualar bit a bit el RNG que ya se uso (no se puede reproducir con
     numpy). Los indices devueltos son validos directamente contra el
     dataset de 202k porque las 58185 nuevas se agregaron al final, sin
-    reordenar las 144280 originales."""
+    reordenar las 144280 originales.
+
+    Salvedad: reproducir el split historico exacto asume la MISMA version
+    de torch que uso el training de V6-V9 -- la salida seedeada de
+    torch.randperm (que random_split usa internamente) solo esta
+    garantizada estable dentro de una misma version de torch, no entre
+    versiones. Si la version de torch del cluster difiere, esto deja de
+    ser "el mismo split historico" en sentido estricto, pero sigue siendo
+    un split fijo, deterministico y reproducible de aca en adelante -- que
+    es el objetivo real de Exp D (congelar un val), no probar identidad
+    bit a bit con lo que uso V6-V9 en su momento."""
     import torch
     from torch.utils.data import random_split
 
