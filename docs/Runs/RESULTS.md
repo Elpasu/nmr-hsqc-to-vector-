@@ -6,7 +6,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 
 | Model | Ch | Cls | Data | Reg. | Best Val Loss (ep) | EMA crude | EMA assist | Notes |
 |-------|----|----|------|------|--------------------|-----------|------------|-------|
-| V10 baseline | 2 | 19 | 202k | none | 0.0303 (76) | TBD | TBD | overfits from ~ep48 |
+| V10 baseline | 2 | 19 | 202k | none | 0.0303 (76) | 0.61% | 74.92% | overfits from ~ep48; assisted EMA inflated by oracle (Exp A) |
 
 ---
 
@@ -18,7 +18,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 - **Sched:** ReduceLROnPlateau patience=8 factor=0.7 · **Split:** random_split(seed=42), val 10%
 - **Run:** 100 epochs · 620 min (~6.1 min/ep) · `.err` clean · ckpt `checkpoints_V10_202k/nmr_202k_v10_2ch_fm_19v_best.pth`
 - **Best Val Loss:** 0.0303 @ ep76
-- **EMA:** TBD → run Exp A (`evaluate_v10.py`, mode `both`)
+- **EMA:** cruda 0.61% · asistida 74.92% (Exp A, oráculo de doble restricción). Δ = +74.3pp — la EMA asistida satura la métrica, no sirve para comparar versiones. Ver `docs/PROMPT_superpowers_mejoras.md`.
 
 **Takeaways:**
 - Scheduler behaved correctly (LR 0.001 held to ep62, then smooth decay). No premature LR collapse (unlike V9).
