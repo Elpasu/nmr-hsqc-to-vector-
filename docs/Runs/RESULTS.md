@@ -7,6 +7,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Model | Ch | Cls | Data | Reg. | Best Val Loss (ep) | EMA crude | EMA assist | Notes |
 |-------|----|----|------|------|--------------------|-----------|------------|-------|
 | V10 baseline | 2 | 19 | 202k | none | 0.0303 (76) | 0.61% | 74.92% | overfits from ~ep48; assisted EMA inflated by oracle (Exp A) |
+| V10-on-frozen-val (Exp D) | 2 | 19 | 202k | none | — (no retrain) | 0.93% | 90.66% | same ckpt as V10; val is ~90% train-contaminated, NOT a clean number — see below |
 
 ---
 
@@ -23,6 +24,28 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 **Takeaways:**
 - Scheduler behaved correctly (LR 0.001 held to ep62, then smooth decay). No premature LR collapse (unlike V9).
 - **Clear overfitting:** Train 0.013 vs Val 0.031; Val plateaus at ~0.031 from ep~48 while Train keeps dropping → validates **Exp B** (dropout + weight_decay). Epochs ~50–100 added no generalization.
+
+---
+
+## Exp D — val set congelado (V10 checkpoint, no retrain)
+
+- **Date:** 2026-07-17 · **SLURM:** 2375430 · **Config:** `experiments/D_val_congelado/config.yaml`
+- **Change vs baseline:** same V10 checkpoint (`nmr_202k_v10_2ch_fm_19v_best.pth`), re-evaluated on a
+  frozen val (14428 "original 144k" molecules, historical `random_split(seed=42)` reproduced over
+  `[0,144280)`), instead of the random 10%-of-202k split V10 was actually trained/evaluated on.
+  `split.py` dedup report: 2928 canonical-duplicate groups (3433 excess molecules), 723 train rows
+  dropped for leak against val, verified leak=0 (train∩val canonical SMILES).
+- **EMA crude / assisted:** 0.93% / 90.66% (Δ +89.7pp). By entorno (assisted): Alifáticos 96.5%,
+  Heteroatómicos O/N 95.0%, sp2 94.8%, X-Multiples 98.5%.
+- **⚠️ Not a clean number:** ~90% of this frozen val was part of V10's actual training set (V10
+  trained on a random 10%-of-202k split, a different permutation than this historical 144k-based
+  split). The jump vs the original 0.61%/74.92% (Exp A, V10's true held-out split) is expected
+  contamination, not a real improvement — treat this row as a rough anchor only. Exp B and Exp C
+  will exclude this frozen val from their own training, so **their numbers on this same val ARE
+  clean** — compare B vs C directly; compare either vs this row only with the caveat above in mind.
+  See `experiments/D_val_congelado/RATIONALE.md`.
+- **Takeaway:** split/dedup machinery verified working end-to-end (val landed exactly on the
+  expected 14428, leak=0 confirmed). `val_indices_frozen.npy` now fixed for all future experiments.
 
 ---
 
