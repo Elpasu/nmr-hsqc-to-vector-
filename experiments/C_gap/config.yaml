@@ -1,0 +1,33 @@
+# experiments/C_gap/config.yaml
+#
+# Exp C: reemplaza el flatten+Linear(65664,128) por GAP para rebalancear
+# la fusion. SIN regularizacion (dropout/weight_decay abandonados tras la
+# falla de Exp B: dieron underfitting real). Usa el split congelado de
+# Exp D (val_indices_frozen.npy) -- ver Global Constraints del plan.
+#
+# OJO: configs/config_V10.yaml (en git) tiene h5_filename SIN "_fast" y
+# num_workers=4 -- ambos violan reglas duras del proyecto. Este
+# config.yaml usa los valores correctos. No copiar config_V10.yaml tal cual.
+
+experiment_name: "nmr_202k_v11c_gap_2ch_fm_19v"
+
+paths:
+  base_dir: "/home/lpassaglia.iquir/DB_200k"
+  h5_filename: "nmr_dataset_v3_202465_fast.h5"
+  labels_filename: "vectors_13c_19v_202465.npy"
+  smiles_filename: "smiles_202465.npy"
+  checkpoint_dir: "checkpoints_V11C_gap"
+  val_indices_filename: "val_indices_frozen.npy"
+
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  scheduler:
+    patience: 8
+    factor: 0.7
+
+system:
+  device: "cuda"
+  num_workers: 0
+  pin_memory: true
