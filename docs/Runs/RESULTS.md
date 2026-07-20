@@ -78,6 +78,32 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 
 ---
 
+## Auditoría de distribución de clases (dataset completo, 202465 moléculas)
+
+- **Fecha:** 2026-07-20 · **Script:** `scripts/audit_class_frequency.py` (login node, sin GPU).
+- **Hipótesis original (descartada por los datos):** que `Cqsp2` y `=CH/Ar` fallan tanto en el
+  modelo por ser clases *raras* en el dataset. Los datos dicen lo contrario.
+- **Hallazgo real:** `Cqsp2` (92.62% de las moléculas, promedio 3.378/molécula) y `=CH/Ar` (80.34%,
+  promedio 3.271/molécula) son las **dos clases más comunes de las 19**, no las más raras — están
+  al fondo de la tabla ordenada por rareza, no arriba. Entre las dos suman ~6.6 señales promedio
+  por molécula, una porción enorme del total de carbonos de una molécula típica.
+- **Por qué importa:** como la EMA exige acertar las 19 clases simultáneamente, un error en la
+  clase más frecuente y de mayor conteo arruina muchísimas más moléculas que un error en una clase
+  rara. `Cqsp2` además es literalmente invisible en HSQC (carbono cuaternario, sin H propio) — el
+  modelo solo puede inferirlo indirectamente (probablemente vía la Fórmula Molecular). La
+  combinación "clase dominante + invisible en la imagen" la vuelve la sospechosa número uno de la
+  EMA cruda baja, más que un problema aislado entre 19.
+- **Bonus — composición de las 58k moléculas nuevas vs las 144k originales:** el dataset ampliado
+  no es "más de lo mismo". Deltas de presencia más grandes: `CH2-N` 18.71%→57.34% (+38.6pp),
+  `CH-N` 7.70%→33.78% (+26.1pp), `=CH/Ar` 76.57%→89.70% (+13.1pp), `Cqsp2` 90.79%→97.17% (+6.4pp).
+  Las moléculas nuevas tienen mucho más contenido nitrogenado y más carbonos sp2/cuaternarios.
+- **Implicancia para la estrategia:** el cuello de botella puede no ser solo arquitectónico
+  (Exp C) — el desbalance de clases (`Cqsp2`/`=CH/Ar` dominan el conteo) sugiere que una loss que
+  pondere por clase, o una cabeza de conteo específica para las clases dominantes, podría mover
+  más la aguja que solo rebalancear la fusión. Ver discusión de próximos pasos en curso.
+
+---
+
 <!-- Template for next entries — keep it short:
 
 ## <Exp> — <one-line description>
