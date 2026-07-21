@@ -26,6 +26,13 @@ model:
   proj_dim: 512          # vec_c(256) + vec_h(256)
   cond_dim: 8            # [total_signals, total_CH2, C,H,N,O,S,Hal]
 
+hsqc_calibration:          # copiado de Genera_mapas_de_pkl_v2.py — no inferido
+  c13_ppm_min: 0
+  c13_ppm_max: 220
+  h1_ppm_min: -1
+  h1_ppm_max: 15
+  resolution: 256
+
 classes_19v:             # orden EXACTO — no reordenar (desalinea labels sin error)
   - CH3          # 0
   - CH2          # 1   (índice CH2)

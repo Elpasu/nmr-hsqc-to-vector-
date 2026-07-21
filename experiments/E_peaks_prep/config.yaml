@@ -1,0 +1,43 @@
+# experiments/E_peaks_prep/config.yaml
+#
+# Exp E Fase 1: extraccion de picos por blob-detection desde el h5 de
+# imagenes existente + validacion contra el label de 19 clases. No entrena
+# ningun modelo. Calibracion copiada de Genera_mapas_de_pkl_v2.py (fuera de
+# este repo, script original del dataset) -- ver RATIONALE.md.
+
+paths:
+  base_dir: "/home/lpassaglia.iquir/DB_200k"
+  h5_filename: "nmr_dataset_v3_202465_fast.h5"
+  labels_filename: "vectors_13c_19v_202465.npy"
+  peaks_output_filename: "peaks_202465.h5"
+
+hsqc_calibration:
+  c13_ppm_min: 0
+  c13_ppm_max: 220
+  h1_ppm_min: -1
+  h1_ppm_max: 15
+  resolution: 256
+
+extraction:
+  chunk_size: 1000   # moleculas por lectura del h5 (evita cargar 202465x2x256x256 en RAM)
+
+classes_19v:
+  - CH3
+  - CH2
+  - CH
+  - Cq
+  - CH3-O
+  - CH2-O
+  - CH-O
+  - Cq-O
+  - CH3-N
+  - CH2-N
+  - CH-N
+  - Cq-N
+  - "=CH2"
+  - "=CH/Ar"
+  - Cqsp2
+  - Aldeh
+  - Imina
+  - C-2X
+  - C-3X
