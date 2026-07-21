@@ -2,18 +2,22 @@
 #
 # Exp E Fase 1b: picos desde el pkl original (sin binning). Corre LOCAL en
 # la maquina Windows de Lucas -- rutas locales, no las del cluster.
-# base_dir: carpeta con TODOS los archivos de abajo juntos (144k ya estan
-# ahi; Lucas copia los de 58k desde snmgt01:DB_58K, y smiles_202465.npy +
-# vectors_13c_19v_202465.npy desde donde esten disponibles).
+# Cada fuente vive en su propia carpeta (no estan todas juntas):
+#   144K: pkl + mol_ids + smiles originales.
+#   58K:  pkl + mol_ids + smiles de las moleculas nuevas.
+#   202K_suma: smiles_202465.npy + vectors_13c_19v_202465.npy (el dataset
+#   real contra el que se verifica alineacion) + donde se guarda la salida.
 
 paths:
-  base_dir: "E:/Proyectos/SciTrix/ScitrixDB/DB-Batch0"
+  base_dir_144k: "E:/Proyectos/SciTrix/ScitrixDB/DB_nmr_to_vector/144K"
   pkl_144k: "nmr_calculated_data_scaled_144K.pkl"
   mol_ids_144k: "mol_ids_144280.npy"
   smiles_144k: "smiles_144280.npy"
+  base_dir_58k: "E:/Proyectos/SciTrix/ScitrixDB/DB_nmr_to_vector/58K"
   pkl_58k: "nmr_calculated_data_scaled_58k.pkl"
   mol_ids_58k: "mol_ids_58185.npy"
   smiles_58k: "smiles_58185.npy"
+  base_dir_202k: "E:/Proyectos/SciTrix/ScitrixDB/DB_nmr_to_vector/202K_suma"
   smiles_202465: "smiles_202465.npy"
   labels_202465: "vectors_13c_19v_202465.npy"
   peaks_output_filename: "peaks_pkl_202465.npz"

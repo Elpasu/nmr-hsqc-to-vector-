@@ -67,13 +67,15 @@ def test_pipeline_end_to_end_with_synthetic_files():
 
         config = {
             "paths": {
-                "base_dir": str(base),
+                "base_dir_144k": str(base),
                 "pkl_144k": "pkl_144.pkl",
                 "mol_ids_144k": "mol_ids_144.npy",
                 "smiles_144k": "smiles_144.npy",
+                "base_dir_58k": str(base),
                 "pkl_58k": "pkl_58.pkl",
                 "mol_ids_58k": "mol_ids_58.npy",
                 "smiles_58k": "smiles_58.npy",
+                "base_dir_202k": str(base),
                 "smiles_202465": "smiles_real.npy",
                 "labels_202465": "labels.npy",
                 "peaks_output_filename": "peaks_out.npz",

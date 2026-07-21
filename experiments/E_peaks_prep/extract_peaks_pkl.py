@@ -98,19 +98,21 @@ def main(config_path):
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
 
-    base_dir = Path(cfg["paths"]["base_dir"])
+    base_dir_144k = Path(cfg["paths"]["base_dir_144k"])
+    base_dir_58k = Path(cfg["paths"]["base_dir_58k"])
+    base_dir_202k = Path(cfg["paths"]["base_dir_202k"])
     class_names = cfg["classes_19v"]
 
     print("=" * 60)
     print("  EXP E FASE 1b: picos desde el pkl original")
     print("=" * 60)
 
-    smiles_144 = np.load(base_dir / cfg["paths"]["smiles_144k"], allow_pickle=True)
-    mol_ids_144 = np.load(base_dir / cfg["paths"]["mol_ids_144k"], allow_pickle=True)
-    smiles_58 = np.load(base_dir / cfg["paths"]["smiles_58k"], allow_pickle=True)
-    mol_ids_58 = np.load(base_dir / cfg["paths"]["mol_ids_58k"], allow_pickle=True)
-    smiles_real = np.load(base_dir / cfg["paths"]["smiles_202465"], allow_pickle=True)
-    labels = np.load(base_dir / cfg["paths"]["labels_202465"]).astype(int)
+    smiles_144 = np.load(base_dir_144k / cfg["paths"]["smiles_144k"], allow_pickle=True)
+    mol_ids_144 = np.load(base_dir_144k / cfg["paths"]["mol_ids_144k"], allow_pickle=True)
+    smiles_58 = np.load(base_dir_58k / cfg["paths"]["smiles_58k"], allow_pickle=True)
+    mol_ids_58 = np.load(base_dir_58k / cfg["paths"]["mol_ids_58k"], allow_pickle=True)
+    smiles_real = np.load(base_dir_202k / cfg["paths"]["smiles_202465"], allow_pickle=True)
+    labels = np.load(base_dir_202k / cfg["paths"]["labels_202465"]).astype(int)
 
     smiles_local = np.concatenate([smiles_144, smiles_58])
     mol_ids_local = np.concatenate([mol_ids_144, mol_ids_58])
@@ -129,9 +131,9 @@ def main(config_path):
         return
     print("[OK] alineacion verificada: SMILES canonicos coinciden posicion por posicion")
 
-    with open(base_dir / cfg["paths"]["pkl_144k"], "rb") as f:
+    with open(base_dir_144k / cfg["paths"]["pkl_144k"], "rb") as f:
         pkl_144 = pickle.load(f)
-    with open(base_dir / cfg["paths"]["pkl_58k"], "rb") as f:
+    with open(base_dir_58k / cfg["paths"]["pkl_58k"], "rb") as f:
         pkl_58 = pickle.load(f)
 
     n_total = len(smiles_local)
@@ -152,7 +154,7 @@ def main(config_path):
     print(f"-> picos por molecula: min={n_counts.min()} max={n_counts.max()} "
           f"promedio={n_counts.mean():.2f}")
 
-    out_path = base_dir / cfg["paths"]["peaks_output_filename"]
+    out_path = base_dir_202k / cfg["paths"]["peaks_output_filename"]
     np.savez(out_path, peaks=peaks_array, peaks_mask=mask_array)
     print(f"\n[SAVE] {out_path}")
 

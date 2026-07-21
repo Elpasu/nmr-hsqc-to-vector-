@@ -1,16 +1,22 @@
 # Exp E — Fase 1b: Picos desde el pkl original
 
-Corre LOCAL en tu máquina Windows (no en el cluster) — el pkl de 144k y sus
-arrays ya están en `E:\Proyectos\SciTrix\ScitrixDB\DB-Batch0\`.
+Corre LOCAL en tu máquina Windows (no en el cluster). Cada fuente vive en su
+propia carpeta, configurada en `config_pkl.yaml`:
+
+- `base_dir_144k`: `E:\Proyectos\SciTrix\ScitrixDB\DB_nmr_to_vector\144K\`
+  (pkl, `mol_ids_144280.npy`, `smiles_144280.npy`).
+- `base_dir_58k`: `E:\Proyectos\SciTrix\ScitrixDB\DB_nmr_to_vector\58K\`
+  (pkl, `mol_ids_58185.npy`, `smiles_58185.npy`).
+- `base_dir_202k`: `E:\Proyectos\SciTrix\ScitrixDB\DB_nmr_to_vector\202K_suma\`
+  (`smiles_202465.npy`, `vectors_13c_19v_202465.npy` — el dataset real
+  contra el que se verifica alineación; ahí también se guarda la salida
+  `peaks_pkl_202465.npz`).
 
 ## Antes de correr
 
-Copiá a esa misma carpeta, si todavía no están:
-- Desde `snmgt01:/data/contrib/pci_78/Lucas/DB_58K/`:
-  `nmr_calculated_data_scaled_58k.pkl`, `mol_ids_58185.npy`,
-  `smiles_58185.npy`.
-- Desde donde tengas `smiles_202465.npy` y `vectors_13c_19v_202465.npy`
-  (login-1 `DB_200k` u otro lado) — son archivos chicos.
+Confirmá que `202K_suma` tiene `smiles_202465.npy` y
+`vectors_13c_19v_202465.npy` (si todavía están bajando, esperá a que
+termine antes de correr `extract_peaks_pkl.py`).
 
 ## Orden de comandos
 
