@@ -1,0 +1,40 @@
+# experiments/E_peaks_prep/config_pkl.yaml
+#
+# Exp E Fase 1b: picos desde el pkl original (sin binning). Corre LOCAL en
+# la maquina Windows de Lucas -- rutas locales, no las del cluster.
+# base_dir: carpeta con TODOS los archivos de abajo juntos (144k ya estan
+# ahi; Lucas copia los de 58k desde snmgt01:DB_58K, y smiles_202465.npy +
+# vectors_13c_19v_202465.npy desde donde esten disponibles).
+
+paths:
+  base_dir: "E:/Proyectos/SciTrix/ScitrixDB/DB-Batch0"
+  pkl_144k: "nmr_calculated_data_scaled_144K.pkl"
+  mol_ids_144k: "mol_ids_144280.npy"
+  smiles_144k: "smiles_144280.npy"
+  pkl_58k: "nmr_calculated_data_scaled_58k.pkl"
+  mol_ids_58k: "mol_ids_58185.npy"
+  smiles_58k: "smiles_58185.npy"
+  smiles_202465: "smiles_202465.npy"
+  labels_202465: "vectors_13c_19v_202465.npy"
+  peaks_output_filename: "peaks_pkl_202465.npz"
+
+classes_19v:
+  - CH3
+  - CH2
+  - CH
+  - Cq
+  - CH3-O
+  - CH2-O
+  - CH-O
+  - Cq-O
+  - CH3-N
+  - CH2-N
+  - CH-N
+  - Cq-N
+  - "=CH2"
+  - "=CH/Ar"
+  - Cqsp2
+  - Aldeh
+  - Imina
+  - C-2X
+  - C-3X
