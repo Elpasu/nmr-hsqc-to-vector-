@@ -10,7 +10,8 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | V10-on-frozen-val (Exp D) | 2 | 19 | 202k | none | — (no retrain) | 0.93% | 90.66% | same ckpt as V10; val is ~90% train-contaminated, NOT a clean number — see below |
 | Exp B — regularizacion | 2 | 19 | 202k | drop=0.25, wd=1e-5 | 0.1764 (97) | 0.00% | 27.09% | **regression, not fix** — underfits, see below |
 | Exp C — GAP (fusion) | 2 | 19 | 202k | none | 0.0370 (100) | 0.89% | 70.02% | crude EMA improved vs V10 true baseline; assisted below target, see below |
-| Exp E Fase 1 — extraccion de picos | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 88.75% de moleculas con colision de blobs — imagen 256x256 no alcanza, ver seccion propia |
+| Exp E Fase 1 — extraccion de picos (blob-detection) | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 88.75% de moleculas con colision de blobs — imagen 256x256 no alcanza, ver seccion propia |
+| Exp E Fase 1b — extraccion de picos (pkl original) | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 97.19% match exacto, 2.19% colision real — valida pasar a Fase 2, ver seccion propia |
 
 ---
 
@@ -137,6 +138,52 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   picos directamente desde los datos originales del pkl/DFT (sin pasar por el binning
   de 256×256), donde δC/δH son valores reales sin cuantizar y la colisión debería caer
   a niveles marginales. Spec de esa fase, pendiente.
+
+---
+
+## Exp E — Fase 1b: extracción de picos desde el pkl original (sin binning)
+
+- **Fecha:** 2026-07-21 · **Script:** `experiments/E_peaks_prep/extract_peaks_pkl.py`
+  (local, máquina Windows de Lucas — sin GPU, sin cluster) · **Dataset:** las
+  202465 moléculas completas, matching por posición
+  (`mol_ids_144280.npy`/`mol_ids_58185.npy` ↔ `smiles_202465.npy`, verificado
+  con `verify_smiles_alignment` antes de generar cualquier pico).
+- **Qué se hizo:** en vez de detectar picos en la imagen 256×256 (Fase 1,
+  blob-detection), extraerlos directamente de los shifts DFT del pkl original
+  (`nmr_calculated_data_scaled_144K.pkl` + `nmr_calculated_data_scaled_58k.pkl`),
+  agrupando por carbono (no por par C-H) — sin ningún binning de por medio.
+- **Bug encontrado y corregido durante la corrida:** la primera pasada dio
+  38.51% match exacto con ~61% de moléculas en *exceso* de picos (no déficit).
+  Causa: carbonos químicamente equivalentes por simetría (ej. las 2 posiciones
+  orto de un anillo para-sustituido) reciben el mismo shift DFT — en un HSQC
+  real son indistinguibles (una sola señal), y el label los cuenta una vez,
+  pero la extracción contaba un pico por átomo sin deduplicar. Fix: colapsar
+  picos con `(δC, δH)` idénticos (hasta 6 decimales) antes de contar. Verificado
+  en 3 moléculas reales antes de aplicar el fix al dataset completo.
+- **Resultado final (post-fix):** `max_peaks=32`, picos por molécula
+  promedio=7.79 (min=0, max=32).
+  - Match exacto: **97.19%**.
+  - Con colisión real (visible > picos): **4425 / 202465 (2.19%)**.
+  - Déficit promedio en las que colisionan: **1.06**.
+- **Comparación directa con Fase 1 (blob-detection sobre la imagen):**
+
+  | | Fase 1 (imagen 256×256) | Fase 1b (pkl, sin binning) |
+  |---|---|---|
+  | Match exacto | 11.24% | **97.19%** |
+  | Colisión | 88.75% | **2.19%** |
+  | Déficit promedio | 3.81 | 1.06 |
+  | Picos/molécula (prom.) | 4.42 | 7.79 |
+
+- **Diagnóstico:** confirma que la pérdida de información de Fase 1 era del
+  binning de la imagen (sigma=0.5 ⇒ ~3.45 ppm δC / ~0.25 ppm δH por blob), no
+  un límite del dato en sí. Trabajando con los shifts reales, la colisión cae
+  a niveles marginales (2.19%, genuina — carbonos distintos con shifts
+  realmente muy cercanos, no artefacto de resolución).
+- **Salida:** `peaks_pkl_202465.npz` (`peaks (N, max_peaks, 4)`,
+  `peaks_mask (N, max_peaks)`), en `DB_nmr_to_vector/202K_suma/` local.
+- **Decisión:** este resultado valida pasar a Exp E Fase 2 (armar y entrenar
+  el modelo de conjuntos, DeepSets como primer candidato) sobre esta
+  representación. Pendiente: escribir el spec de Fase 2.
 
 ---
 
