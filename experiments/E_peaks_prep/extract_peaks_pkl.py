@@ -53,3 +53,33 @@ def extract_peaks_from_pkl_molecule(smiles, nmr_shifts):
         amp_ch1 = float(mult) / 3.0
         peaks.append((delta_c, delta_h, amp_ch0, amp_ch1))
     return peaks
+
+
+def canonicalize_smiles(smiles_array):
+    """Copiada tal cual de experiments/D_val_congelado/split.py -- misma
+    logica ya probada en Exp D, no reinventar. Canonicaliza con RDKit.
+    SMILES invalidos se conservan tal cual (no se descarta ninguna molecula)."""
+    canonical = []
+    n_invalid = 0
+    for smi in smiles_array:
+        mol = Chem.MolFromSmiles(str(smi))
+        if mol is None:
+            canonical.append(str(smi))
+            n_invalid += 1
+        else:
+            canonical.append(Chem.MolToSmiles(mol))
+    return np.array(canonical, dtype=object), n_invalid
+
+
+def verify_smiles_alignment(local_smiles, real_smiles):
+    """local_smiles, real_smiles: arrays de SMILES. Canonicaliza ambos y
+    compara posicion por posicion. Devuelve (ok, primer_indice_en_conflicto)
+    -- indice es None si el desajuste es de longitud, no posicional."""
+    if len(local_smiles) != len(real_smiles):
+        return False, None
+    local_canonical, _ = canonicalize_smiles(local_smiles)
+    real_canonical, _ = canonicalize_smiles(real_smiles)
+    for i in range(len(local_canonical)):
+        if local_canonical[i] != real_canonical[i]:
+            return False, i
+    return True, None
