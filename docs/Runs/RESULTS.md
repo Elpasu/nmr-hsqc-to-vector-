@@ -10,6 +10,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | V10-on-frozen-val (Exp D) | 2 | 19 | 202k | none | — (no retrain) | 0.93% | 90.66% | same ckpt as V10; val is ~90% train-contaminated, NOT a clean number — see below |
 | Exp B — regularizacion | 2 | 19 | 202k | drop=0.25, wd=1e-5 | 0.1764 (97) | 0.00% | 27.09% | **regression, not fix** — underfits, see below |
 | Exp C — GAP (fusion) | 2 | 19 | 202k | none | 0.0370 (100) | 0.89% | 70.02% | crude EMA improved vs V10 true baseline; assisted below target, see below |
+| Exp E Fase 1 — extraccion de picos | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 88.75% de moleculas con colision de blobs — imagen 256x256 no alcanza, ver seccion propia |
 
 ---
 
@@ -102,6 +103,40 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 - **Takeaway:** rebalancear la fusión ayudó (crude EMA sube, 38.6x menos parámetros, sin
   underfitting) pero no resuelve las confusiones estructurales. Siguiente paso: Exp E
   (conjunto de picos en vez de imagen), no más iteración sobre la arquitectura CNN.
+
+---
+
+## Exp E — Fase 1: extracción de picos vía blob-detection
+
+- **Fecha:** 2026-07-21 · **Scripts:** `experiments/E_peaks_prep/extract_peaks.py`,
+  `validate_peaks.py` (login node, sin GPU) · **Dataset:** las 202465 moléculas completas.
+- **Qué se hizo:** convertir el HSQC de imagen (2×256×256) a una lista de picos
+  `(δC, δH, amp_ch0, amp_ch1)` por molécula, detectando componentes conexos
+  (conectividad-8) sobre el canal 0. Calibración exacta (δC `[0,220]` ppm, δH `[-1,15]`
+  ppm, uniforme, 256 bins) copiada de `Genera_mapas_de_pkl_v2.py`.
+- **Resultado de extracción:** `max_peaks=14`, picos por molécula min=0 max=14
+  promedio=4.42.
+- **Resultado de validación (blobs detectados vs conteo visible del label):**
+  - Match exacto: **11.24%** de las moléculas.
+  - Con colisión (visible > blobs, pico perdido por fusión): **179 695 / 202 465
+    (88.75%)**.
+  - Déficit promedio en las que colisionan: **3.81** picos perdidos.
+  - Peores casos: moléculas con 32 carbonos visibles en el label, de las cuales el
+    blob-detector solo separó 3-4 (deficit=28-29) — moléculas grandes con zona
+    alifática muy poblada.
+- **Diagnóstico:** no es un bug de la extracción — es un límite físico de la imagen
+  fuente. Cada pico ocupa un radio de ~4px (`sigma=0.5`), que en ppm reales es
+  **~3.45 ppm en δC y ~0.25 ppm en δH**. Dos carbonos dentro de esa ventana se funden
+  en un solo blob de forma indistinguible — la CNN de V10/Exp B/Exp C ve exactamente
+  la misma fusión (no puede separarlos tampoco), así que esto no es una desventaja de
+  blob-detection frente al enfoque de imagen: es un techo compartido por ambos, que
+  solo se hizo visible al contar blobs en vez de píxeles (el chequeo viejo de
+  `audit_data_pipeline.py`, basado en conteo de píxeles, no lo detectaba — comparaba
+  contra una magnitud que no medía colisión real).
+- **Decisión (con Lucas):** pasar al plan de contingencia ya pactado — reprocesar los
+  picos directamente desde los datos originales del pkl/DFT (sin pasar por el binning
+  de 256×256), donde δC/δH son valores reales sin cuantizar y la colisión debería caer
+  a niveles marginales. Spec de esa fase, pendiente.
 
 ---
 
