@@ -60,8 +60,35 @@ def test_invalid_smiles_returns_empty():
     print("[OK] test_invalid_smiles_returns_empty")
 
 
+def test_symmetric_carbons_with_identical_shift_collapse_to_one_peak():
+    # Propano CCC -> AddHs: atomo 0=C(CH3, H en 3,4,5), 1=C(CH2, H en 6,7),
+    # 2=C(CH3, H en 8,9,10) -- verificado con RDKit directamente. Los dos
+    # CH3 (0 y 2) son quimicamente equivalentes por simetria -- un DFT real
+    # les asigna el MISMO shift (caso real observado en datos de produccion,
+    # ej. anillos para-sustituidos). En un HSQC real dan una sola senal
+    # (son indistinguibles), asi que el label los cuenta una vez -- la
+    # extraccion debe deduplicar picos con (delta_c, delta_h) identicos
+    # en vez de generar un pico por cada atomo.
+    nmr_shifts = {
+        0: 15.5, 2: 15.5,      # los dos C del CH3, shift IDENTICO (simetria)
+        1: 16.2,               # C del CH2
+        3: 0.9, 4: 0.9, 5: 0.9,       # H del CH3 (atomo 0)
+        6: 1.3, 7: 1.3,               # H del CH2
+        8: 0.9, 9: 0.9, 10: 0.9,      # H del CH3 (atomo 2, mismo shift que el 0)
+    }
+
+    peaks = extract_peaks_from_pkl_molecule("CCC", nmr_shifts)
+    assert len(peaks) == 2, f"esperados 2 picos (CH3 simetrico colapsado + CH2), salieron {len(peaks)}"
+
+    peaks_by_c = {round(p[0], 3): p for p in peaks}
+    assert 15.5 in peaks_by_c, peaks_by_c
+    assert 16.2 in peaks_by_c, peaks_by_c
+    print(f"[OK] test_symmetric_carbons_with_identical_shift_collapse_to_one_peak -> {peaks}")
+
+
 if __name__ == "__main__":
     test_ethanol_one_peak_per_carbon_with_diastereotopic_average()
     test_carbon_without_shift_is_dropped()
     test_invalid_smiles_returns_empty()
+    test_symmetric_carbons_with_identical_shift_collapse_to_one_peak()
     print("\n>>> test_extract_peaks_pkl.py OK <<<")

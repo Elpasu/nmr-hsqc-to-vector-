@@ -21,10 +21,33 @@ from rdkit import Chem
 from ch_connectivity import get_ch_connectivity_with_multiplicity
 
 
+def _dedupe_symmetric_peaks(peaks):
+    """Colapsa picos con (delta_c, delta_h) practicamente identicos (mismos
+    hasta 6 decimales) a uno solo. Corresponden a carbonos quimicamente
+    equivalentes por simetria molecular (ej. las dos posiciones orto de un
+    anillo para-sustituido) -- el calculo DFT les asigna el mismo shift, y
+    en un HSQC real son indistinguibles (una sola senal), por eso el label
+    de 19 clases los cuenta una vez. Mantiene el primer pico de cada grupo.
+    Confirmado con datos reales de produccion: sin este paso, el conteo de
+    picos superaba sistematicamente al conteo visible del label en ~61% de
+    las 202465 moleculas (exceso, no colision)."""
+    seen = set()
+    deduped = []
+    for peak in peaks:
+        key = (round(peak[0], 6), round(peak[1], 6))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(peak)
+    return deduped
+
+
 def extract_peaks_from_pkl_molecule(smiles, nmr_shifts):
     """smiles: str. nmr_shifts: dict {atom_idx: float shift}, con indices de
     atomo POST AddHs. Devuelve lista de (delta_c, delta_h, amp_ch0, amp_ch1),
-    un elemento por carbono con al menos un H con shift conocido."""
+    un elemento por CARBONO CON ENTORNO QUIMICO DISTINTO (carbonos
+    equivalentes por simetria con shift identico colapsan a un solo pico,
+    ver _dedupe_symmetric_peaks) con al menos un H con shift conocido."""
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
         return []
@@ -52,7 +75,7 @@ def extract_peaks_from_pkl_molecule(smiles, nmr_shifts):
         amp_ch0 = phase * float(mult)
         amp_ch1 = float(mult) / 3.0
         peaks.append((delta_c, delta_h, amp_ch0, amp_ch1))
-    return peaks
+    return _dedupe_symmetric_peaks(peaks)
 
 
 def canonicalize_smiles(smiles_array):
