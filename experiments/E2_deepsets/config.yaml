@@ -1,0 +1,28 @@
+# experiments/E2_deepsets/config.yaml
+#
+# Exp E Fase 2: modelo DeepSets sobre picos extraidos del pkl original
+# (Exp E Fase 1b, ver docs/Runs/RESULTS.md). Sin imagen HSQC, sin
+# proyecciones 1D (vec_c/vec_h) -- ver RATIONALE.md.
+
+experiment_name: "nmr_202k_e2_deepsets_picos_19v"
+
+paths:
+  base_dir: "/home/lpassaglia.iquir/DB_200k"
+  peaks_filename: "peaks_pkl_202465.npz"
+  labels_filename: "vectors_13c_19v_202465.npy"
+  smiles_filename: "smiles_202465.npy"
+  checkpoint_dir: "checkpoints_E2_deepsets"
+  val_indices_filename: "val_indices_frozen.npy"
+
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  scheduler:
+    patience: 8
+    factor: 0.7
+
+system:
+  device: "cuda"
+  num_workers: 0
+  pin_memory: true
