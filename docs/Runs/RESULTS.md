@@ -9,6 +9,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | V10 baseline | 2 | 19 | 202k | none | 0.0303 (76) | 0.61% | 74.92% | overfits from ~ep48; assisted EMA inflated by oracle (Exp A) |
 | V10-on-frozen-val (Exp D) | 2 | 19 | 202k | none | — (no retrain) | 0.93% | 90.66% | same ckpt as V10; val is ~90% train-contaminated, NOT a clean number — see below |
 | Exp B — regularizacion | 2 | 19 | 202k | drop=0.25, wd=1e-5 | 0.1764 (97) | 0.00% | 27.09% | **regression, not fix** — underfits, see below |
+| Exp C — GAP (fusion) | 2 | 19 | 202k | none | 0.0370 (100) | 0.89% | 70.02% | crude EMA improved vs V10 true baseline; assisted below target, see below |
 
 ---
 
@@ -75,6 +76,32 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   architecture** — do not carry these values into Exp C without re-testing. This result is
   evidence FOR prioritizing Exp C (rebalance the fusion bottleneck) over a milder regularization
   retry, since the failure mode implicates the same bottleneck Exp C targets.
+
+---
+
+## Exp C — GAP (rebalanceo de fusión) — resultado final
+
+- **Date:** 2026-07-20→21 · **SLURM train:** 2376427 (100 ep, 603.7 min ≈ 10.1h) ·
+  **SLURM eval:** 2376888 · **Params:** 222,883 (V10: 8,603,299, ~38.6x menos).
+- **Loss:** Train 0.0203 / Val 0.0370 (mejor, ep100, todavía descendiendo — el scheduler
+  nunca terminó de estabilizar). Mismo orden de magnitud que V10 (0.031); nada que ver con
+  el 0.176 de Exp B. Ningún `[WARN]` de underfitting se disparó en las 100 épocas.
+- **EMA crude / assisted:** 0.89% / 70.02% (Δ +69.1pp). Por entorno (asistida): Alifáticos
+  82.71%, Heteroatómicos O/N 80.03%, sp2 83.54%, X-Multiples 96.32%.
+- **Comparación honesta:** EMA cruda 0.89% > 0.61% de V10 (baseline real, split limpio) —
+  mejora real, aunque chica en términos absolutos. EMA asistida 70.02% < 74.92% de V10 —
+  por debajo, pero la asistida depende de dónde caen los errores del modelo (vía el
+  oráculo), no es la métrica de comparación primaria del proyecto. Lejos del objetivo de
+  ~90% asistida que se marcó el usuario — ningún experimento corrido hasta ahora se acercó
+  a eso con una evaluación limpia.
+- **Confusiones que sobreviven al oráculo — MISMAS que en V10 y Exp B:** `Cqsp2`↔`=CH/Ar`
+  (~40% de los errores cruzados de esas dos clases), `CH2`↔`CH2-N` (44-52%), `CH`↔`=CH/Ar`.
+  Tres arquitecturas distintas (V10 sin cambios, Exp B con regularización, Exp C con GAP),
+  mismo patrón de confusión — evidencia fuerte de que el problema **no es arquitectónico**,
+  es de representación/información. Motiva pasar a Exp E (representación de picos).
+- **Takeaway:** rebalancear la fusión ayudó (crude EMA sube, 38.6x menos parámetros, sin
+  underfitting) pero no resuelve las confusiones estructurales. Siguiente paso: Exp E
+  (conjunto de picos en vez de imagen), no más iteración sobre la arquitectura CNN.
 
 ---
 
