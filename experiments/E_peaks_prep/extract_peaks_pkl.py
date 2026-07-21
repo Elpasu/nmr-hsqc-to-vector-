@@ -83,3 +83,95 @@ def verify_smiles_alignment(local_smiles, real_smiles):
         if local_canonical[i] != real_canonical[i]:
             return False, i
     return True, None
+
+
+def main(config_path):
+    import sys as _sys
+    import pickle
+
+    import yaml
+
+    _sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from extract_peaks import build_padded_arrays
+    from validate_peaks import blob_counts_from_mask, validation_report, visible_label_counts
+
+    with open(config_path, "r", encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+
+    base_dir = Path(cfg["paths"]["base_dir"])
+    class_names = cfg["classes_19v"]
+
+    print("=" * 60)
+    print("  EXP E FASE 1b: picos desde el pkl original")
+    print("=" * 60)
+
+    smiles_144 = np.load(base_dir / cfg["paths"]["smiles_144k"], allow_pickle=True)
+    mol_ids_144 = np.load(base_dir / cfg["paths"]["mol_ids_144k"], allow_pickle=True)
+    smiles_58 = np.load(base_dir / cfg["paths"]["smiles_58k"], allow_pickle=True)
+    mol_ids_58 = np.load(base_dir / cfg["paths"]["mol_ids_58k"], allow_pickle=True)
+    smiles_real = np.load(base_dir / cfg["paths"]["smiles_202465"], allow_pickle=True)
+    labels = np.load(base_dir / cfg["paths"]["labels_202465"]).astype(int)
+
+    smiles_local = np.concatenate([smiles_144, smiles_58])
+    mol_ids_local = np.concatenate([mol_ids_144, mol_ids_58])
+
+    print(f"-> Moleculas locales (144k+58k): {len(smiles_local)}")
+    print(f"-> Moleculas en smiles_202465 real: {len(smiles_real)}")
+
+    ok, mismatch_idx = verify_smiles_alignment(smiles_local, smiles_real)
+    if not ok:
+        if mismatch_idx is None:
+            print("[ERROR] longitudes distintas entre smiles_local y smiles_202465 -- abortando")
+        else:
+            print(f"[ERROR] desajuste de alineacion en indice {mismatch_idx}")
+            print(f"  local: {smiles_local[mismatch_idx]!r}")
+            print(f"  real:  {smiles_real[mismatch_idx]!r}")
+        return
+    print("[OK] alineacion verificada: SMILES canonicos coinciden posicion por posicion")
+
+    with open(base_dir / cfg["paths"]["pkl_144k"], "rb") as f:
+        pkl_144 = pickle.load(f)
+    with open(base_dir / cfg["paths"]["pkl_58k"], "rb") as f:
+        pkl_58 = pickle.load(f)
+
+    n_total = len(smiles_local)
+    n_144 = len(smiles_144)
+    peaks_per_molecule = []
+    for i in range(n_total):
+        smiles = str(smiles_local[i])
+        mol_id = str(mol_ids_local[i])
+        pkl = pkl_144 if i < n_144 else pkl_58
+        nmr_shifts = pkl.get(mol_id, {})
+        peaks_per_molecule.append(extract_peaks_from_pkl_molecule(smiles, nmr_shifts))
+        if (i + 1) % 20000 == 0:
+            print(f"   procesadas {i + 1}/{n_total}")
+
+    peaks_array, mask_array = build_padded_arrays(peaks_per_molecule)
+    n_counts = mask_array.sum(axis=1)
+    print(f"-> max_peaks detectado: {peaks_array.shape[1]}")
+    print(f"-> picos por molecula: min={n_counts.min()} max={n_counts.max()} "
+          f"promedio={n_counts.mean():.2f}")
+
+    out_path = base_dir / cfg["paths"]["peaks_output_filename"]
+    np.savez(out_path, peaks=peaks_array, peaks_mask=mask_array)
+    print(f"\n[SAVE] {out_path}")
+
+    visible_counts = visible_label_counts(labels, class_names)
+    blob_counts = blob_counts_from_mask(mask_array)
+    report = validation_report(blob_counts, visible_counts)
+
+    print(f"\nMoleculas evaluadas: {report['n']}")
+    print(f"Match exacto (picos == visible): {report['pct_exact_match']:.2f}%")
+    print(f"Con colision (visible > picos): {report['n_collision']} "
+          f"({report['pct_collision']:.2f}%)")
+    print(f"Deficit promedio en las que tienen colision: "
+          f"{report['mean_deficit_positive']:.2f}")
+
+    print(">>> EXP E FASE 1b extract_peaks_pkl.py OK <<<")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Exp E Fase 1b: picos desde el pkl original")
+    parser.add_argument("--config", type=str, default="config_pkl.yaml")
+    args = parser.parse_args()
+    main(args.config)
