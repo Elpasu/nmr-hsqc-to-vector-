@@ -12,6 +12,9 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp C — GAP (fusion) | 2 | 19 | 202k | none | 0.0370 (100) | 0.89% | 70.02% | crude EMA improved vs V10 true baseline; assisted below target, see below |
 | Exp E Fase 1 — extraccion de picos (blob-detection) | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 88.75% de moleculas con colision de blobs — imagen 256x256 no alcanza, ver seccion propia |
 | Exp E Fase 1b — extraccion de picos (pkl original) | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 97.19% match exacto, 2.19% colision real — valida pasar a Fase 2, ver seccion propia |
+| Exp E Fase 2 — DeepSets (picos) | n/a (sin imagen) | 19 | 202k | none | 0.0323 (97) | 0.74% | 70.90% | **FRACASO segun criterio propio** — crude < Exp C (0.89%), confusiones de cuaternarios EMPEORARON; picos son crosspeaks puros y se quito la proj 1D. Ver seccion |
+| Exp E Fase 3 — DeepSets (2 conjuntos: crosspeaks + 13C) | n/a (sin imagen) | 19 | 202k | none | 0.0201 (97) | 2.28% | 82.96% | **exito** — agrega conjunto 13C (con cuaternarios); Cqsp2 con error 13.5%->5.2% vs E2. Ver seccion |
+| **Exp E Fase 3 — Set Transformer (2 conjuntos: crosspeaks + 13C)** | n/a (sin imagen) | 19 | 202k | none | **0.0097 (97)** | 2.26% | **91.35%** | **mejor resultado del proyecto** — primera vez que cruza el objetivo ~90% asistida limpio; rompe la confusion estructural Cqsp2<->=CH/Ar (persistia en V10/B/C/E2). Ver seccion |
 
 ---
 
@@ -184,6 +187,119 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 - **Decisión:** este resultado valida pasar a Exp E Fase 2 (armar y entrenar
   el modelo de conjuntos, DeepSets como primer candidato) sobre esta
   representación. Pendiente: escribir el spec de Fase 2.
+
+---
+
+## Exp E — Fase 2: modelo DeepSets sobre picos — resultado final
+
+- **Fecha:** 2026-07-21 · **SLURM train:** 2376953 (100 ep, ~9.2s/ep, ~16 min total) ·
+  **SLURM eval:** 2376954 · **Params:** 23,315 (V10: 8.6M, Exp C: 223k).
+- **Config:** `experiments/E2_deepsets/config.yaml` · **Arch:** `model_e2.py` (DeepSets:
+  MLP por pico 4→64→64, promedio enmascarado, fusión 72→128→64→19).
+- **Loss:** Train 0.0388 / Val **0.0323** (mejor, ep97). Mismo orden que V10 (0.031) y Exp C
+  (0.037). Convergencia limpia, scheduler OK (LR 0.001→0.00049, sin colapso), `.err` vacío.
+  **No hay ningún bug de código** — el experimento corrió como se diseñó.
+- **EMA crude / assisted:** 0.74% / 70.90% (Δ +70.16pp). Por entorno (asistida): Alifáticos
+  86.69%, Heteroatómicos O/N 83.20%, sp2 81.71%, X-Multiples 95.27%.
+- **Veredicto vs criterio propio (`RATIONALE.md`): FRACASO.** EMA cruda 0.74% < 0.89%
+  (objetivo mínimo = Exp C). EMA asistida 70.90% ≈ Exp C (70.02%), sin mejora real. Y el
+  indicador de éxito que fijó la propia RATIONALE — que las confusiones `Cqsp2`↔`=CH/Ar` y
+  `CH2`↔`CH2-N` mejoraran — **empeoró**: `Cqsp2`→`=CH/Ar` 53.6% (Exp C ~40%),
+  `=CH/Ar`→`Cqsp2` 50.2%, `CH2`→`CH2-N` 69.6% (Exp C 44-52%), `CH2-N`→`CH2` 56.7%.
+- **Causa probable (hallazgo del análisis post-mortem, no un bug):** los picos de Exp E son
+  **crosspeaks C-H puros** — `experiments/E_peaks_prep/extract_peaks_pkl.py:65-70` descarta
+  todo carbono sin H (`if not h_shifts: continue`). Los cuaternarios (`Cqsp2`, `Cq`, `Cq-O`,
+  `Cq-N`) **nunca entran al set de picos**: el modelo sólo puede inferirlos vía la FM +
+  restricciones de conteo. Además, a diferencia de V10/B/C, Exp E **eliminó las proyecciones
+  1D (`vec_c`/`vec_h`)** con el argumento de que eran "redundantes con los picos" (spec Fase 2,
+  líneas 40-43) — pero el diseño ORIGINAL del workflow (E1, `WORKFLOW_V11` líneas 324-325)
+  mandaba fusionar "picos + **proj 1D** + FM". La desviación quitó una entrada que el plan
+  original mantenía.
+- **⚠️ PREGUNTA ABIERTA (decide el próximo experimento):** ¿`vec_c`/`vec_h` son **(a)**
+  proyecciones de la imagen HSQC 2D — que por física NO contienen cuaternarios, exactamente el
+  mismo conjunto de carbonos que los picos — o **(b)** espectros ¹³C/¹H 1D reales desde el pkl,
+  que SÍ ven cuaternarios? Lo decide `Genera_mapas_de_pkl_v2.py` (snmgt01), no verificable
+  desde este repo. **Si (b):** su eliminación fue una pérdida de información real y el próximo
+  experimento obvio y barato es reincorporar la proj 1D al DeepSets. **Si (a):** el cuello es
+  información pura (Cqsp2 invisible en HSQC) y el fix es HMBC simulado, como ya anticipa
+  `WORKFLOW_V11` líneas 39-41 / 344-346.
+- **Takeaway:** cambiar imagen→picos NO resolvió las confusiones estructurales; las agravó al
+  quitar la proj 1D. Refuerza que `Cqsp2`/`Cq` son un límite de INFORMACIÓN (invisibles en
+  HSQC), no de arquitectura — cuatro representaciones distintas (V10 CNN, Exp B, Exp C GAP,
+  Exp E picos) fallan igual en ellos. Antes de saltar a Set Transformer, el experimento
+  correcto es reañadir la proj 1D al DeepSets (si aporta cuaternarios) o el HMBC simulado.
+
+---
+
+## Exp E — Fase 3: dos conjuntos de picos (crosspeaks C-H + ¹³C), dos arquitecturas
+
+- **Fecha:** 2026-07-22 · **SLURM train:** 2376980 (DeepSets, 20.7 min) / 2376981
+  (Set Transformer, 39.0 min) · **SLURM eval:** 2377009 (DeepSets) / 2377018
+  (Set Transformer) · **Params:** DeepSets 35,795 / Set Transformer 70,163
+  (ambos chicos por diseño; V10: 8,603,299).
+- **Qué cambia vs Fase 2:** se agrega un segundo conjunto de picos ¹³C
+  (`peaks_13c_202465.npz`, extraído con `extract_peaks_13c_pkl.py` — todos los
+  carbonos del pkl, sin filtrar por H, a diferencia de los crosspeaks de Fase
+  1b). Validación de la extracción sobre las 202465 moléculas reales: match
+  exacto 99.35%, déficit real 0.01% (21 moléculas), exceso 0.64% (1295
+  moléculas, causado por carbonos equivalentes por simetría con δC
+  ligeramente distinto — benigno, no filtrado). Los desplazamientos se
+  normalizan min-max desde `config/db.yaml` (no se normalizaba en Fase 2). Se
+  prueban dos arquitecturas sobre el mismo dataset/loss/split/scheduler: un
+  DeepSets de dos ramas (una por conjunto) y un Set Transformer (self-attention
+  sobre la unión de ambos conjuntos con embedding de tipo + pooling PMA).
+- **Loss (100 épocas, ambos):** DeepSets Train 0.0266 / Val **0.0201** (mejor,
+  ep97). Set Transformer Train 0.0130 / Val **0.0097** (mejor, ep97) — el
+  valor más bajo del proyecto, menos de un tercio del de Fase 2 (0.0323). En
+  ninguno de los dos el LR bajó de 0.001 en 100 épocas (scheduler no encontró
+  meseta) — margen de mejora, no estancamiento.
+- **EMA crude / assisted:**
+  - **DeepSets:** 2.28% / 82.96% (Δ +80.68pp). Por entorno (asistida):
+    Alifáticos 92.75%, Heteroatómicos O/N 89.83%, sp2 91.02%, X-Multiples
+    97.08%.
+  - **Set Transformer:** 2.26% / **91.35%** (Δ +89.09pp). Por entorno
+    (asistida): Alifáticos 96.06%, Heteroatómicos O/N 93.80%, sp2 96.56%,
+    X-Multiples 98.15%.
+- **Éxito según criterio propio (`RATIONALE.md` de la carpeta):** ambas
+  arquitecturas superan el objetivo mínimo de EMA cruda (0.89%, Exp C) y la
+  asistida de referencia (Exp C 70.02%, E2 70.90%). El Set Transformer además
+  supera a V10 (74.92%, hasta ahora el techo) y **cruza por primera vez, con
+  evaluación limpia, el objetivo de ~90% asistida** que se marcó el usuario
+  para el proyecto.
+- **Las confusiones persistentes de cuaternarios bajaron y cambiaron de
+  naturaleza** (el indicador de éxito real definido en la RATIONALE):
+
+  | Clase — % moléculas con error | E2 (Fase 2, fracaso) | DeepSets F3 | Set Transformer F3 |
+  |---|---|---|---|
+  | `Cqsp2` | 13.5% | 5.2% | **1.2%** |
+  | `=CH/Ar` | 8.9% | 6.0% | **2.1%** |
+  | `CH2` | 3.6% | 3.0% | 1.9% |
+  | `CH2-N` | 3.7% | 3.4% | 2.2% |
+
+  Más importante que la caída absoluta: en V10/Exp B/Exp C/E2/DeepSets-F3, la
+  confusión dominante de `Cqsp2` era siempre `=CH/Ar` (40-63% de sus errores).
+  En el Set Transformer, `Cqsp2` ya no confunde principalmente con `=CH/Ar`
+  (ahora `Cq-O` 34.1%, `=CH/Ar` 21.6%, `C-2X` 12.5%), y `=CH/Ar` tampoco
+  confunde ya con `Cqsp2` como principal (pasa a `Imina`/`CH-O`). La pareja
+  `Cqsp2`↔`=CH/Ar`, que sobrevivió a cinco arquitecturas distintas sobre la
+  imagen/crosspeaks, se rompió al combinar el conjunto ¹³C (que sí ve los
+  cuaternarios) con una arquitectura capaz de comparar ambos conjuntos entre sí.
+- **Diagnóstico:** confirma las dos hipótesis del diseño — (1) el input
+  incompleto de Fase 2 (crosspeaks puros, sin cuaternarios) era la causa raíz
+  de su fracaso, no la capacidad del modelo; (2) la capacidad relacional
+  (Set Transformer vs DeepSets, mismo input) aporta una mejora adicional
+  sustancial (82.96% → 91.35% asistida, 0.0201 → 0.0097 val loss), consistente
+  con que detectar un cuaternario es una operación de comparación entre
+  conjuntos que el promedio enmascarado del DeepSets no puede expresar bien.
+- **Resto del error (para el próximo experimento):** en el Set Transformer,
+  lo que más pesa ahora es la pareja `CH2`↔`CH2-N` (1.9%/2.2%, la otra
+  confusión histórica, que bajó pero no se rompió como `Cqsp2`↔`=CH/Ar`),
+  seguida de `C-2X` (1.7%, clase rara, sistemas polihalogenados) y un frente
+  nuevo y menor `=CH/Ar`↔`Imina` (25.8% de los errores de `=CH/Ar`).
+- **Takeaway:** mejor resultado limpio del proyecto hasta ahora. Spec:
+  `docs/superpowers/specs/2026-07-22-exp-e-fase3-dos-conjuntos-picos-design.md`.
+  Plan: `docs/superpowers/plans/2026-07-22-exp-e-fase3-dos-conjuntos-picos.md`.
+  Código: `experiments/E3_dos_conjuntos/`.
 
 ---
 

@@ -1,0 +1,38 @@
+# experiments/E3_dos_conjuntos/config_deepsets.yaml
+#
+# Exp E Fase 3: DeepSets de dos ramas sobre dos conjuntos de picos
+# (crosspeaks C-H + 13C con cuaternarios). Ver RATIONALE.md y el spec
+# docs/superpowers/specs/2026-07-22-exp-e-fase3-dos-conjuntos-picos-design.md
+experiment_name: "nmr_202k_e3_deepsets_2sets_19v"
+
+paths:
+  base_dir: "/home/lpassaglia.iquir/DB_200k"
+  peaks_ch_filename: "peaks_pkl_202465.npz"
+  peaks_13c_filename: "peaks_13c_202465.npz"
+  labels_filename: "vectors_13c_19v_202465.npy"
+  smiles_filename: "smiles_202465.npy"
+  checkpoint_dir: "checkpoints_E3_deepsets"
+  val_indices_filename: "val_indices_frozen.npy"
+
+model:
+  arch: "deepsets"
+
+normalization:
+  c13_ppm_min: 0
+  c13_ppm_max: 220
+  h1_ppm_min: -1
+  h1_ppm_max: 15
+  amp_ch0_scale: 3.0
+
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  scheduler:
+    patience: 8
+    factor: 0.7
+
+system:
+  device: "cuda"
+  num_workers: 0
+  pin_memory: true
