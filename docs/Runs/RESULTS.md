@@ -12,6 +12,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp C — GAP (fusion) | 2 | 19 | 202k | none | 0.0370 (100) | 0.89% | 70.02% | crude EMA improved vs V10 true baseline; assisted below target, see below |
 | Exp E Fase 1 — extraccion de picos (blob-detection) | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 88.75% de moleculas con colision de blobs — imagen 256x256 no alcanza, ver seccion propia |
 | Exp E Fase 1b — extraccion de picos (pkl original) | n/a (sin imagen) | n/a | 202k | n/a | n/a (sin entrenar) | n/a | n/a | 97.19% match exacto, 2.19% colision real — valida pasar a Fase 2, ver seccion propia |
+| Exp E Fase 2 — DeepSets (picos) | n/a (sin imagen) | 19 | 202k | none | 0.0323 (97) | 0.74% | 70.90% | **FRACASO segun criterio propio** — crude < Exp C (0.89%), confusiones de cuaternarios EMPEORARON; picos son crosspeaks puros y se quito la proj 1D. Ver seccion |
 
 ---
 
@@ -184,6 +185,47 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 - **Decisión:** este resultado valida pasar a Exp E Fase 2 (armar y entrenar
   el modelo de conjuntos, DeepSets como primer candidato) sobre esta
   representación. Pendiente: escribir el spec de Fase 2.
+
+---
+
+## Exp E — Fase 2: modelo DeepSets sobre picos — resultado final
+
+- **Fecha:** 2026-07-21 · **SLURM train:** 2376953 (100 ep, ~9.2s/ep, ~16 min total) ·
+  **SLURM eval:** 2376954 · **Params:** 23,315 (V10: 8.6M, Exp C: 223k).
+- **Config:** `experiments/E2_deepsets/config.yaml` · **Arch:** `model_e2.py` (DeepSets:
+  MLP por pico 4→64→64, promedio enmascarado, fusión 72→128→64→19).
+- **Loss:** Train 0.0388 / Val **0.0323** (mejor, ep97). Mismo orden que V10 (0.031) y Exp C
+  (0.037). Convergencia limpia, scheduler OK (LR 0.001→0.00049, sin colapso), `.err` vacío.
+  **No hay ningún bug de código** — el experimento corrió como se diseñó.
+- **EMA crude / assisted:** 0.74% / 70.90% (Δ +70.16pp). Por entorno (asistida): Alifáticos
+  86.69%, Heteroatómicos O/N 83.20%, sp2 81.71%, X-Multiples 95.27%.
+- **Veredicto vs criterio propio (`RATIONALE.md`): FRACASO.** EMA cruda 0.74% < 0.89%
+  (objetivo mínimo = Exp C). EMA asistida 70.90% ≈ Exp C (70.02%), sin mejora real. Y el
+  indicador de éxito que fijó la propia RATIONALE — que las confusiones `Cqsp2`↔`=CH/Ar` y
+  `CH2`↔`CH2-N` mejoraran — **empeoró**: `Cqsp2`→`=CH/Ar` 53.6% (Exp C ~40%),
+  `=CH/Ar`→`Cqsp2` 50.2%, `CH2`→`CH2-N` 69.6% (Exp C 44-52%), `CH2-N`→`CH2` 56.7%.
+- **Causa probable (hallazgo del análisis post-mortem, no un bug):** los picos de Exp E son
+  **crosspeaks C-H puros** — `experiments/E_peaks_prep/extract_peaks_pkl.py:65-70` descarta
+  todo carbono sin H (`if not h_shifts: continue`). Los cuaternarios (`Cqsp2`, `Cq`, `Cq-O`,
+  `Cq-N`) **nunca entran al set de picos**: el modelo sólo puede inferirlos vía la FM +
+  restricciones de conteo. Además, a diferencia de V10/B/C, Exp E **eliminó las proyecciones
+  1D (`vec_c`/`vec_h`)** con el argumento de que eran "redundantes con los picos" (spec Fase 2,
+  líneas 40-43) — pero el diseño ORIGINAL del workflow (E1, `WORKFLOW_V11` líneas 324-325)
+  mandaba fusionar "picos + **proj 1D** + FM". La desviación quitó una entrada que el plan
+  original mantenía.
+- **⚠️ PREGUNTA ABIERTA (decide el próximo experimento):** ¿`vec_c`/`vec_h` son **(a)**
+  proyecciones de la imagen HSQC 2D — que por física NO contienen cuaternarios, exactamente el
+  mismo conjunto de carbonos que los picos — o **(b)** espectros ¹³C/¹H 1D reales desde el pkl,
+  que SÍ ven cuaternarios? Lo decide `Genera_mapas_de_pkl_v2.py` (snmgt01), no verificable
+  desde este repo. **Si (b):** su eliminación fue una pérdida de información real y el próximo
+  experimento obvio y barato es reincorporar la proj 1D al DeepSets. **Si (a):** el cuello es
+  información pura (Cqsp2 invisible en HSQC) y el fix es HMBC simulado, como ya anticipa
+  `WORKFLOW_V11` líneas 39-41 / 344-346.
+- **Takeaway:** cambiar imagen→picos NO resolvió las confusiones estructurales; las agravó al
+  quitar la proj 1D. Refuerza que `Cqsp2`/`Cq` son un límite de INFORMACIÓN (invisibles en
+  HSQC), no de arquitectura — cuatro representaciones distintas (V10 CNN, Exp B, Exp C GAP,
+  Exp E picos) fallan igual en ellos. Antes de saltar a Set Transformer, el experimento
+  correcto es reañadir la proj 1D al DeepSets (si aporta cuaternarios) o el HMBC simulado.
 
 ---
 
