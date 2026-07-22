@@ -1,10 +1,19 @@
+# experiments/F_poisson_head/train.py
 # coding: ascii
 """
-train.py -- Exp E Fase 3: entrena DeepSets o Set Transformer (segun
-model.arch del config) sobre los dos conjuntos de picos (crosspeaks C-H +
-13C). Sin regularizacion (misma decision que Exp C/E2). Split congelado de
-Exp D (val_indices_frozen.npy). Todo lo demas identico a E2 salvo el modelo,
-los dos conjuntos y la normalizacion (que vive en el dataset).
+train.py -- Exp F: cabeza Poisson + entrenamiento extendido sobre el Set
+Transformer de Exp E Fase 3. Cambios respecto a Fase 3:
+  (1) modelo con activacion softplus en la salida (model_f_settransformer.py) --
+      garantiza lambda >= 0, que exige PoissonNLLLoss(log_input=False).
+  (2) ConstrainedPoissonLoss en vez de ConstrainedMSELoss (Poisson NLL por
+      clase + mismo termino de restriccion de suma, lambda_sum=0.5).
+  (3) epochs=250 en vez de 100 (en Fase 3 el LR nunca bajo de 0.001 en 100
+      epocas -- scheduler patience=8/factor=0.7 sin cambios, regla 6).
+Dataset, split congelado (Exp D), condicionante FM y arquitectura del Set
+Transformer (d_model/n_heads/n_layers/n_seeds) identicos a Fase 3.
+
+CAVEAT: el val loss reportado es Poisson NLL, NO es comparable numericamente
+contra el 0.0097 (MSE) de Fase 3. Comparar por EMA (evaluate.py).
 """
 import torch
 import torch.nn as nn
@@ -15,8 +24,9 @@ import time, os, yaml, argparse, random
 import numpy as np
 from pathlib import Path
 
-from dataset_e3 import NMRTwoSetsDataset
-from split_utils import canonicalize_smiles, remove_leaking_from_train, subsample_train_idx
+from dataset_f import NMRTwoSetsDataset
+from model_f_settransformer import NMR_SetTransformer
+from split_utils import canonicalize_smiles, remove_leaking_from_train
 
 
 def set_seed(seed=42):
@@ -27,13 +37,21 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
 
 
-class ConstrainedMSELoss(nn.Module):
+class ConstrainedPoissonLoss(nn.Module):
+    """Poisson NLL por clase (el modelo ya devuelve lambda >= 0 via
+    softplus, por eso log_input=False) + el mismo termino de restriccion de
+    suma que ConstrainedMSELoss (MSE sobre el total predicho vs el total
+    real, lambda_sum=0.5). full=True agrega el termino de Stirling
+    (aproximacion de log(target!)) para que la loss sea una NLL propiamente
+    normalizada, no solo la parte que importa para el gradiente."""
     def __init__(self, lambda_sum=0.5):
         super().__init__()
-        self.mse = nn.MSELoss(); self.lambda_sum = lambda_sum
+        self.poisson = nn.PoissonNLLLoss(log_input=False, full=True)
+        self.mse = nn.MSELoss()
+        self.lambda_sum = lambda_sum
 
     def forward(self, pred, target):
-        li = self.mse(pred, target)
+        li = self.poisson(pred, target)
         ls = self.mse(torch.sum(pred, dim=1), torch.sum(target, dim=1))
         return li + self.lambda_sum * ls
 
@@ -44,21 +62,14 @@ def load_config(p):
 
 
 def build_model(cfg, num_classes=19):
-    arch = cfg['model']['arch']
-    if arch == 'deepsets':
-        from model_e3_deepsets import NMR_DeepSets
-        return NMR_DeepSets(num_classes=num_classes)
-    if arch == 'settransformer':
-        from model_e3_settransformer import NMR_SetTransformer
-        m = cfg['model']
-        return NMR_SetTransformer(
-            num_classes=num_classes,
-            d_model=int(m.get('d_model', 64)),
-            n_heads=int(m.get('n_heads', 4)),
-            n_layers=int(m.get('n_layers', 2)),
-            n_seeds=int(m.get('n_seeds', 1)),
-        )
-    raise ValueError(f"model.arch desconocido: {arch!r} (usar 'deepsets' o 'settransformer')")
+    m = cfg['model']
+    return NMR_SetTransformer(
+        num_classes=num_classes,
+        d_model=int(m.get('d_model', 64)),
+        n_heads=int(m.get('n_heads', 4)),
+        n_layers=int(m.get('n_layers', 2)),
+        n_seeds=int(m.get('n_seeds', 1)),
+    )
 
 
 def build_frozen_split(full_dataset, base_dir, cfg):
@@ -76,13 +87,8 @@ def build_frozen_split(full_dataset, base_dir, cfg):
     all_idx = np.arange(len(full_dataset))
     train_idx_raw = np.setdiff1d(all_idx, val_idx, assume_unique=False)
     train_idx, n_removed = remove_leaking_from_train(train_idx_raw, val_idx, canonical)
-
-    fraction = float(cfg['hyperparameters'].get('train_fraction', 1.0))
-    if fraction < 1.0:
-        train_idx = subsample_train_idx(train_idx, fraction, seed=42)
-
     print(f"[INFO] Split congelado: SMILES invalidos={n_invalid} | "
-          f"train={len(train_idx)} (leak removido={n_removed}, train_fraction={fraction}) | val={len(val_idx)}")
+          f"train={len(train_idx)} (leak removido={n_removed}) | val={len(val_idx)}")
     return train_idx, val_idx
 
 
@@ -104,7 +110,7 @@ def validate(model, loader, criterion, device):
 def train(config_path):
     set_seed(42)
     cfg = load_config(config_path)
-    print(f"--- ENTRENAMIENTO EXP E FASE 3 ({cfg['model']['arch']}): {cfg['experiment_name']} ---")
+    print(f"--- ENTRENAMIENTO EXP F (Poisson + entrenamiento extendido): {cfg['experiment_name']} ---")
 
     base_dir = Path(cfg['paths']['base_dir'])
     peaks_ch = base_dir / cfg['paths']['peaks_ch_filename']
@@ -131,15 +137,17 @@ def train(config_path):
 
     model = build_model(cfg, num_classes=19).to(device)
     n_params = sum(p.numel() for p in model.parameters())
-    print(f"[INFO] Parametros totales del modelo ({cfg['model']['arch']}): {n_params:,} "
-          f"(chico por diseno; V10 ~8,603,299)")
+    print(f"[INFO] Parametros totales del modelo: {n_params:,} "
+          f"(igual a Fase 3 Set Transformer, ~70k; softplus no agrega parametros)")
 
-    criterion = ConstrainedMSELoss(lambda_sum=0.5)
+    criterion = ConstrainedPoissonLoss(lambda_sum=0.5)
     optimizer = optim.Adam(model.parameters(), lr=cfg['hyperparameters']['learning_rate'])
     sched_cfg = cfg['hyperparameters'].get('scheduler', {})
     patience = sched_cfg.get('patience', 8); factor = sched_cfg.get('factor', 0.7)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=factor, patience=patience)
     print(f"[INFO] Scheduler: patience={patience}, factor={factor}")
+    print("[INFO] Loss: ConstrainedPoissonLoss -- el val loss NO es comparable "
+          "numericamente contra el 0.0097 (MSE) de Fase 3. Comparar por EMA.")
 
     epochs = cfg['hyperparameters']['epochs']
     print(f"\n[START] {epochs} epochs...")
@@ -178,6 +186,6 @@ def train(config_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="config_deepsets.yaml")
+    parser.add_argument("--config", type=str, default="config.yaml")
     args = parser.parse_args()
     train(args.config)

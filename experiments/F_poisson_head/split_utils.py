@@ -1,10 +1,9 @@
+# experiments/F_poisson_head/split_utils.py
 # coding: ascii
 """
-split_utils.py -- Exp E Fase 2: funciones puras de dedup/leak, copiadas de
-experiments/D_val_congelado/split.py (ya probadas ahi y en Exp B/C). Se usan
-en train.py para reconstruir el mismo train set limpio a partir de
-val_indices_frozen.npy (Exp D), sin volver a correr split.py completo ni
-depender de otras carpetas de experimento (self-contained).
+split_utils.py -- Exp F: funciones puras de dedup/leak, copiadas de
+experiments/E3_dos_conjuntos/split_utils.py (self-contained, sin depender
+de otras carpetas de experimento).
 """
 import numpy as np
 from rdkit import Chem
@@ -35,18 +34,3 @@ def remove_leaking_from_train(train_idx, val_idx, canonical_smiles):
     )
     n_removed = len(train_idx) - len(clean_train_idx)
     return clean_train_idx, n_removed
-
-
-def subsample_train_idx(train_idx, fraction, seed=42):
-    """Subsamplea train_idx de forma deterministica y anidada, para el
-    estudio de escalado de datos (Parte 2 del spec de Exp F): la
-    permutacion es la misma para cualquier fraccion (mismo seed), asi que
-    fraccion=0.25 es subconjunto de fraccion=0.50, etc. -- la curva de
-    escalado mide una progresion genuinamente incremental, no muestras
-    independientes entre si. fraction >= 1.0 devuelve train_idx sin tocar."""
-    if fraction >= 1.0:
-        return train_idx
-    rng = np.random.RandomState(seed)
-    perm = rng.permutation(train_idx)
-    n_keep = int(len(train_idx) * fraction)
-    return np.sort(perm[:n_keep])
