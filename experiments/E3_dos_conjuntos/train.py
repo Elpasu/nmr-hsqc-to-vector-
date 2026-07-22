@@ -16,7 +16,7 @@ import numpy as np
 from pathlib import Path
 
 from dataset_e3 import NMRTwoSetsDataset
-from split_utils import canonicalize_smiles, remove_leaking_from_train
+from split_utils import canonicalize_smiles, remove_leaking_from_train, subsample_train_idx
 
 
 def set_seed(seed=42):
@@ -76,8 +76,13 @@ def build_frozen_split(full_dataset, base_dir, cfg):
     all_idx = np.arange(len(full_dataset))
     train_idx_raw = np.setdiff1d(all_idx, val_idx, assume_unique=False)
     train_idx, n_removed = remove_leaking_from_train(train_idx_raw, val_idx, canonical)
+
+    fraction = float(cfg['hyperparameters'].get('train_fraction', 1.0))
+    if fraction < 1.0:
+        train_idx = subsample_train_idx(train_idx, fraction, seed=42)
+
     print(f"[INFO] Split congelado: SMILES invalidos={n_invalid} | "
-          f"train={len(train_idx)} (leak removido={n_removed}) | val={len(val_idx)}")
+          f"train={len(train_idx)} (leak removido={n_removed}, train_fraction={fraction}) | val={len(val_idx)}")
     return train_idx, val_idx
 
 

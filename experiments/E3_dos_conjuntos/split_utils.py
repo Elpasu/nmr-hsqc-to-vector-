@@ -35,3 +35,18 @@ def remove_leaking_from_train(train_idx, val_idx, canonical_smiles):
     )
     n_removed = len(train_idx) - len(clean_train_idx)
     return clean_train_idx, n_removed
+
+
+def subsample_train_idx(train_idx, fraction, seed=42):
+    """Subsamplea train_idx de forma deterministica y anidada, para el
+    estudio de escalado de datos (Parte 2 del spec de Exp F): la
+    permutacion es la misma para cualquier fraccion (mismo seed), asi que
+    fraccion=0.25 es subconjunto de fraccion=0.50, etc. -- la curva de
+    escalado mide una progresion genuinamente incremental, no muestras
+    independientes entre si. fraction >= 1.0 devuelve train_idx sin tocar."""
+    if fraction >= 1.0:
+        return train_idx
+    rng = np.random.RandomState(seed)
+    perm = rng.permutation(train_idx)
+    n_keep = int(len(train_idx) * fraction)
+    return np.sort(perm[:n_keep])
