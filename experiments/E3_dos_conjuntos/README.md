@@ -79,3 +79,39 @@ Los dos modelos comparten dataset, loss, scheduler y split — solo cambia
 `model.arch` en el config. La comparación DeepSets vs E2 aísla el efecto de
 completar el input (agregar cuaternarios); Set Transformer vs DeepSets aísla
 el de la capacidad relacional. Ver `RATIONALE.md`.
+
+## Estudio de escalado de datos (ablación, post Fase 3)
+
+Curva EMA vs tamaño de train (10/25/50/75/100% de las ~187314 moléculas de
+train de Exp D), mismo Set Transformer y misma loss MSE de Fase 3 — **sin
+Poisson**, para no mezclar con Exp F (`experiments/F_poisson_head/`). El
+val congelado (14428) es idéntico en las 5 corridas.
+
+1. Confirmar que los 5 configs existen: `config_scaling_10.yaml` ...
+   `config_scaling_100.yaml`.
+2. Smoke test del subsampleo (corre local, sin torch — ejecutalo de
+   verdad, no requiere el cluster):
+   ```bash
+   python tests/test_train_fraction.py
+   ```
+3. Lanzar las 5 corridas (no dependen entre sí, se pueden lanzar todas de una):
+   ```bash
+   sbatch run_train_scaling.sh config_scaling_10.yaml
+   sbatch run_train_scaling.sh config_scaling_25.yaml
+   sbatch run_train_scaling.sh config_scaling_50.yaml
+   sbatch run_train_scaling.sh config_scaling_75.yaml
+   sbatch run_train_scaling.sh config_scaling_100.yaml
+   ```
+4. Evaluar cada checkpoint (reusa `run_eval.sh` de Fase 3, que ya acepta
+   el config como argumento):
+   ```bash
+   sbatch run_eval.sh config_scaling_10.yaml
+   sbatch run_eval.sh config_scaling_25.yaml
+   sbatch run_eval.sh config_scaling_50.yaml
+   sbatch run_eval.sh config_scaling_75.yaml
+   sbatch run_eval.sh config_scaling_100.yaml
+   ```
+5. Armar una tabla EMA cruda/asistida vs tamaño de train (10/25/50/75/100%)
+   y agregarla a `docs/Runs/RESULTS.md`. Avisá a Claude Code con los 5
+   números — si la pendiente entre 75% y 100% sigue siendo grande, vale la
+   pena ampliar el dataset de nuevo; si se aplanó, no.
