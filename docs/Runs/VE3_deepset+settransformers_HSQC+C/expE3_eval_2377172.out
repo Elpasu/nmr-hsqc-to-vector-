@@ -1,0 +1,228 @@
+============================================================
+  EVALUACION EXP E FASE 3 (dos conjuntos) - SPLIT CONGELADO
+============================================================
+-> Experimento (checkpoint): nmr_202k_e3_settransformer_scaling_100pct  | arch: settransformer
+-> Modos: ['on', 'off']   | idx_ch2: [1, 5, 9, 12]
+-> num_workers=0 (rule 1)  batch_size=256
+-> Dispositivo: CUDA
+[INFO] Extrayendo formulas moleculares (C,H,N,O,S,Hal)...
+[INFO] Formulas moleculares cargadas.
+
+-> Set de validacion (congelado): 14428 moleculas
+
+============================================================
+  MODO CRUDO (--oraculo off)  ->  EXACT MATCH ACCURACY: 2.26%
+============================================================
+
+GRUPO      |    MAE  Estado
+----------------------------------------
+CH3        | 0.4718  [MEJORABLE]
+CH2        | 0.3359  [MEJORABLE]
+CH         | 0.1426  [MEJORABLE]
+Cq         | 0.0562  [ACEPTABLE]
+CH3-O      | 0.1217  [MEJORABLE]
+CH2-O      | 0.1710  [MEJORABLE]
+CH-O       | 0.0506  [ACEPTABLE]
+Cq-O       | 0.0333  [BUENO]
+CH3-N      | 0.0267  [BUENO]
+CH2-N      | 0.1046  [MEJORABLE]
+CH-N       | 0.0405  [ACEPTABLE]
+Cq-N       | 0.0206  [EXCELENTE]
+=CH2       | 0.0578  [ACEPTABLE]
+=CH/Ar     | 0.2481  [MEJORABLE]
+Cqsp2      | 0.5044  [MEJORABLE]
+Aldeh      | 0.0288  [BUENO]
+Imina      | 0.0152  [EXCELENTE]
+C-2X       | 0.0495  [ACEPTABLE]
+C-3X       | 0.0026  [PERFECTO]
+
+  ERRORES POR ENTORNO
+  ----------------------------------------
+
+  Alifaticos (sp3)
+    Moleculas con error: 9834 / 14428  (68.2%)
+    EMA del entorno:     31.84%   |   MAE promedio: 0.2516
+      CH3       : MAE=0.4718 | Mol. con error: 6807 (47.2%)
+      CH2       : MAE=0.3359 | Mol. con error: 4835 (33.5%)
+      CH        : MAE=0.1426 | Mol. con error: 2052 (14.2%)
+      Cq        : MAE=0.0562 | Mol. con error: 810 (5.6%)
+
+  Heteroatomicos O/N (sp3)
+    Moleculas con error: 6528 / 14428  (45.2%)
+    EMA del entorno:     54.75%   |   MAE promedio: 0.0711
+      CH3-O     : MAE=0.1217 | Mol. con error: 1756 (12.2%)
+      CH2-O     : MAE=0.1710 | Mol. con error: 2466 (17.1%)
+      CH-O      : MAE=0.0506 | Mol. con error: 725 (5.0%)
+      Cq-O      : MAE=0.0333 | Mol. con error: 478 (3.3%)
+      CH3-N     : MAE=0.0267 | Mol. con error: 385 (2.7%)
+      CH2-N     : MAE=0.1046 | Mol. con error: 1502 (10.4%)
+      CH-N      : MAE=0.0405 | Mol. con error: 581 (4.0%)
+      Cq-N      : MAE=0.0206 | Mol. con error: 296 (2.1%)
+
+  Carbonos sp2 (Olef/Arom/C=O)
+    Moleculas con error: 9791 / 14428  (67.9%)
+    EMA del entorno:     32.14%   |   MAE promedio: 0.1709
+      =CH2      : MAE=0.0578 | Mol. con error: 834 (5.8%)
+      =CH/Ar    : MAE=0.2481 | Mol. con error: 3579 (24.8%)
+      Cqsp2     : MAE=0.5044 | Mol. con error: 7273 (50.4%)
+      Aldeh     : MAE=0.0288 | Mol. con error: 416 (2.9%)
+      Imina     : MAE=0.0152 | Mol. con error: 219 (1.5%)
+
+  Sistemas X-Multiples (C-2X/3X)
+    Moleculas con error: 740 / 14428  (5.1%)
+    EMA del entorno:     94.87%   |   MAE promedio: 0.0260
+      C-2X      : MAE=0.0495 | Mol. con error: 710 (4.9%)
+      C-3X      : MAE=0.0026 | Mol. con error: 37 (0.3%)
+
+============================================================
+  MODO ASISTIDO (--oraculo on)  ->  EXACT MATCH ACCURACY: 91.35%
+============================================================
+
+GRUPO      |    MAE  Estado
+----------------------------------------
+CH3        | 0.0021  [PERFECTO]
+CH2        | 0.0190  [EXCELENTE]
+CH         | 0.0119  [EXCELENTE]
+Cq         | 0.0088  [PERFECTO]
+CH3-O      | 0.0002  [PERFECTO]
+CH2-O      | 0.0073  [PERFECTO]
+CH-O       | 0.0125  [EXCELENTE]
+Cq-O       | 0.0105  [EXCELENTE]
+CH3-N      | 0.0022  [PERFECTO]
+CH2-N      | 0.0227  [EXCELENTE]
+CH-N       | 0.0128  [EXCELENTE]
+Cq-N       | 0.0091  [PERFECTO]
+=CH2       | 0.0012  [PERFECTO]
+=CH/Ar     | 0.0214  [EXCELENTE]
+Cqsp2      | 0.0121  [EXCELENTE]
+Aldeh      | 0.0034  [PERFECTO]
+Imina      | 0.0107  [EXCELENTE]
+C-2X       | 0.0173  [EXCELENTE]
+C-3X       | 0.0026  [PERFECTO]
+
+  ERRORES POR ENTORNO
+  ----------------------------------------
+
+  Alifaticos (sp3)
+    Moleculas con error: 569 / 14428  (3.9%)
+    EMA del entorno:     96.06%   |   MAE promedio: 0.0104
+      CH3       : MAE=0.0021 | Mol. con error: 30 (0.2%)
+      CH2       : MAE=0.0190 | Mol. con error: 271 (1.9%)
+      CH        : MAE=0.0119 | Mol. con error: 170 (1.2%)
+      Cq        : MAE=0.0088 | Mol. con error: 127 (0.9%)
+
+  Heteroatomicos O/N (sp3)
+    Moleculas con error: 894 / 14428  (6.2%)
+    EMA del entorno:     93.80%   |   MAE promedio: 0.0097
+      CH3-O     : MAE=0.0002 | Mol. con error: 3 (0.0%)
+      CH2-O     : MAE=0.0073 | Mol. con error: 105 (0.7%)
+      CH-O      : MAE=0.0125 | Mol. con error: 181 (1.3%)
+      Cq-O      : MAE=0.0105 | Mol. con error: 152 (1.1%)
+      CH3-N     : MAE=0.0022 | Mol. con error: 32 (0.2%)
+      CH2-N     : MAE=0.0227 | Mol. con error: 324 (2.2%)
+      CH-N      : MAE=0.0128 | Mol. con error: 182 (1.3%)
+      Cq-N      : MAE=0.0091 | Mol. con error: 132 (0.9%)
+
+  Carbonos sp2 (Olef/Arom/C=O)
+    Moleculas con error: 497 / 14428  (3.4%)
+    EMA del entorno:     96.56%   |   MAE promedio: 0.0098
+      =CH2      : MAE=0.0012 | Mol. con error: 17 (0.1%)
+      =CH/Ar    : MAE=0.0214 | Mol. con error: 307 (2.1%)
+      Cqsp2     : MAE=0.0121 | Mol. con error: 175 (1.2%)
+      Aldeh     : MAE=0.0034 | Mol. con error: 49 (0.3%)
+      Imina     : MAE=0.0107 | Mol. con error: 154 (1.1%)
+
+  Sistemas X-Multiples (C-2X/3X)
+    Moleculas con error: 267 / 14428  (1.9%)
+    EMA del entorno:     98.15%   |   MAE promedio: 0.0099
+      C-2X      : MAE=0.0173 | Mol. con error: 249 (1.7%)
+      C-3X      : MAE=0.0026 | Mol. con error: 37 (0.3%)
+
+============================================================
+  MAPA DE CONFUSIONES CRUZADAS (solo modo asistido)
+============================================================
+  CH3        (falla en 0.2% mol) -> confunde con:
+      CH3-N     :     9 senales  (90.0%)
+      =CH/Ar    :     1 senales  (10.0%)
+  CH2        (falla en 1.9% mol) -> confunde con:
+      CH2-N     :   181 senales  (83.4%)
+      CH2-O     :     8 senales  (3.7%)
+      Cq-O      :     7 senales  (3.2%)
+  CH         (falla en 1.2% mol) -> confunde con:
+      CH-N      :    73 senales  (59.3%)
+      CH-O      :    26 senales  (21.1%)
+      =CH/Ar    :     5 senales  (4.1%)
+  Cq         (falla en 0.9% mol) -> confunde con:
+      Cq-N      :    33 senales  (54.1%)
+      Cq-O      :    12 senales  (19.7%)
+      Cqsp2     :     6 senales  (9.8%)
+  CH2-O      (falla en 0.7% mol) -> confunde con:
+      CH2-N     :    34 senales  (59.6%)
+      CH2       :    13 senales  (22.8%)
+      Cq        :     3 senales  (5.3%)
+  CH-O       (falla en 1.3% mol) -> confunde con:
+      CH-N      :    25 senales  (32.5%)
+      CH        :    23 senales  (29.9%)
+      =CH/Ar    :    12 senales  (15.6%)
+  Cq-O       (falla en 1.1% mol) -> confunde con:
+      Cqsp2     :    24 senales  (32.9%)
+      Cq        :    21 senales  (28.8%)
+      C-2X      :     7 senales  (9.6%)
+  CH3-N      (falla en 0.2% mol) -> confunde con:
+      CH3       :    18 senales  (66.7%)
+      CH3-O     :     3 senales  (11.1%)
+      Cqsp2     :     2 senales  (7.4%)
+  CH2-N      (falla en 2.2% mol) -> confunde con:
+      CH2       :    72 senales  (56.2%)
+      CH2-O     :    37 senales  (28.9%)
+      =CH/Ar    :     5 senales  (3.9%)
+  CH-N       (falla en 1.3% mol) -> confunde con:
+      CH        :    35 senales  (44.3%)
+      CH-O      :    28 senales  (35.4%)
+      CH2       :     4 senales  (5.1%)
+  Cq-N       (falla en 0.9% mol) -> confunde con:
+      Cq        :    47 senales  (46.1%)
+      Cq-O      :    15 senales  (14.7%)
+      Cqsp2     :    11 senales  (10.8%)
+  =CH2       (falla en 0.1% mol) -> confunde con:
+      CH2-O     :    11 senales  (64.7%)
+      CH2-N     :     3 senales  (17.6%)
+      =CH/Ar    :     2 senales  (11.8%)
+  =CH/Ar     (falla en 2.1% mol) -> confunde con:
+      Imina     :    24 senales  (25.8%)
+      CH-O      :    20 senales  (21.5%)
+      Aldeh     :    13 senales  (14.0%)
+  Cqsp2      (falla en 1.2% mol) -> confunde con:
+      Cq-O      :    30 senales  (34.1%)
+      =CH/Ar    :    19 senales  (21.6%)
+      C-2X      :    11 senales  (12.5%)
+  Aldeh      (falla en 0.3% mol) -> confunde con:
+      =CH/Ar    :     7 senales  (70.0%)
+      Imina     :     3 senales  (30.0%)
+  Imina      (falla en 1.1% mol) -> confunde con:
+      =CH/Ar    :   101 senales  (73.7%)
+      Aldeh     :    23 senales  (16.8%)
+      CH2-N     :     3 senales  (2.2%)
+  C-2X       (falla en 1.7% mol) -> confunde con:
+      =CH/Ar    :    70 senales  (32.1%)
+      Cqsp2     :    39 senales  (17.9%)
+      CH-O      :    38 senales  (17.4%)
+  C-3X       (falla en 0.3% mol) -> confunde con:
+      C-2X      :    18 senales  (43.9%)
+      Cqsp2     :    12 senales  (29.3%)
+      =CH/Ar    :     7 senales  (17.1%)
+
+============================================================
+  TABLA COMPARATIVA: EMA CRUDA vs ASISTIDA
+============================================================
+
+                                       CRUDA    ASISTIDA     Delta
+  --------------------------------------------------------------
+  EMA GLOBAL                           2.26%      91.35%   +89.09
+  Alifaticos (sp3)                    31.84%      96.06%   +64.22
+  Heteroatomicos O/N (sp3)            54.75%      93.80%   +39.05
+  Carbonos sp2 (Olef/Arom/C=O)        32.14%      96.56%   +64.42
+  Sistemas X-Multiples (C-2X/3X)      94.87%      98.15%    +3.28
+
+  Delta = ASISTIDA - CRUDA. Un Delta grande (>10 pp) indica que la
+  EMA reportada depende fuertemente del oraculo de doble restriccion.

@@ -1,0 +1,945 @@
+--- ENTRENAMIENTO EXP E FASE 3 (settransformer): nmr_202k_e3_settransformer_scaling_50pct ---
+[INFO] Dispositivo: cuda
+[INFO] Extrayendo formulas moleculares (C,H,N,O,S,Hal)...
+[INFO] Formulas moleculares cargadas.
+[INFO] Split congelado: SMILES invalidos=0 | train=93657 (leak removido=723, train_fraction=0.5) | val=14428
+[INFO] Parametros totales del modelo (settransformer): 70,163 (chico por diseno; V10 ~8,603,299)
+[INFO] Scheduler: patience=8, factor=0.7
+
+[START] 100 epochs...
+  Epoch [1/100] Batch 0/1464 Loss: 49.1417
+  Epoch [1/100] Batch 200/1464 Loss: 0.5652
+  Epoch [1/100] Batch 400/1464 Loss: 0.3434
+  Epoch [1/100] Batch 600/1464 Loss: 0.3713
+  Epoch [1/100] Batch 800/1464 Loss: 0.2535
+  Epoch [1/100] Batch 1000/1464 Loss: 0.1912
+  Epoch [1/100] Batch 1200/1464 Loss: 0.2057
+  Epoch [1/100] Batch 1400/1464 Loss: 0.1855
+[EPOCH 1] Train: 0.5087 | Val: 0.1646 | LR: 0.001000 | Time: 12.5s
+[SAVE] Nuevo mejor modelo!
+  Epoch [2/100] Batch 0/1464 Loss: 0.1813
+  Epoch [2/100] Batch 200/1464 Loss: 0.1514
+  Epoch [2/100] Batch 400/1464 Loss: 0.1808
+  Epoch [2/100] Batch 600/1464 Loss: 0.1530
+  Epoch [2/100] Batch 800/1464 Loss: 0.1628
+  Epoch [2/100] Batch 1000/1464 Loss: 0.1366
+  Epoch [2/100] Batch 1200/1464 Loss: 0.1031
+  Epoch [2/100] Batch 1400/1464 Loss: 0.1293
+[EPOCH 2] Train: 0.1455 | Val: 0.1224 | LR: 0.001000 | Time: 12.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [3/100] Batch 0/1464 Loss: 0.1378
+  Epoch [3/100] Batch 200/1464 Loss: 0.1108
+  Epoch [3/100] Batch 400/1464 Loss: 0.0841
+  Epoch [3/100] Batch 600/1464 Loss: 0.1150
+  Epoch [3/100] Batch 800/1464 Loss: 0.0836
+  Epoch [3/100] Batch 1000/1464 Loss: 0.0969
+  Epoch [3/100] Batch 1200/1464 Loss: 0.0752
+  Epoch [3/100] Batch 1400/1464 Loss: 0.0631
+[EPOCH 3] Train: 0.0884 | Val: 0.0795 | LR: 0.001000 | Time: 12.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [4/100] Batch 0/1464 Loss: 0.0816
+  Epoch [4/100] Batch 200/1464 Loss: 0.0669
+  Epoch [4/100] Batch 400/1464 Loss: 0.0598
+  Epoch [4/100] Batch 600/1464 Loss: 0.1156
+  Epoch [4/100] Batch 800/1464 Loss: 0.0675
+  Epoch [4/100] Batch 1000/1464 Loss: 0.0576
+  Epoch [4/100] Batch 1200/1464 Loss: 0.0813
+  Epoch [4/100] Batch 1400/1464 Loss: 0.0570
+[EPOCH 4] Train: 0.0666 | Val: 0.0482 | LR: 0.001000 | Time: 12.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [5/100] Batch 0/1464 Loss: 0.0521
+  Epoch [5/100] Batch 200/1464 Loss: 0.0685
+  Epoch [5/100] Batch 400/1464 Loss: 0.0457
+  Epoch [5/100] Batch 600/1464 Loss: 0.0555
+  Epoch [5/100] Batch 800/1464 Loss: 0.0801
+  Epoch [5/100] Batch 1000/1464 Loss: 0.0472
+  Epoch [5/100] Batch 1200/1464 Loss: 0.0548
+  Epoch [5/100] Batch 1400/1464 Loss: 0.0633
+[EPOCH 5] Train: 0.0560 | Val: 0.0430 | LR: 0.001000 | Time: 12.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [6/100] Batch 0/1464 Loss: 0.0528
+  Epoch [6/100] Batch 200/1464 Loss: 0.0655
+  Epoch [6/100] Batch 400/1464 Loss: 0.0449
+  Epoch [6/100] Batch 600/1464 Loss: 0.0475
+  Epoch [6/100] Batch 800/1464 Loss: 0.0367
+  Epoch [6/100] Batch 1000/1464 Loss: 0.0524
+  Epoch [6/100] Batch 1200/1464 Loss: 0.0423
+  Epoch [6/100] Batch 1400/1464 Loss: 0.0556
+[EPOCH 6] Train: 0.0510 | Val: 0.0420 | LR: 0.001000 | Time: 12.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [7/100] Batch 0/1464 Loss: 0.0558
+  Epoch [7/100] Batch 200/1464 Loss: 0.0473
+  Epoch [7/100] Batch 400/1464 Loss: 0.0555
+  Epoch [7/100] Batch 600/1464 Loss: 0.0424
+  Epoch [7/100] Batch 800/1464 Loss: 0.0440
+  Epoch [7/100] Batch 1000/1464 Loss: 0.0505
+  Epoch [7/100] Batch 1200/1464 Loss: 0.0413
+  Epoch [7/100] Batch 1400/1464 Loss: 0.0337
+[EPOCH 7] Train: 0.0461 | Val: 0.0341 | LR: 0.001000 | Time: 12.1s
+[SAVE] Nuevo mejor modelo!
+  Epoch [8/100] Batch 0/1464 Loss: 0.0434
+  Epoch [8/100] Batch 200/1464 Loss: 0.0422
+  Epoch [8/100] Batch 400/1464 Loss: 0.0232
+  Epoch [8/100] Batch 600/1464 Loss: 0.0303
+  Epoch [8/100] Batch 800/1464 Loss: 0.0366
+  Epoch [8/100] Batch 1000/1464 Loss: 0.0394
+  Epoch [8/100] Batch 1200/1464 Loss: 0.0361
+  Epoch [8/100] Batch 1400/1464 Loss: 0.0578
+[EPOCH 8] Train: 0.0431 | Val: 0.0322 | LR: 0.001000 | Time: 12.1s
+[SAVE] Nuevo mejor modelo!
+  Epoch [9/100] Batch 0/1464 Loss: 0.0281
+  Epoch [9/100] Batch 200/1464 Loss: 0.0352
+  Epoch [9/100] Batch 400/1464 Loss: 0.0518
+  Epoch [9/100] Batch 600/1464 Loss: 0.0338
+  Epoch [9/100] Batch 800/1464 Loss: 0.0488
+  Epoch [9/100] Batch 1000/1464 Loss: 0.0414
+  Epoch [9/100] Batch 1200/1464 Loss: 0.0342
+  Epoch [9/100] Batch 1400/1464 Loss: 0.0304
+[EPOCH 9] Train: 0.0404 | Val: 0.0281 | LR: 0.001000 | Time: 12.1s
+[SAVE] Nuevo mejor modelo!
+  Epoch [10/100] Batch 0/1464 Loss: 0.0306
+  Epoch [10/100] Batch 200/1464 Loss: 0.0558
+  Epoch [10/100] Batch 400/1464 Loss: 0.0325
+  Epoch [10/100] Batch 600/1464 Loss: 0.0358
+  Epoch [10/100] Batch 800/1464 Loss: 0.0335
+  Epoch [10/100] Batch 1000/1464 Loss: 0.0383
+  Epoch [10/100] Batch 1200/1464 Loss: 0.0236
+  Epoch [10/100] Batch 1400/1464 Loss: 0.0311
+[EPOCH 10] Train: 0.0371 | Val: 0.0356 | LR: 0.001000 | Time: 12.1s
+  Epoch [11/100] Batch 0/1464 Loss: 0.0463
+  Epoch [11/100] Batch 200/1464 Loss: 0.0341
+  Epoch [11/100] Batch 400/1464 Loss: 0.0389
+  Epoch [11/100] Batch 600/1464 Loss: 0.0302
+  Epoch [11/100] Batch 800/1464 Loss: 0.0273
+  Epoch [11/100] Batch 1000/1464 Loss: 0.0411
+  Epoch [11/100] Batch 1200/1464 Loss: 0.0305
+  Epoch [11/100] Batch 1400/1464 Loss: 0.0223
+[EPOCH 11] Train: 0.0374 | Val: 0.0265 | LR: 0.001000 | Time: 12.1s
+[SAVE] Nuevo mejor modelo!
+  Epoch [12/100] Batch 0/1464 Loss: 0.0206
+  Epoch [12/100] Batch 200/1464 Loss: 0.0342
+  Epoch [12/100] Batch 400/1464 Loss: 0.0470
+  Epoch [12/100] Batch 600/1464 Loss: 0.0239
+  Epoch [12/100] Batch 800/1464 Loss: 0.0315
+  Epoch [12/100] Batch 1000/1464 Loss: 0.0475
+  Epoch [12/100] Batch 1200/1464 Loss: 0.0346
+  Epoch [12/100] Batch 1400/1464 Loss: 0.0427
+[EPOCH 12] Train: 0.0347 | Val: 0.0276 | LR: 0.001000 | Time: 12.1s
+  Epoch [13/100] Batch 0/1464 Loss: 0.0299
+  Epoch [13/100] Batch 200/1464 Loss: 0.0352
+  Epoch [13/100] Batch 400/1464 Loss: 0.0293
+  Epoch [13/100] Batch 600/1464 Loss: 0.0279
+  Epoch [13/100] Batch 800/1464 Loss: 0.0405
+  Epoch [13/100] Batch 1000/1464 Loss: 0.0319
+  Epoch [13/100] Batch 1200/1464 Loss: 0.0248
+  Epoch [13/100] Batch 1400/1464 Loss: 0.0261
+[EPOCH 13] Train: 0.0332 | Val: 0.0406 | LR: 0.001000 | Time: 12.2s
+  Epoch [14/100] Batch 0/1464 Loss: 0.0473
+  Epoch [14/100] Batch 200/1464 Loss: 0.0291
+  Epoch [14/100] Batch 400/1464 Loss: 0.0338
+  Epoch [14/100] Batch 600/1464 Loss: 0.0329
+  Epoch [14/100] Batch 800/1464 Loss: 0.0332
+  Epoch [14/100] Batch 1000/1464 Loss: 0.0405
+  Epoch [14/100] Batch 1200/1464 Loss: 0.0278
+  Epoch [14/100] Batch 1400/1464 Loss: 0.0392
+[EPOCH 14] Train: 0.0323 | Val: 0.0283 | LR: 0.001000 | Time: 12.2s
+  Epoch [15/100] Batch 0/1464 Loss: 0.0299
+  Epoch [15/100] Batch 200/1464 Loss: 0.0342
+  Epoch [15/100] Batch 400/1464 Loss: 0.0305
+  Epoch [15/100] Batch 600/1464 Loss: 0.0251
+  Epoch [15/100] Batch 800/1464 Loss: 0.0286
+  Epoch [15/100] Batch 1000/1464 Loss: 0.0290
+  Epoch [15/100] Batch 1200/1464 Loss: 0.0211
+  Epoch [15/100] Batch 1400/1464 Loss: 0.0265
+[EPOCH 15] Train: 0.0318 | Val: 0.0228 | LR: 0.001000 | Time: 12.2s
+[SAVE] Nuevo mejor modelo!
+  Epoch [16/100] Batch 0/1464 Loss: 0.0241
+  Epoch [16/100] Batch 200/1464 Loss: 0.0242
+  Epoch [16/100] Batch 400/1464 Loss: 0.0230
+  Epoch [16/100] Batch 600/1464 Loss: 0.0407
+  Epoch [16/100] Batch 800/1464 Loss: 0.0353
+  Epoch [16/100] Batch 1000/1464 Loss: 0.0311
+  Epoch [16/100] Batch 1200/1464 Loss: 0.0216
+  Epoch [16/100] Batch 1400/1464 Loss: 0.0294
+[EPOCH 16] Train: 0.0307 | Val: 0.0261 | LR: 0.001000 | Time: 12.2s
+  Epoch [17/100] Batch 0/1464 Loss: 0.0375
+  Epoch [17/100] Batch 200/1464 Loss: 0.0275
+  Epoch [17/100] Batch 400/1464 Loss: 0.0237
+  Epoch [17/100] Batch 600/1464 Loss: 0.0262
+  Epoch [17/100] Batch 800/1464 Loss: 0.0235
+  Epoch [17/100] Batch 1000/1464 Loss: 0.0338
+  Epoch [17/100] Batch 1200/1464 Loss: 0.0262
+  Epoch [17/100] Batch 1400/1464 Loss: 0.0394
+[EPOCH 17] Train: 0.0299 | Val: 0.0211 | LR: 0.001000 | Time: 12.2s
+[SAVE] Nuevo mejor modelo!
+  Epoch [18/100] Batch 0/1464 Loss: 0.0252
+  Epoch [18/100] Batch 200/1464 Loss: 0.0251
+  Epoch [18/100] Batch 400/1464 Loss: 0.0344
+  Epoch [18/100] Batch 600/1464 Loss: 0.0202
+  Epoch [18/100] Batch 800/1464 Loss: 0.0243
+  Epoch [18/100] Batch 1000/1464 Loss: 0.0343
+  Epoch [18/100] Batch 1200/1464 Loss: 0.0231
+  Epoch [18/100] Batch 1400/1464 Loss: 0.0250
+[EPOCH 18] Train: 0.0292 | Val: 0.0224 | LR: 0.001000 | Time: 12.2s
+  Epoch [19/100] Batch 0/1464 Loss: 0.0277
+  Epoch [19/100] Batch 200/1464 Loss: 0.0309
+  Epoch [19/100] Batch 400/1464 Loss: 0.0245
+  Epoch [19/100] Batch 600/1464 Loss: 0.0241
+  Epoch [19/100] Batch 800/1464 Loss: 0.0313
+  Epoch [19/100] Batch 1000/1464 Loss: 0.0179
+  Epoch [19/100] Batch 1200/1464 Loss: 0.0362
+  Epoch [19/100] Batch 1400/1464 Loss: 0.0199
+[EPOCH 19] Train: 0.0279 | Val: 0.0228 | LR: 0.001000 | Time: 12.2s
+  Epoch [20/100] Batch 0/1464 Loss: 0.0252
+  Epoch [20/100] Batch 200/1464 Loss: 0.0294
+  Epoch [20/100] Batch 400/1464 Loss: 0.0370
+  Epoch [20/100] Batch 600/1464 Loss: 0.0277
+  Epoch [20/100] Batch 800/1464 Loss: 0.0281
+  Epoch [20/100] Batch 1000/1464 Loss: 0.0336
+  Epoch [20/100] Batch 1200/1464 Loss: 0.0300
+  Epoch [20/100] Batch 1400/1464 Loss: 0.0314
+[EPOCH 20] Train: 0.0280 | Val: 0.0230 | LR: 0.001000 | Time: 12.2s
+  Epoch [21/100] Batch 0/1464 Loss: 0.0303
+  Epoch [21/100] Batch 200/1464 Loss: 0.0183
+  Epoch [21/100] Batch 400/1464 Loss: 0.0240
+  Epoch [21/100] Batch 600/1464 Loss: 0.0233
+  Epoch [21/100] Batch 800/1464 Loss: 0.0246
+  Epoch [21/100] Batch 1000/1464 Loss: 0.0320
+  Epoch [21/100] Batch 1200/1464 Loss: 0.0333
+  Epoch [21/100] Batch 1400/1464 Loss: 0.0233
+[EPOCH 21] Train: 0.0271 | Val: 0.0457 | LR: 0.001000 | Time: 12.3s
+  Epoch [22/100] Batch 0/1464 Loss: 0.0622
+  Epoch [22/100] Batch 200/1464 Loss: 0.0279
+  Epoch [22/100] Batch 400/1464 Loss: 0.0276
+  Epoch [22/100] Batch 600/1464 Loss: 0.0329
+  Epoch [22/100] Batch 800/1464 Loss: 0.0333
+  Epoch [22/100] Batch 1000/1464 Loss: 0.0262
+  Epoch [22/100] Batch 1200/1464 Loss: 0.0294
+  Epoch [22/100] Batch 1400/1464 Loss: 0.0291
+[EPOCH 22] Train: 0.0266 | Val: 0.0248 | LR: 0.001000 | Time: 12.3s
+  Epoch [23/100] Batch 0/1464 Loss: 0.0311
+  Epoch [23/100] Batch 200/1464 Loss: 0.0213
+  Epoch [23/100] Batch 400/1464 Loss: 0.0290
+  Epoch [23/100] Batch 600/1464 Loss: 0.0293
+  Epoch [23/100] Batch 800/1464 Loss: 0.0308
+  Epoch [23/100] Batch 1000/1464 Loss: 0.0252
+  Epoch [23/100] Batch 1200/1464 Loss: 0.0243
+  Epoch [23/100] Batch 1400/1464 Loss: 0.0170
+[EPOCH 23] Train: 0.0258 | Val: 0.0194 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [24/100] Batch 0/1464 Loss: 0.0198
+  Epoch [24/100] Batch 200/1464 Loss: 0.0198
+  Epoch [24/100] Batch 400/1464 Loss: 0.0226
+  Epoch [24/100] Batch 600/1464 Loss: 0.0205
+  Epoch [24/100] Batch 800/1464 Loss: 0.0248
+  Epoch [24/100] Batch 1000/1464 Loss: 0.0303
+  Epoch [24/100] Batch 1200/1464 Loss: 0.0185
+  Epoch [24/100] Batch 1400/1464 Loss: 0.0246
+[EPOCH 24] Train: 0.0256 | Val: 0.0189 | LR: 0.001000 | Time: 12.2s
+[SAVE] Nuevo mejor modelo!
+  Epoch [25/100] Batch 0/1464 Loss: 0.0158
+  Epoch [25/100] Batch 200/1464 Loss: 0.0251
+  Epoch [25/100] Batch 400/1464 Loss: 0.0288
+  Epoch [25/100] Batch 600/1464 Loss: 0.0246
+  Epoch [25/100] Batch 800/1464 Loss: 0.0174
+  Epoch [25/100] Batch 1000/1464 Loss: 0.0176
+  Epoch [25/100] Batch 1200/1464 Loss: 0.0176
+  Epoch [25/100] Batch 1400/1464 Loss: 0.0288
+[EPOCH 25] Train: 0.0249 | Val: 0.0184 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [26/100] Batch 0/1464 Loss: 0.0225
+  Epoch [26/100] Batch 200/1464 Loss: 0.0174
+  Epoch [26/100] Batch 400/1464 Loss: 0.0211
+  Epoch [26/100] Batch 600/1464 Loss: 0.0180
+  Epoch [26/100] Batch 800/1464 Loss: 0.0471
+  Epoch [26/100] Batch 1000/1464 Loss: 0.0278
+  Epoch [26/100] Batch 1200/1464 Loss: 0.0197
+  Epoch [26/100] Batch 1400/1464 Loss: 0.0197
+[EPOCH 26] Train: 0.0248 | Val: 0.0179 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [27/100] Batch 0/1464 Loss: 0.0257
+  Epoch [27/100] Batch 200/1464 Loss: 0.0267
+  Epoch [27/100] Batch 400/1464 Loss: 0.0290
+  Epoch [27/100] Batch 600/1464 Loss: 0.0173
+  Epoch [27/100] Batch 800/1464 Loss: 0.0175
+  Epoch [27/100] Batch 1000/1464 Loss: 0.0343
+  Epoch [27/100] Batch 1200/1464 Loss: 0.0227
+  Epoch [27/100] Batch 1400/1464 Loss: 0.0259
+[EPOCH 27] Train: 0.0244 | Val: 0.0190 | LR: 0.001000 | Time: 12.3s
+  Epoch [28/100] Batch 0/1464 Loss: 0.0256
+  Epoch [28/100] Batch 200/1464 Loss: 0.0188
+  Epoch [28/100] Batch 400/1464 Loss: 0.0172
+  Epoch [28/100] Batch 600/1464 Loss: 0.0241
+  Epoch [28/100] Batch 800/1464 Loss: 0.0278
+  Epoch [28/100] Batch 1000/1464 Loss: 0.0195
+  Epoch [28/100] Batch 1200/1464 Loss: 0.0202
+  Epoch [28/100] Batch 1400/1464 Loss: 0.0173
+[EPOCH 28] Train: 0.0239 | Val: 0.0170 | LR: 0.001000 | Time: 12.2s
+[SAVE] Nuevo mejor modelo!
+  Epoch [29/100] Batch 0/1464 Loss: 0.0184
+  Epoch [29/100] Batch 200/1464 Loss: 0.0283
+  Epoch [29/100] Batch 400/1464 Loss: 0.0226
+  Epoch [29/100] Batch 600/1464 Loss: 0.0266
+  Epoch [29/100] Batch 800/1464 Loss: 0.0282
+  Epoch [29/100] Batch 1000/1464 Loss: 0.0207
+  Epoch [29/100] Batch 1200/1464 Loss: 0.0236
+  Epoch [29/100] Batch 1400/1464 Loss: 0.0299
+[EPOCH 29] Train: 0.0235 | Val: 0.0187 | LR: 0.001000 | Time: 12.2s
+  Epoch [30/100] Batch 0/1464 Loss: 0.0212
+  Epoch [30/100] Batch 200/1464 Loss: 0.0145
+  Epoch [30/100] Batch 400/1464 Loss: 0.0208
+  Epoch [30/100] Batch 600/1464 Loss: 0.0195
+  Epoch [30/100] Batch 800/1464 Loss: 0.0187
+  Epoch [30/100] Batch 1000/1464 Loss: 0.0216
+  Epoch [30/100] Batch 1200/1464 Loss: 0.0224
+  Epoch [30/100] Batch 1400/1464 Loss: 0.0184
+[EPOCH 30] Train: 0.0236 | Val: 0.0192 | LR: 0.001000 | Time: 12.2s
+  Epoch [31/100] Batch 0/1464 Loss: 0.0333
+  Epoch [31/100] Batch 200/1464 Loss: 0.0351
+  Epoch [31/100] Batch 400/1464 Loss: 0.0165
+  Epoch [31/100] Batch 600/1464 Loss: 0.0176
+  Epoch [31/100] Batch 800/1464 Loss: 0.0266
+  Epoch [31/100] Batch 1000/1464 Loss: 0.0370
+  Epoch [31/100] Batch 1200/1464 Loss: 0.0310
+  Epoch [31/100] Batch 1400/1464 Loss: 0.0214
+[EPOCH 31] Train: 0.0233 | Val: 0.0192 | LR: 0.001000 | Time: 12.2s
+  Epoch [32/100] Batch 0/1464 Loss: 0.0217
+  Epoch [32/100] Batch 200/1464 Loss: 0.0206
+  Epoch [32/100] Batch 400/1464 Loss: 0.0185
+  Epoch [32/100] Batch 600/1464 Loss: 0.0249
+  Epoch [32/100] Batch 800/1464 Loss: 0.0220
+  Epoch [32/100] Batch 1000/1464 Loss: 0.0272
+  Epoch [32/100] Batch 1200/1464 Loss: 0.0284
+  Epoch [32/100] Batch 1400/1464 Loss: 0.0406
+[EPOCH 32] Train: 0.0233 | Val: 0.0191 | LR: 0.001000 | Time: 12.2s
+  Epoch [33/100] Batch 0/1464 Loss: 0.0278
+  Epoch [33/100] Batch 200/1464 Loss: 0.0125
+  Epoch [33/100] Batch 400/1464 Loss: 0.0190
+  Epoch [33/100] Batch 600/1464 Loss: 0.0233
+  Epoch [33/100] Batch 800/1464 Loss: 0.0253
+  Epoch [33/100] Batch 1000/1464 Loss: 0.0277
+  Epoch [33/100] Batch 1200/1464 Loss: 0.0187
+  Epoch [33/100] Batch 1400/1464 Loss: 0.0135
+[EPOCH 33] Train: 0.0226 | Val: 0.0171 | LR: 0.001000 | Time: 12.2s
+  Epoch [34/100] Batch 0/1464 Loss: 0.0173
+  Epoch [34/100] Batch 200/1464 Loss: 0.0219
+  Epoch [34/100] Batch 400/1464 Loss: 0.0165
+  Epoch [34/100] Batch 600/1464 Loss: 0.0230
+  Epoch [34/100] Batch 800/1464 Loss: 0.0254
+  Epoch [34/100] Batch 1000/1464 Loss: 0.0183
+  Epoch [34/100] Batch 1200/1464 Loss: 0.0257
+  Epoch [34/100] Batch 1400/1464 Loss: 0.0345
+[EPOCH 34] Train: 0.0226 | Val: 0.0182 | LR: 0.001000 | Time: 12.3s
+  Epoch [35/100] Batch 0/1464 Loss: 0.0222
+  Epoch [35/100] Batch 200/1464 Loss: 0.0197
+  Epoch [35/100] Batch 400/1464 Loss: 0.0177
+  Epoch [35/100] Batch 600/1464 Loss: 0.0155
+  Epoch [35/100] Batch 800/1464 Loss: 0.0168
+  Epoch [35/100] Batch 1000/1464 Loss: 0.0401
+  Epoch [35/100] Batch 1200/1464 Loss: 0.0215
+  Epoch [35/100] Batch 1400/1464 Loss: 0.0221
+[EPOCH 35] Train: 0.0220 | Val: 0.0209 | LR: 0.001000 | Time: 12.3s
+  Epoch [36/100] Batch 0/1464 Loss: 0.0228
+  Epoch [36/100] Batch 200/1464 Loss: 0.0214
+  Epoch [36/100] Batch 400/1464 Loss: 0.0141
+  Epoch [36/100] Batch 600/1464 Loss: 0.0266
+  Epoch [36/100] Batch 800/1464 Loss: 0.0203
+  Epoch [36/100] Batch 1000/1464 Loss: 0.0197
+  Epoch [36/100] Batch 1200/1464 Loss: 0.0209
+  Epoch [36/100] Batch 1400/1464 Loss: 0.0207
+[EPOCH 36] Train: 0.0220 | Val: 0.0156 | LR: 0.001000 | Time: 12.4s
+[SAVE] Nuevo mejor modelo!
+  Epoch [37/100] Batch 0/1464 Loss: 0.0113
+  Epoch [37/100] Batch 200/1464 Loss: 0.0198
+  Epoch [37/100] Batch 400/1464 Loss: 0.0214
+  Epoch [37/100] Batch 600/1464 Loss: 0.0297
+  Epoch [37/100] Batch 800/1464 Loss: 0.0127
+  Epoch [37/100] Batch 1000/1464 Loss: 0.0228
+  Epoch [37/100] Batch 1200/1464 Loss: 0.0224
+  Epoch [37/100] Batch 1400/1464 Loss: 0.0268
+[EPOCH 37] Train: 0.0216 | Val: 0.0191 | LR: 0.001000 | Time: 12.3s
+  Epoch [38/100] Batch 0/1464 Loss: 0.0313
+  Epoch [38/100] Batch 200/1464 Loss: 0.0198
+  Epoch [38/100] Batch 400/1464 Loss: 0.0139
+  Epoch [38/100] Batch 600/1464 Loss: 0.0251
+  Epoch [38/100] Batch 800/1464 Loss: 0.0198
+  Epoch [38/100] Batch 1000/1464 Loss: 0.0161
+  Epoch [38/100] Batch 1200/1464 Loss: 0.0186
+  Epoch [38/100] Batch 1400/1464 Loss: 0.0153
+[EPOCH 38] Train: 0.0216 | Val: 0.0159 | LR: 0.001000 | Time: 12.3s
+  Epoch [39/100] Batch 0/1464 Loss: 0.0126
+  Epoch [39/100] Batch 200/1464 Loss: 0.0128
+  Epoch [39/100] Batch 400/1464 Loss: 0.0136
+  Epoch [39/100] Batch 600/1464 Loss: 0.0192
+  Epoch [39/100] Batch 800/1464 Loss: 0.0220
+  Epoch [39/100] Batch 1000/1464 Loss: 0.0199
+  Epoch [39/100] Batch 1200/1464 Loss: 0.0191
+  Epoch [39/100] Batch 1400/1464 Loss: 0.0201
+[EPOCH 39] Train: 0.0216 | Val: 0.0151 | LR: 0.001000 | Time: 12.4s
+[SAVE] Nuevo mejor modelo!
+  Epoch [40/100] Batch 0/1464 Loss: 0.0172
+  Epoch [40/100] Batch 200/1464 Loss: 0.0130
+  Epoch [40/100] Batch 400/1464 Loss: 0.0162
+  Epoch [40/100] Batch 600/1464 Loss: 0.0443
+  Epoch [40/100] Batch 800/1464 Loss: 0.0153
+  Epoch [40/100] Batch 1000/1464 Loss: 0.0213
+  Epoch [40/100] Batch 1200/1464 Loss: 0.0258
+  Epoch [40/100] Batch 1400/1464 Loss: 0.0372
+[EPOCH 40] Train: 0.0209 | Val: 0.0162 | LR: 0.001000 | Time: 12.4s
+  Epoch [41/100] Batch 0/1464 Loss: 0.0188
+  Epoch [41/100] Batch 200/1464 Loss: 0.0235
+  Epoch [41/100] Batch 400/1464 Loss: 0.0148
+  Epoch [41/100] Batch 600/1464 Loss: 0.0262
+  Epoch [41/100] Batch 800/1464 Loss: 0.0189
+  Epoch [41/100] Batch 1000/1464 Loss: 0.0181
+  Epoch [41/100] Batch 1200/1464 Loss: 0.0154
+  Epoch [41/100] Batch 1400/1464 Loss: 0.0211
+[EPOCH 41] Train: 0.0208 | Val: 0.0182 | LR: 0.001000 | Time: 12.3s
+  Epoch [42/100] Batch 0/1464 Loss: 0.0201
+  Epoch [42/100] Batch 200/1464 Loss: 0.0140
+  Epoch [42/100] Batch 400/1464 Loss: 0.0180
+  Epoch [42/100] Batch 600/1464 Loss: 0.0110
+  Epoch [42/100] Batch 800/1464 Loss: 0.0517
+  Epoch [42/100] Batch 1000/1464 Loss: 0.0084
+  Epoch [42/100] Batch 1200/1464 Loss: 0.0189
+  Epoch [42/100] Batch 1400/1464 Loss: 0.0232
+[EPOCH 42] Train: 0.0201 | Val: 0.0158 | LR: 0.001000 | Time: 12.4s
+  Epoch [43/100] Batch 0/1464 Loss: 0.0295
+  Epoch [43/100] Batch 200/1464 Loss: 0.0204
+  Epoch [43/100] Batch 400/1464 Loss: 0.0126
+  Epoch [43/100] Batch 600/1464 Loss: 0.0207
+  Epoch [43/100] Batch 800/1464 Loss: 0.0141
+  Epoch [43/100] Batch 1000/1464 Loss: 0.0159
+  Epoch [43/100] Batch 1200/1464 Loss: 0.0195
+  Epoch [43/100] Batch 1400/1464 Loss: 0.0137
+[EPOCH 43] Train: 0.0212 | Val: 0.0156 | LR: 0.001000 | Time: 12.4s
+  Epoch [44/100] Batch 0/1464 Loss: 0.0202
+  Epoch [44/100] Batch 200/1464 Loss: 0.0185
+  Epoch [44/100] Batch 400/1464 Loss: 0.0167
+  Epoch [44/100] Batch 600/1464 Loss: 0.0180
+  Epoch [44/100] Batch 800/1464 Loss: 0.0194
+  Epoch [44/100] Batch 1000/1464 Loss: 0.0191
+  Epoch [44/100] Batch 1200/1464 Loss: 0.0232
+  Epoch [44/100] Batch 1400/1464 Loss: 0.0125
+[EPOCH 44] Train: 0.0198 | Val: 0.0163 | LR: 0.001000 | Time: 12.4s
+  Epoch [45/100] Batch 0/1464 Loss: 0.0178
+  Epoch [45/100] Batch 200/1464 Loss: 0.0384
+  Epoch [45/100] Batch 400/1464 Loss: 0.0154
+  Epoch [45/100] Batch 600/1464 Loss: 0.0151
+  Epoch [45/100] Batch 800/1464 Loss: 0.0144
+  Epoch [45/100] Batch 1000/1464 Loss: 0.0163
+  Epoch [45/100] Batch 1200/1464 Loss: 0.0142
+  Epoch [45/100] Batch 1400/1464 Loss: 0.0134
+[EPOCH 45] Train: 0.0201 | Val: 0.0151 | LR: 0.001000 | Time: 12.4s
+[SAVE] Nuevo mejor modelo!
+  Epoch [46/100] Batch 0/1464 Loss: 0.0150
+  Epoch [46/100] Batch 200/1464 Loss: 0.0173
+  Epoch [46/100] Batch 400/1464 Loss: 0.0264
+  Epoch [46/100] Batch 600/1464 Loss: 0.0151
+  Epoch [46/100] Batch 800/1464 Loss: 0.0219
+  Epoch [46/100] Batch 1000/1464 Loss: 0.0189
+  Epoch [46/100] Batch 1200/1464 Loss: 0.0178
+  Epoch [46/100] Batch 1400/1464 Loss: 0.0196
+[EPOCH 46] Train: 0.0198 | Val: 0.0153 | LR: 0.001000 | Time: 12.4s
+  Epoch [47/100] Batch 0/1464 Loss: 0.0185
+  Epoch [47/100] Batch 200/1464 Loss: 0.0311
+  Epoch [47/100] Batch 400/1464 Loss: 0.0273
+  Epoch [47/100] Batch 600/1464 Loss: 0.0220
+  Epoch [47/100] Batch 800/1464 Loss: 0.0125
+  Epoch [47/100] Batch 1000/1464 Loss: 0.0173
+  Epoch [47/100] Batch 1200/1464 Loss: 0.0132
+  Epoch [47/100] Batch 1400/1464 Loss: 0.0203
+[EPOCH 47] Train: 0.0196 | Val: 0.0147 | LR: 0.001000 | Time: 12.4s
+[SAVE] Nuevo mejor modelo!
+  Epoch [48/100] Batch 0/1464 Loss: 0.0158
+  Epoch [48/100] Batch 200/1464 Loss: 0.0209
+  Epoch [48/100] Batch 400/1464 Loss: 0.0143
+  Epoch [48/100] Batch 600/1464 Loss: 0.0157
+  Epoch [48/100] Batch 800/1464 Loss: 0.0196
+  Epoch [48/100] Batch 1000/1464 Loss: 0.0199
+  Epoch [48/100] Batch 1200/1464 Loss: 0.0181
+  Epoch [48/100] Batch 1400/1464 Loss: 0.0176
+[EPOCH 48] Train: 0.0191 | Val: 0.0170 | LR: 0.001000 | Time: 12.4s
+  Epoch [49/100] Batch 0/1464 Loss: 0.0157
+  Epoch [49/100] Batch 200/1464 Loss: 0.0162
+  Epoch [49/100] Batch 400/1464 Loss: 0.0191
+  Epoch [49/100] Batch 600/1464 Loss: 0.0229
+  Epoch [49/100] Batch 800/1464 Loss: 0.0193
+  Epoch [49/100] Batch 1000/1464 Loss: 0.0186
+  Epoch [49/100] Batch 1200/1464 Loss: 0.0168
+  Epoch [49/100] Batch 1400/1464 Loss: 0.0107
+[EPOCH 49] Train: 0.0190 | Val: 0.0146 | LR: 0.001000 | Time: 12.4s
+[SAVE] Nuevo mejor modelo!
+  Epoch [50/100] Batch 0/1464 Loss: 0.0187
+  Epoch [50/100] Batch 200/1464 Loss: 0.0179
+  Epoch [50/100] Batch 400/1464 Loss: 0.0111
+  Epoch [50/100] Batch 600/1464 Loss: 0.0179
+  Epoch [50/100] Batch 800/1464 Loss: 0.0109
+  Epoch [50/100] Batch 1000/1464 Loss: 0.0189
+  Epoch [50/100] Batch 1200/1464 Loss: 0.0099
+  Epoch [50/100] Batch 1400/1464 Loss: 0.0166
+[EPOCH 50] Train: 0.0195 | Val: 0.0139 | LR: 0.001000 | Time: 12.4s
+[SAVE] Nuevo mejor modelo!
+  Epoch [51/100] Batch 0/1464 Loss: 0.0171
+  Epoch [51/100] Batch 200/1464 Loss: 0.0630
+  Epoch [51/100] Batch 400/1464 Loss: 0.0143
+  Epoch [51/100] Batch 600/1464 Loss: 0.0128
+  Epoch [51/100] Batch 800/1464 Loss: 0.0131
+  Epoch [51/100] Batch 1000/1464 Loss: 0.0117
+  Epoch [51/100] Batch 1200/1464 Loss: 0.0148
+  Epoch [51/100] Batch 1400/1464 Loss: 0.0124
+[EPOCH 51] Train: 0.0191 | Val: 0.0144 | LR: 0.001000 | Time: 12.4s
+  Epoch [52/100] Batch 0/1464 Loss: 0.0134
+  Epoch [52/100] Batch 200/1464 Loss: 0.0165
+  Epoch [52/100] Batch 400/1464 Loss: 0.0301
+  Epoch [52/100] Batch 600/1464 Loss: 0.0216
+  Epoch [52/100] Batch 800/1464 Loss: 0.0164
+  Epoch [52/100] Batch 1000/1464 Loss: 0.0198
+  Epoch [52/100] Batch 1200/1464 Loss: 0.0206
+  Epoch [52/100] Batch 1400/1464 Loss: 0.0223
+[EPOCH 52] Train: 0.0189 | Val: 0.0152 | LR: 0.001000 | Time: 12.4s
+  Epoch [53/100] Batch 0/1464 Loss: 0.0195
+  Epoch [53/100] Batch 200/1464 Loss: 0.0178
+  Epoch [53/100] Batch 400/1464 Loss: 0.0198
+  Epoch [53/100] Batch 600/1464 Loss: 0.0147
+  Epoch [53/100] Batch 800/1464 Loss: 0.0143
+  Epoch [53/100] Batch 1000/1464 Loss: 0.0200
+  Epoch [53/100] Batch 1200/1464 Loss: 0.0162
+  Epoch [53/100] Batch 1400/1464 Loss: 0.0147
+[EPOCH 53] Train: 0.0186 | Val: 0.0139 | LR: 0.001000 | Time: 12.4s
+[SAVE] Nuevo mejor modelo!
+  Epoch [54/100] Batch 0/1464 Loss: 0.0167
+  Epoch [54/100] Batch 200/1464 Loss: 0.0212
+  Epoch [54/100] Batch 400/1464 Loss: 0.0136
+  Epoch [54/100] Batch 600/1464 Loss: 0.0116
+  Epoch [54/100] Batch 800/1464 Loss: 0.0139
+  Epoch [54/100] Batch 1000/1464 Loss: 0.0145
+  Epoch [54/100] Batch 1200/1464 Loss: 0.0093
+  Epoch [54/100] Batch 1400/1464 Loss: 0.0136
+[EPOCH 54] Train: 0.0186 | Val: 0.0140 | LR: 0.001000 | Time: 12.4s
+  Epoch [55/100] Batch 0/1464 Loss: 0.0128
+  Epoch [55/100] Batch 200/1464 Loss: 0.0108
+  Epoch [55/100] Batch 400/1464 Loss: 0.0160
+  Epoch [55/100] Batch 600/1464 Loss: 0.0138
+  Epoch [55/100] Batch 800/1464 Loss: 0.0235
+  Epoch [55/100] Batch 1000/1464 Loss: 0.0108
+  Epoch [55/100] Batch 1200/1464 Loss: 0.0172
+  Epoch [55/100] Batch 1400/1464 Loss: 0.0172
+[EPOCH 55] Train: 0.0186 | Val: 0.0136 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [56/100] Batch 0/1464 Loss: 0.0158
+  Epoch [56/100] Batch 200/1464 Loss: 0.0163
+  Epoch [56/100] Batch 400/1464 Loss: 0.0124
+  Epoch [56/100] Batch 600/1464 Loss: 0.0154
+  Epoch [56/100] Batch 800/1464 Loss: 0.0184
+  Epoch [56/100] Batch 1000/1464 Loss: 0.0223
+  Epoch [56/100] Batch 1200/1464 Loss: 0.0208
+  Epoch [56/100] Batch 1400/1464 Loss: 0.0163
+[EPOCH 56] Train: 0.0181 | Val: 0.0139 | LR: 0.001000 | Time: 12.3s
+  Epoch [57/100] Batch 0/1464 Loss: 0.0157
+  Epoch [57/100] Batch 200/1464 Loss: 0.0252
+  Epoch [57/100] Batch 400/1464 Loss: 0.0453
+  Epoch [57/100] Batch 600/1464 Loss: 0.0160
+  Epoch [57/100] Batch 800/1464 Loss: 0.0259
+  Epoch [57/100] Batch 1000/1464 Loss: 0.0143
+  Epoch [57/100] Batch 1200/1464 Loss: 0.0207
+  Epoch [57/100] Batch 1400/1464 Loss: 0.0153
+[EPOCH 57] Train: 0.0182 | Val: 0.0139 | LR: 0.001000 | Time: 12.3s
+  Epoch [58/100] Batch 0/1464 Loss: 0.0177
+  Epoch [58/100] Batch 200/1464 Loss: 0.0145
+  Epoch [58/100] Batch 400/1464 Loss: 0.0286
+  Epoch [58/100] Batch 600/1464 Loss: 0.0158
+  Epoch [58/100] Batch 800/1464 Loss: 0.0243
+  Epoch [58/100] Batch 1000/1464 Loss: 0.0258
+  Epoch [58/100] Batch 1200/1464 Loss: 0.0157
+  Epoch [58/100] Batch 1400/1464 Loss: 0.0166
+[EPOCH 58] Train: 0.0183 | Val: 0.0138 | LR: 0.001000 | Time: 12.3s
+  Epoch [59/100] Batch 0/1464 Loss: 0.0110
+  Epoch [59/100] Batch 200/1464 Loss: 0.0192
+  Epoch [59/100] Batch 400/1464 Loss: 0.0190
+  Epoch [59/100] Batch 600/1464 Loss: 0.0227
+  Epoch [59/100] Batch 800/1464 Loss: 0.0112
+  Epoch [59/100] Batch 1000/1464 Loss: 0.0178
+  Epoch [59/100] Batch 1200/1464 Loss: 0.0248
+  Epoch [59/100] Batch 1400/1464 Loss: 0.0178
+[EPOCH 59] Train: 0.0185 | Val: 0.0159 | LR: 0.001000 | Time: 12.3s
+  Epoch [60/100] Batch 0/1464 Loss: 0.0221
+  Epoch [60/100] Batch 200/1464 Loss: 0.0132
+  Epoch [60/100] Batch 400/1464 Loss: 0.0147
+  Epoch [60/100] Batch 600/1464 Loss: 0.0216
+  Epoch [60/100] Batch 800/1464 Loss: 0.0197
+  Epoch [60/100] Batch 1000/1464 Loss: 0.0206
+  Epoch [60/100] Batch 1200/1464 Loss: 0.0341
+  Epoch [60/100] Batch 1400/1464 Loss: 0.0140
+[EPOCH 60] Train: 0.0173 | Val: 0.0147 | LR: 0.001000 | Time: 12.3s
+  Epoch [61/100] Batch 0/1464 Loss: 0.0161
+  Epoch [61/100] Batch 200/1464 Loss: 0.0154
+  Epoch [61/100] Batch 400/1464 Loss: 0.0202
+  Epoch [61/100] Batch 600/1464 Loss: 0.0315
+  Epoch [61/100] Batch 800/1464 Loss: 0.0158
+  Epoch [61/100] Batch 1000/1464 Loss: 0.0138
+  Epoch [61/100] Batch 1200/1464 Loss: 0.0156
+  Epoch [61/100] Batch 1400/1464 Loss: 0.0162
+[EPOCH 61] Train: 0.0175 | Val: 0.0142 | LR: 0.001000 | Time: 12.3s
+  Epoch [62/100] Batch 0/1464 Loss: 0.0121
+  Epoch [62/100] Batch 200/1464 Loss: 0.0184
+  Epoch [62/100] Batch 400/1464 Loss: 0.0195
+  Epoch [62/100] Batch 600/1464 Loss: 0.0114
+  Epoch [62/100] Batch 800/1464 Loss: 0.0179
+  Epoch [62/100] Batch 1000/1464 Loss: 0.0230
+  Epoch [62/100] Batch 1200/1464 Loss: 0.0152
+  Epoch [62/100] Batch 1400/1464 Loss: 0.0140
+[EPOCH 62] Train: 0.0178 | Val: 0.0132 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [63/100] Batch 0/1464 Loss: 0.0175
+  Epoch [63/100] Batch 200/1464 Loss: 0.0143
+  Epoch [63/100] Batch 400/1464 Loss: 0.0101
+  Epoch [63/100] Batch 600/1464 Loss: 0.0189
+  Epoch [63/100] Batch 800/1464 Loss: 0.0114
+  Epoch [63/100] Batch 1000/1464 Loss: 0.0179
+  Epoch [63/100] Batch 1200/1464 Loss: 0.0180
+  Epoch [63/100] Batch 1400/1464 Loss: 0.0190
+[EPOCH 63] Train: 0.0172 | Val: 0.0142 | LR: 0.001000 | Time: 12.3s
+  Epoch [64/100] Batch 0/1464 Loss: 0.0215
+  Epoch [64/100] Batch 200/1464 Loss: 0.0141
+  Epoch [64/100] Batch 400/1464 Loss: 0.0137
+  Epoch [64/100] Batch 600/1464 Loss: 0.0094
+  Epoch [64/100] Batch 800/1464 Loss: 0.0179
+  Epoch [64/100] Batch 1000/1464 Loss: 0.0367
+  Epoch [64/100] Batch 1200/1464 Loss: 0.0198
+  Epoch [64/100] Batch 1400/1464 Loss: 0.0197
+[EPOCH 64] Train: 0.0173 | Val: 0.0138 | LR: 0.001000 | Time: 12.3s
+  Epoch [65/100] Batch 0/1464 Loss: 0.0174
+  Epoch [65/100] Batch 200/1464 Loss: 0.0241
+  Epoch [65/100] Batch 400/1464 Loss: 0.0108
+  Epoch [65/100] Batch 600/1464 Loss: 0.0172
+  Epoch [65/100] Batch 800/1464 Loss: 0.0209
+  Epoch [65/100] Batch 1000/1464 Loss: 0.0276
+  Epoch [65/100] Batch 1200/1464 Loss: 0.0216
+  Epoch [65/100] Batch 1400/1464 Loss: 0.0110
+[EPOCH 65] Train: 0.0177 | Val: 0.0145 | LR: 0.001000 | Time: 12.3s
+  Epoch [66/100] Batch 0/1464 Loss: 0.0193
+  Epoch [66/100] Batch 200/1464 Loss: 0.0126
+  Epoch [66/100] Batch 400/1464 Loss: 0.0189
+  Epoch [66/100] Batch 600/1464 Loss: 0.0111
+  Epoch [66/100] Batch 800/1464 Loss: 0.0128
+  Epoch [66/100] Batch 1000/1464 Loss: 0.0136
+  Epoch [66/100] Batch 1200/1464 Loss: 0.0116
+  Epoch [66/100] Batch 1400/1464 Loss: 0.0204
+[EPOCH 66] Train: 0.0169 | Val: 0.0139 | LR: 0.001000 | Time: 12.3s
+  Epoch [67/100] Batch 0/1464 Loss: 0.0240
+  Epoch [67/100] Batch 200/1464 Loss: 0.0166
+  Epoch [67/100] Batch 400/1464 Loss: 0.0263
+  Epoch [67/100] Batch 600/1464 Loss: 0.0142
+  Epoch [67/100] Batch 800/1464 Loss: 0.0164
+  Epoch [67/100] Batch 1000/1464 Loss: 0.0183
+  Epoch [67/100] Batch 1200/1464 Loss: 0.0210
+  Epoch [67/100] Batch 1400/1464 Loss: 0.0111
+[EPOCH 67] Train: 0.0173 | Val: 0.0129 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [68/100] Batch 0/1464 Loss: 0.0174
+  Epoch [68/100] Batch 200/1464 Loss: 0.0244
+  Epoch [68/100] Batch 400/1464 Loss: 0.0192
+  Epoch [68/100] Batch 600/1464 Loss: 0.0157
+  Epoch [68/100] Batch 800/1464 Loss: 0.0179
+  Epoch [68/100] Batch 1000/1464 Loss: 0.0160
+  Epoch [68/100] Batch 1200/1464 Loss: 0.0148
+  Epoch [68/100] Batch 1400/1464 Loss: 0.0176
+[EPOCH 68] Train: 0.0172 | Val: 0.0137 | LR: 0.001000 | Time: 12.3s
+  Epoch [69/100] Batch 0/1464 Loss: 0.0207
+  Epoch [69/100] Batch 200/1464 Loss: 0.0195
+  Epoch [69/100] Batch 400/1464 Loss: 0.0151
+  Epoch [69/100] Batch 600/1464 Loss: 0.0138
+  Epoch [69/100] Batch 800/1464 Loss: 0.0197
+  Epoch [69/100] Batch 1000/1464 Loss: 0.0142
+  Epoch [69/100] Batch 1200/1464 Loss: 0.0128
+  Epoch [69/100] Batch 1400/1464 Loss: 0.0166
+[EPOCH 69] Train: 0.0168 | Val: 0.0137 | LR: 0.001000 | Time: 12.3s
+  Epoch [70/100] Batch 0/1464 Loss: 0.0206
+  Epoch [70/100] Batch 200/1464 Loss: 0.0101
+  Epoch [70/100] Batch 400/1464 Loss: 0.0156
+  Epoch [70/100] Batch 600/1464 Loss: 0.0187
+  Epoch [70/100] Batch 800/1464 Loss: 0.0146
+  Epoch [70/100] Batch 1000/1464 Loss: 0.0133
+  Epoch [70/100] Batch 1200/1464 Loss: 0.0128
+  Epoch [70/100] Batch 1400/1464 Loss: 0.0180
+[EPOCH 70] Train: 0.0167 | Val: 0.0418 | LR: 0.001000 | Time: 12.3s
+  Epoch [71/100] Batch 0/1464 Loss: 0.0604
+  Epoch [71/100] Batch 200/1464 Loss: 0.0121
+  Epoch [71/100] Batch 400/1464 Loss: 0.0145
+  Epoch [71/100] Batch 600/1464 Loss: 0.0255
+  Epoch [71/100] Batch 800/1464 Loss: 0.0104
+  Epoch [71/100] Batch 1000/1464 Loss: 0.0142
+  Epoch [71/100] Batch 1200/1464 Loss: 0.0140
+  Epoch [71/100] Batch 1400/1464 Loss: 0.0183
+[EPOCH 71] Train: 0.0167 | Val: 0.0127 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [72/100] Batch 0/1464 Loss: 0.0129
+  Epoch [72/100] Batch 200/1464 Loss: 0.0160
+  Epoch [72/100] Batch 400/1464 Loss: 0.0205
+  Epoch [72/100] Batch 600/1464 Loss: 0.0138
+  Epoch [72/100] Batch 800/1464 Loss: 0.0191
+  Epoch [72/100] Batch 1000/1464 Loss: 0.0164
+  Epoch [72/100] Batch 1200/1464 Loss: 0.0174
+  Epoch [72/100] Batch 1400/1464 Loss: 0.0199
+[EPOCH 72] Train: 0.0171 | Val: 0.0146 | LR: 0.001000 | Time: 12.3s
+  Epoch [73/100] Batch 0/1464 Loss: 0.0200
+  Epoch [73/100] Batch 200/1464 Loss: 0.0118
+  Epoch [73/100] Batch 400/1464 Loss: 0.0156
+  Epoch [73/100] Batch 600/1464 Loss: 0.0153
+  Epoch [73/100] Batch 800/1464 Loss: 0.0135
+  Epoch [73/100] Batch 1000/1464 Loss: 0.0129
+  Epoch [73/100] Batch 1200/1464 Loss: 0.0132
+  Epoch [73/100] Batch 1400/1464 Loss: 0.0154
+[EPOCH 73] Train: 0.0163 | Val: 0.0134 | LR: 0.001000 | Time: 12.4s
+  Epoch [74/100] Batch 0/1464 Loss: 0.0082
+  Epoch [74/100] Batch 200/1464 Loss: 0.0078
+  Epoch [74/100] Batch 400/1464 Loss: 0.0196
+  Epoch [74/100] Batch 600/1464 Loss: 0.0179
+  Epoch [74/100] Batch 800/1464 Loss: 0.0217
+  Epoch [74/100] Batch 1000/1464 Loss: 0.0160
+  Epoch [74/100] Batch 1200/1464 Loss: 0.0185
+  Epoch [74/100] Batch 1400/1464 Loss: 0.0224
+[EPOCH 74] Train: 0.0164 | Val: 0.0129 | LR: 0.001000 | Time: 12.5s
+  Epoch [75/100] Batch 0/1464 Loss: 0.0183
+  Epoch [75/100] Batch 200/1464 Loss: 0.0206
+  Epoch [75/100] Batch 400/1464 Loss: 0.0226
+  Epoch [75/100] Batch 600/1464 Loss: 0.0224
+  Epoch [75/100] Batch 800/1464 Loss: 0.0152
+  Epoch [75/100] Batch 1000/1464 Loss: 0.0136
+  Epoch [75/100] Batch 1200/1464 Loss: 0.0150
+  Epoch [75/100] Batch 1400/1464 Loss: 0.0263
+[EPOCH 75] Train: 0.0168 | Val: 0.0132 | LR: 0.001000 | Time: 12.5s
+  Epoch [76/100] Batch 0/1464 Loss: 0.0260
+  Epoch [76/100] Batch 200/1464 Loss: 0.0150
+  Epoch [76/100] Batch 400/1464 Loss: 0.0110
+  Epoch [76/100] Batch 600/1464 Loss: 0.0224
+  Epoch [76/100] Batch 800/1464 Loss: 0.0141
+  Epoch [76/100] Batch 1000/1464 Loss: 0.0130
+  Epoch [76/100] Batch 1200/1464 Loss: 0.0185
+  Epoch [76/100] Batch 1400/1464 Loss: 0.0160
+[EPOCH 76] Train: 0.0162 | Val: 0.0125 | LR: 0.001000 | Time: 12.5s
+[SAVE] Nuevo mejor modelo!
+  Epoch [77/100] Batch 0/1464 Loss: 0.0153
+  Epoch [77/100] Batch 200/1464 Loss: 0.0120
+  Epoch [77/100] Batch 400/1464 Loss: 0.0138
+  Epoch [77/100] Batch 600/1464 Loss: 0.0198
+  Epoch [77/100] Batch 800/1464 Loss: 0.0213
+  Epoch [77/100] Batch 1000/1464 Loss: 0.0228
+  Epoch [77/100] Batch 1200/1464 Loss: 0.0122
+  Epoch [77/100] Batch 1400/1464 Loss: 0.0128
+[EPOCH 77] Train: 0.0164 | Val: 0.0127 | LR: 0.001000 | Time: 12.5s
+  Epoch [78/100] Batch 0/1464 Loss: 0.0158
+  Epoch [78/100] Batch 200/1464 Loss: 0.0069
+  Epoch [78/100] Batch 400/1464 Loss: 0.0116
+  Epoch [78/100] Batch 600/1464 Loss: 0.0201
+  Epoch [78/100] Batch 800/1464 Loss: 0.0146
+  Epoch [78/100] Batch 1000/1464 Loss: 0.0158
+  Epoch [78/100] Batch 1200/1464 Loss: 0.0145
+  Epoch [78/100] Batch 1400/1464 Loss: 0.0153
+[EPOCH 78] Train: 0.0161 | Val: 0.0133 | LR: 0.001000 | Time: 12.5s
+  Epoch [79/100] Batch 0/1464 Loss: 0.0172
+  Epoch [79/100] Batch 200/1464 Loss: 0.0147
+  Epoch [79/100] Batch 400/1464 Loss: 0.0183
+  Epoch [79/100] Batch 600/1464 Loss: 0.0152
+  Epoch [79/100] Batch 800/1464 Loss: 0.0156
+  Epoch [79/100] Batch 1000/1464 Loss: 0.0257
+  Epoch [79/100] Batch 1200/1464 Loss: 0.0116
+  Epoch [79/100] Batch 1400/1464 Loss: 0.0194
+[EPOCH 79] Train: 0.0160 | Val: 0.0139 | LR: 0.001000 | Time: 12.5s
+  Epoch [80/100] Batch 0/1464 Loss: 0.0140
+  Epoch [80/100] Batch 200/1464 Loss: 0.0168
+  Epoch [80/100] Batch 400/1464 Loss: 0.0158
+  Epoch [80/100] Batch 600/1464 Loss: 0.0165
+  Epoch [80/100] Batch 800/1464 Loss: 0.0204
+  Epoch [80/100] Batch 1000/1464 Loss: 0.0075
+  Epoch [80/100] Batch 1200/1464 Loss: 0.0093
+  Epoch [80/100] Batch 1400/1464 Loss: 0.0137
+[EPOCH 80] Train: 0.0162 | Val: 0.0124 | LR: 0.001000 | Time: 12.5s
+[SAVE] Nuevo mejor modelo!
+  Epoch [81/100] Batch 0/1464 Loss: 0.0157
+  Epoch [81/100] Batch 200/1464 Loss: 0.0172
+  Epoch [81/100] Batch 400/1464 Loss: 0.0137
+  Epoch [81/100] Batch 600/1464 Loss: 0.0184
+  Epoch [81/100] Batch 800/1464 Loss: 0.0146
+  Epoch [81/100] Batch 1000/1464 Loss: 0.0101
+  Epoch [81/100] Batch 1200/1464 Loss: 0.0111
+  Epoch [81/100] Batch 1400/1464 Loss: 0.0174
+[EPOCH 81] Train: 0.0159 | Val: 0.0132 | LR: 0.001000 | Time: 12.3s
+  Epoch [82/100] Batch 0/1464 Loss: 0.0142
+  Epoch [82/100] Batch 200/1464 Loss: 0.0160
+  Epoch [82/100] Batch 400/1464 Loss: 0.0159
+  Epoch [82/100] Batch 600/1464 Loss: 0.0128
+  Epoch [82/100] Batch 800/1464 Loss: 0.0180
+  Epoch [82/100] Batch 1000/1464 Loss: 0.0164
+  Epoch [82/100] Batch 1200/1464 Loss: 0.0275
+  Epoch [82/100] Batch 1400/1464 Loss: 0.0136
+[EPOCH 82] Train: 0.0165 | Val: 0.0121 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [83/100] Batch 0/1464 Loss: 0.0195
+  Epoch [83/100] Batch 200/1464 Loss: 0.0163
+  Epoch [83/100] Batch 400/1464 Loss: 0.0119
+  Epoch [83/100] Batch 600/1464 Loss: 0.0149
+  Epoch [83/100] Batch 800/1464 Loss: 0.0153
+  Epoch [83/100] Batch 1000/1464 Loss: 0.0166
+  Epoch [83/100] Batch 1200/1464 Loss: 0.0175
+  Epoch [83/100] Batch 1400/1464 Loss: 0.0136
+[EPOCH 83] Train: 0.0162 | Val: 0.0125 | LR: 0.001000 | Time: 12.3s
+  Epoch [84/100] Batch 0/1464 Loss: 0.0157
+  Epoch [84/100] Batch 200/1464 Loss: 0.0100
+  Epoch [84/100] Batch 400/1464 Loss: 0.0110
+  Epoch [84/100] Batch 600/1464 Loss: 0.0180
+  Epoch [84/100] Batch 800/1464 Loss: 0.0148
+  Epoch [84/100] Batch 1000/1464 Loss: 0.0134
+  Epoch [84/100] Batch 1200/1464 Loss: 0.0124
+  Epoch [84/100] Batch 1400/1464 Loss: 0.0180
+[EPOCH 84] Train: 0.0156 | Val: 0.0216 | LR: 0.001000 | Time: 12.3s
+  Epoch [85/100] Batch 0/1464 Loss: 0.0316
+  Epoch [85/100] Batch 200/1464 Loss: 0.0191
+  Epoch [85/100] Batch 400/1464 Loss: 0.0099
+  Epoch [85/100] Batch 600/1464 Loss: 0.0214
+  Epoch [85/100] Batch 800/1464 Loss: 0.0189
+  Epoch [85/100] Batch 1000/1464 Loss: 0.0176
+  Epoch [85/100] Batch 1200/1464 Loss: 0.0105
+  Epoch [85/100] Batch 1400/1464 Loss: 0.0134
+[EPOCH 85] Train: 0.0156 | Val: 0.0127 | LR: 0.001000 | Time: 12.3s
+  Epoch [86/100] Batch 0/1464 Loss: 0.0155
+  Epoch [86/100] Batch 200/1464 Loss: 0.0119
+  Epoch [86/100] Batch 400/1464 Loss: 0.0127
+  Epoch [86/100] Batch 600/1464 Loss: 0.0138
+  Epoch [86/100] Batch 800/1464 Loss: 0.0147
+  Epoch [86/100] Batch 1000/1464 Loss: 0.0202
+  Epoch [86/100] Batch 1200/1464 Loss: 0.0199
+  Epoch [86/100] Batch 1400/1464 Loss: 0.0241
+[EPOCH 86] Train: 0.0163 | Val: 0.0119 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [87/100] Batch 0/1464 Loss: 0.0123
+  Epoch [87/100] Batch 200/1464 Loss: 0.0183
+  Epoch [87/100] Batch 400/1464 Loss: 0.0151
+  Epoch [87/100] Batch 600/1464 Loss: 0.0208
+  Epoch [87/100] Batch 800/1464 Loss: 0.0154
+  Epoch [87/100] Batch 1000/1464 Loss: 0.0148
+  Epoch [87/100] Batch 1200/1464 Loss: 0.0197
+  Epoch [87/100] Batch 1400/1464 Loss: 0.0184
+[EPOCH 87] Train: 0.0153 | Val: 0.0172 | LR: 0.001000 | Time: 12.3s
+  Epoch [88/100] Batch 0/1464 Loss: 0.0154
+  Epoch [88/100] Batch 200/1464 Loss: 0.0120
+  Epoch [88/100] Batch 400/1464 Loss: 0.0150
+  Epoch [88/100] Batch 600/1464 Loss: 0.0209
+  Epoch [88/100] Batch 800/1464 Loss: 0.0148
+  Epoch [88/100] Batch 1000/1464 Loss: 0.0180
+  Epoch [88/100] Batch 1200/1464 Loss: 0.0167
+  Epoch [88/100] Batch 1400/1464 Loss: 0.0176
+[EPOCH 88] Train: 0.0153 | Val: 0.0118 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [89/100] Batch 0/1464 Loss: 0.0071
+  Epoch [89/100] Batch 200/1464 Loss: 0.0117
+  Epoch [89/100] Batch 400/1464 Loss: 0.0219
+  Epoch [89/100] Batch 600/1464 Loss: 0.0174
+  Epoch [89/100] Batch 800/1464 Loss: 0.0151
+  Epoch [89/100] Batch 1000/1464 Loss: 0.0121
+  Epoch [89/100] Batch 1200/1464 Loss: 0.0137
+  Epoch [89/100] Batch 1400/1464 Loss: 0.0183
+[EPOCH 89] Train: 0.0161 | Val: 0.0179 | LR: 0.001000 | Time: 12.3s
+  Epoch [90/100] Batch 0/1464 Loss: 0.0382
+  Epoch [90/100] Batch 200/1464 Loss: 0.0184
+  Epoch [90/100] Batch 400/1464 Loss: 0.0122
+  Epoch [90/100] Batch 600/1464 Loss: 0.0118
+  Epoch [90/100] Batch 800/1464 Loss: 0.0146
+  Epoch [90/100] Batch 1000/1464 Loss: 0.0133
+  Epoch [90/100] Batch 1200/1464 Loss: 0.0119
+  Epoch [90/100] Batch 1400/1464 Loss: 0.0125
+[EPOCH 90] Train: 0.0149 | Val: 0.0422 | LR: 0.001000 | Time: 12.3s
+  Epoch [91/100] Batch 0/1464 Loss: 0.0394
+  Epoch [91/100] Batch 200/1464 Loss: 0.0084
+  Epoch [91/100] Batch 400/1464 Loss: 0.0126
+  Epoch [91/100] Batch 600/1464 Loss: 0.0110
+  Epoch [91/100] Batch 800/1464 Loss: 0.0213
+  Epoch [91/100] Batch 1000/1464 Loss: 0.0107
+  Epoch [91/100] Batch 1200/1464 Loss: 0.0151
+  Epoch [91/100] Batch 1400/1464 Loss: 0.0208
+[EPOCH 91] Train: 0.0155 | Val: 0.0135 | LR: 0.001000 | Time: 12.3s
+  Epoch [92/100] Batch 0/1464 Loss: 0.0160
+  Epoch [92/100] Batch 200/1464 Loss: 0.0187
+  Epoch [92/100] Batch 400/1464 Loss: 0.0173
+  Epoch [92/100] Batch 600/1464 Loss: 0.0161
+  Epoch [92/100] Batch 800/1464 Loss: 0.0164
+  Epoch [92/100] Batch 1000/1464 Loss: 0.0244
+  Epoch [92/100] Batch 1200/1464 Loss: 0.0190
+  Epoch [92/100] Batch 1400/1464 Loss: 0.0140
+[EPOCH 92] Train: 0.0152 | Val: 0.0130 | LR: 0.001000 | Time: 12.3s
+  Epoch [93/100] Batch 0/1464 Loss: 0.0124
+  Epoch [93/100] Batch 200/1464 Loss: 0.0118
+  Epoch [93/100] Batch 400/1464 Loss: 0.0161
+  Epoch [93/100] Batch 600/1464 Loss: 0.0156
+  Epoch [93/100] Batch 800/1464 Loss: 0.0127
+  Epoch [93/100] Batch 1000/1464 Loss: 0.0158
+  Epoch [93/100] Batch 1200/1464 Loss: 0.0220
+  Epoch [93/100] Batch 1400/1464 Loss: 0.0157
+[EPOCH 93] Train: 0.0155 | Val: 0.0133 | LR: 0.001000 | Time: 12.3s
+  Epoch [94/100] Batch 0/1464 Loss: 0.0170
+  Epoch [94/100] Batch 200/1464 Loss: 0.0135
+  Epoch [94/100] Batch 400/1464 Loss: 0.0157
+  Epoch [94/100] Batch 600/1464 Loss: 0.0116
+  Epoch [94/100] Batch 800/1464 Loss: 0.0137
+  Epoch [94/100] Batch 1000/1464 Loss: 0.0090
+  Epoch [94/100] Batch 1200/1464 Loss: 0.0147
+  Epoch [94/100] Batch 1400/1464 Loss: 0.0181
+[EPOCH 94] Train: 0.0152 | Val: 0.0119 | LR: 0.001000 | Time: 12.3s
+  Epoch [95/100] Batch 0/1464 Loss: 0.0103
+  Epoch [95/100] Batch 200/1464 Loss: 0.0130
+  Epoch [95/100] Batch 400/1464 Loss: 0.0202
+  Epoch [95/100] Batch 600/1464 Loss: 0.0143
+  Epoch [95/100] Batch 800/1464 Loss: 0.0154
+  Epoch [95/100] Batch 1000/1464 Loss: 0.0152
+  Epoch [95/100] Batch 1200/1464 Loss: 0.0079
+  Epoch [95/100] Batch 1400/1464 Loss: 0.0092
+[EPOCH 95] Train: 0.0150 | Val: 0.0117 | LR: 0.001000 | Time: 12.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [96/100] Batch 0/1464 Loss: 0.0130
+  Epoch [96/100] Batch 200/1464 Loss: 0.0117
+  Epoch [96/100] Batch 400/1464 Loss: 0.0160
+  Epoch [96/100] Batch 600/1464 Loss: 0.0358
+  Epoch [96/100] Batch 800/1464 Loss: 0.0182
+  Epoch [96/100] Batch 1000/1464 Loss: 0.0117
+  Epoch [96/100] Batch 1200/1464 Loss: 0.0142
+  Epoch [96/100] Batch 1400/1464 Loss: 0.0189
+[EPOCH 96] Train: 0.0155 | Val: 0.0127 | LR: 0.001000 | Time: 12.3s
+  Epoch [97/100] Batch 0/1464 Loss: 0.0181
+  Epoch [97/100] Batch 200/1464 Loss: 0.0229
+  Epoch [97/100] Batch 400/1464 Loss: 0.0121
+  Epoch [97/100] Batch 600/1464 Loss: 0.0128
+  Epoch [97/100] Batch 800/1464 Loss: 0.0104
+  Epoch [97/100] Batch 1000/1464 Loss: 0.0146
+  Epoch [97/100] Batch 1200/1464 Loss: 0.0088
+  Epoch [97/100] Batch 1400/1464 Loss: 0.0122
+[EPOCH 97] Train: 0.0144 | Val: 0.0130 | LR: 0.001000 | Time: 12.3s
+  Epoch [98/100] Batch 0/1464 Loss: 0.0187
+  Epoch [98/100] Batch 200/1464 Loss: 0.0153
+  Epoch [98/100] Batch 400/1464 Loss: 0.0103
+  Epoch [98/100] Batch 600/1464 Loss: 0.0144
+  Epoch [98/100] Batch 800/1464 Loss: 0.0178
+  Epoch [98/100] Batch 1000/1464 Loss: 0.0169
+  Epoch [98/100] Batch 1200/1464 Loss: 0.0166
+  Epoch [98/100] Batch 1400/1464 Loss: 0.0160
+[EPOCH 98] Train: 0.0154 | Val: 0.0124 | LR: 0.001000 | Time: 12.3s
+  Epoch [99/100] Batch 0/1464 Loss: 0.0146
+  Epoch [99/100] Batch 200/1464 Loss: 0.0102
+  Epoch [99/100] Batch 400/1464 Loss: 0.0179
+  Epoch [99/100] Batch 600/1464 Loss: 0.0180
+  Epoch [99/100] Batch 800/1464 Loss: 0.0181
+  Epoch [99/100] Batch 1000/1464 Loss: 0.0231
+  Epoch [99/100] Batch 1200/1464 Loss: 0.0160
+  Epoch [99/100] Batch 1400/1464 Loss: 0.0144
+[EPOCH 99] Train: 0.0148 | Val: 0.0119 | LR: 0.001000 | Time: 12.3s
+  Epoch [100/100] Batch 0/1464 Loss: 0.0148
+  Epoch [100/100] Batch 200/1464 Loss: 0.0176
+  Epoch [100/100] Batch 400/1464 Loss: 0.0178
+  Epoch [100/100] Batch 600/1464 Loss: 0.0096
+  Epoch [100/100] Batch 800/1464 Loss: 0.0176
+  Epoch [100/100] Batch 1000/1464 Loss: 0.0116
+  Epoch [100/100] Batch 1200/1464 Loss: 0.0122
+  Epoch [100/100] Batch 1400/1464 Loss: 0.0165
+[EPOCH 100] Train: 0.0149 | Val: 0.0126 | LR: 0.001000 | Time: 12.3s
+
+[DONE] 20.5 min. Mejor Val: 0.0117

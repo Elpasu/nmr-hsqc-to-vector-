@@ -1,0 +1,1239 @@
+--- ENTRENAMIENTO EXP E FASE 3 (settransformer): nmr_202k_e3_settransformer_scaling_75pct ---
+[INFO] Dispositivo: cuda
+[INFO] Extrayendo formulas moleculares (C,H,N,O,S,Hal)...
+[INFO] Formulas moleculares cargadas.
+[INFO] Split congelado: SMILES invalidos=0 | train=140485 (leak removido=723, train_fraction=0.75) | val=14428
+[INFO] Parametros totales del modelo (settransformer): 70,163 (chico por diseno; V10 ~8,603,299)
+[INFO] Scheduler: patience=8, factor=0.7
+
+[START] 100 epochs...
+  Epoch [1/100] Batch 0/2196 Loss: 58.1558
+  Epoch [1/100] Batch 200/2196 Loss: 0.4640
+  Epoch [1/100] Batch 400/2196 Loss: 0.3327
+  Epoch [1/100] Batch 600/2196 Loss: 0.3229
+  Epoch [1/100] Batch 800/2196 Loss: 0.2457
+  Epoch [1/100] Batch 1000/2196 Loss: 0.2506
+  Epoch [1/100] Batch 1200/2196 Loss: 0.2767
+  Epoch [1/100] Batch 1400/2196 Loss: 0.1892
+  Epoch [1/100] Batch 1600/2196 Loss: 0.1694
+  Epoch [1/100] Batch 1800/2196 Loss: 0.1861
+  Epoch [1/100] Batch 2000/2196 Loss: 0.1664
+[EPOCH 1] Train: 0.3975 | Val: 0.1382 | LR: 0.001000 | Time: 18.1s
+[SAVE] Nuevo mejor modelo!
+  Epoch [2/100] Batch 0/2196 Loss: 0.1547
+  Epoch [2/100] Batch 200/2196 Loss: 0.1056
+  Epoch [2/100] Batch 400/2196 Loss: 0.1736
+  Epoch [2/100] Batch 600/2196 Loss: 0.1265
+  Epoch [2/100] Batch 800/2196 Loss: 0.1089
+  Epoch [2/100] Batch 1000/2196 Loss: 0.1123
+  Epoch [2/100] Batch 1200/2196 Loss: 0.1092
+  Epoch [2/100] Batch 1400/2196 Loss: 0.1056
+  Epoch [2/100] Batch 1600/2196 Loss: 0.1114
+  Epoch [2/100] Batch 1800/2196 Loss: 0.0821
+  Epoch [2/100] Batch 2000/2196 Loss: 0.0683
+[EPOCH 2] Train: 0.1081 | Val: 0.0800 | LR: 0.001000 | Time: 17.6s
+[SAVE] Nuevo mejor modelo!
+  Epoch [3/100] Batch 0/2196 Loss: 0.0906
+  Epoch [3/100] Batch 200/2196 Loss: 0.0702
+  Epoch [3/100] Batch 400/2196 Loss: 0.0452
+  Epoch [3/100] Batch 600/2196 Loss: 0.0738
+  Epoch [3/100] Batch 800/2196 Loss: 0.0884
+  Epoch [3/100] Batch 1000/2196 Loss: 0.0701
+  Epoch [3/100] Batch 1200/2196 Loss: 0.0480
+  Epoch [3/100] Batch 1400/2196 Loss: 0.0626
+  Epoch [3/100] Batch 1600/2196 Loss: 0.0537
+  Epoch [3/100] Batch 1800/2196 Loss: 0.0491
+  Epoch [3/100] Batch 2000/2196 Loss: 0.0560
+[EPOCH 3] Train: 0.0667 | Val: 0.0534 | LR: 0.001000 | Time: 17.6s
+[SAVE] Nuevo mejor modelo!
+  Epoch [4/100] Batch 0/2196 Loss: 0.0784
+  Epoch [4/100] Batch 200/2196 Loss: 0.0462
+  Epoch [4/100] Batch 400/2196 Loss: 0.0486
+  Epoch [4/100] Batch 600/2196 Loss: 0.0710
+  Epoch [4/100] Batch 800/2196 Loss: 0.0591
+  Epoch [4/100] Batch 1000/2196 Loss: 0.0431
+  Epoch [4/100] Batch 1200/2196 Loss: 0.0579
+  Epoch [4/100] Batch 1400/2196 Loss: 0.0436
+  Epoch [4/100] Batch 1600/2196 Loss: 0.0416
+  Epoch [4/100] Batch 1800/2196 Loss: 0.0378
+  Epoch [4/100] Batch 2000/2196 Loss: 0.0549
+[EPOCH 4] Train: 0.0527 | Val: 0.0389 | LR: 0.001000 | Time: 17.7s
+[SAVE] Nuevo mejor modelo!
+  Epoch [5/100] Batch 0/2196 Loss: 0.0640
+  Epoch [5/100] Batch 200/2196 Loss: 0.0415
+  Epoch [5/100] Batch 400/2196 Loss: 0.0462
+  Epoch [5/100] Batch 600/2196 Loss: 0.0434
+  Epoch [5/100] Batch 800/2196 Loss: 0.0387
+  Epoch [5/100] Batch 1000/2196 Loss: 0.0427
+  Epoch [5/100] Batch 1200/2196 Loss: 0.0611
+  Epoch [5/100] Batch 1400/2196 Loss: 0.0414
+  Epoch [5/100] Batch 1600/2196 Loss: 0.0455
+  Epoch [5/100] Batch 1800/2196 Loss: 0.0990
+  Epoch [5/100] Batch 2000/2196 Loss: 0.0354
+[EPOCH 5] Train: 0.0452 | Val: 0.0420 | LR: 0.001000 | Time: 17.8s
+  Epoch [6/100] Batch 0/2196 Loss: 0.0448
+  Epoch [6/100] Batch 200/2196 Loss: 0.0330
+  Epoch [6/100] Batch 400/2196 Loss: 0.0403
+  Epoch [6/100] Batch 600/2196 Loss: 0.0470
+  Epoch [6/100] Batch 800/2196 Loss: 0.0460
+  Epoch [6/100] Batch 1000/2196 Loss: 0.0344
+  Epoch [6/100] Batch 1200/2196 Loss: 0.0544
+  Epoch [6/100] Batch 1400/2196 Loss: 0.0370
+  Epoch [6/100] Batch 1600/2196 Loss: 0.0414
+  Epoch [6/100] Batch 1800/2196 Loss: 0.0317
+  Epoch [6/100] Batch 2000/2196 Loss: 0.0381
+[EPOCH 6] Train: 0.0401 | Val: 0.0475 | LR: 0.001000 | Time: 17.8s
+  Epoch [7/100] Batch 0/2196 Loss: 0.0500
+  Epoch [7/100] Batch 200/2196 Loss: 0.0407
+  Epoch [7/100] Batch 400/2196 Loss: 0.0422
+  Epoch [7/100] Batch 600/2196 Loss: 0.0381
+  Epoch [7/100] Batch 800/2196 Loss: 0.0320
+  Epoch [7/100] Batch 1000/2196 Loss: 0.0478
+  Epoch [7/100] Batch 1200/2196 Loss: 0.0331
+  Epoch [7/100] Batch 1400/2196 Loss: 0.0243
+  Epoch [7/100] Batch 1600/2196 Loss: 0.0309
+  Epoch [7/100] Batch 1800/2196 Loss: 0.0286
+  Epoch [7/100] Batch 2000/2196 Loss: 0.0444
+[EPOCH 7] Train: 0.0367 | Val: 0.0396 | LR: 0.001000 | Time: 17.8s
+  Epoch [8/100] Batch 0/2196 Loss: 0.0410
+  Epoch [8/100] Batch 200/2196 Loss: 0.0400
+  Epoch [8/100] Batch 400/2196 Loss: 0.0552
+  Epoch [8/100] Batch 600/2196 Loss: 0.0284
+  Epoch [8/100] Batch 800/2196 Loss: 0.0330
+  Epoch [8/100] Batch 1000/2196 Loss: 0.0322
+  Epoch [8/100] Batch 1200/2196 Loss: 0.0257
+  Epoch [8/100] Batch 1400/2196 Loss: 0.0503
+  Epoch [8/100] Batch 1600/2196 Loss: 0.0262
+  Epoch [8/100] Batch 1800/2196 Loss: 0.0309
+  Epoch [8/100] Batch 2000/2196 Loss: 0.0418
+[EPOCH 8] Train: 0.0351 | Val: 0.0267 | LR: 0.001000 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [9/100] Batch 0/2196 Loss: 0.0339
+  Epoch [9/100] Batch 200/2196 Loss: 0.0264
+  Epoch [9/100] Batch 400/2196 Loss: 0.0291
+  Epoch [9/100] Batch 600/2196 Loss: 0.0335
+  Epoch [9/100] Batch 800/2196 Loss: 0.0369
+  Epoch [9/100] Batch 1000/2196 Loss: 0.0293
+  Epoch [9/100] Batch 1200/2196 Loss: 0.0277
+  Epoch [9/100] Batch 1400/2196 Loss: 0.0408
+  Epoch [9/100] Batch 1600/2196 Loss: 0.0320
+  Epoch [9/100] Batch 1800/2196 Loss: 0.0218
+  Epoch [9/100] Batch 2000/2196 Loss: 0.0249
+[EPOCH 9] Train: 0.0332 | Val: 0.0286 | LR: 0.001000 | Time: 17.9s
+  Epoch [10/100] Batch 0/2196 Loss: 0.0519
+  Epoch [10/100] Batch 200/2196 Loss: 0.0321
+  Epoch [10/100] Batch 400/2196 Loss: 0.0248
+  Epoch [10/100] Batch 600/2196 Loss: 0.0406
+  Epoch [10/100] Batch 800/2196 Loss: 0.0427
+  Epoch [10/100] Batch 1000/2196 Loss: 0.0274
+  Epoch [10/100] Batch 1200/2196 Loss: 0.0283
+  Epoch [10/100] Batch 1400/2196 Loss: 0.0370
+  Epoch [10/100] Batch 1600/2196 Loss: 0.0301
+  Epoch [10/100] Batch 1800/2196 Loss: 0.0370
+  Epoch [10/100] Batch 2000/2196 Loss: 0.0409
+[EPOCH 10] Train: 0.0313 | Val: 0.0236 | LR: 0.001000 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [11/100] Batch 0/2196 Loss: 0.0269
+  Epoch [11/100] Batch 200/2196 Loss: 0.0238
+  Epoch [11/100] Batch 400/2196 Loss: 0.0285
+  Epoch [11/100] Batch 600/2196 Loss: 0.0330
+  Epoch [11/100] Batch 800/2196 Loss: 0.0308
+  Epoch [11/100] Batch 1000/2196 Loss: 0.0215
+  Epoch [11/100] Batch 1200/2196 Loss: 0.0280
+  Epoch [11/100] Batch 1400/2196 Loss: 0.0294
+  Epoch [11/100] Batch 1600/2196 Loss: 0.0323
+  Epoch [11/100] Batch 1800/2196 Loss: 0.0236
+  Epoch [11/100] Batch 2000/2196 Loss: 0.0295
+[EPOCH 11] Train: 0.0302 | Val: 0.0287 | LR: 0.001000 | Time: 17.9s
+  Epoch [12/100] Batch 0/2196 Loss: 0.0294
+  Epoch [12/100] Batch 200/2196 Loss: 0.0181
+  Epoch [12/100] Batch 400/2196 Loss: 0.0225
+  Epoch [12/100] Batch 600/2196 Loss: 0.0348
+  Epoch [12/100] Batch 800/2196 Loss: 0.0239
+  Epoch [12/100] Batch 1000/2196 Loss: 0.0376
+  Epoch [12/100] Batch 1200/2196 Loss: 0.0290
+  Epoch [12/100] Batch 1400/2196 Loss: 0.0448
+  Epoch [12/100] Batch 1600/2196 Loss: 0.0179
+  Epoch [12/100] Batch 1800/2196 Loss: 0.0254
+  Epoch [12/100] Batch 2000/2196 Loss: 0.0269
+[EPOCH 12] Train: 0.0292 | Val: 0.0245 | LR: 0.001000 | Time: 18.0s
+  Epoch [13/100] Batch 0/2196 Loss: 0.0263
+  Epoch [13/100] Batch 200/2196 Loss: 0.0295
+  Epoch [13/100] Batch 400/2196 Loss: 0.0206
+  Epoch [13/100] Batch 600/2196 Loss: 0.0281
+  Epoch [13/100] Batch 800/2196 Loss: 0.0315
+  Epoch [13/100] Batch 1000/2196 Loss: 0.0167
+  Epoch [13/100] Batch 1200/2196 Loss: 0.0198
+  Epoch [13/100] Batch 1400/2196 Loss: 0.0291
+  Epoch [13/100] Batch 1600/2196 Loss: 0.0148
+  Epoch [13/100] Batch 1800/2196 Loss: 0.0276
+  Epoch [13/100] Batch 2000/2196 Loss: 0.0177
+[EPOCH 13] Train: 0.0278 | Val: 0.0643 | LR: 0.001000 | Time: 18.0s
+  Epoch [14/100] Batch 0/2196 Loss: 0.1059
+  Epoch [14/100] Batch 200/2196 Loss: 0.0311
+  Epoch [14/100] Batch 400/2196 Loss: 0.0312
+  Epoch [14/100] Batch 600/2196 Loss: 0.0302
+  Epoch [14/100] Batch 800/2196 Loss: 0.0285
+  Epoch [14/100] Batch 1000/2196 Loss: 0.0414
+  Epoch [14/100] Batch 1200/2196 Loss: 0.0228
+  Epoch [14/100] Batch 1400/2196 Loss: 0.0257
+  Epoch [14/100] Batch 1600/2196 Loss: 0.0295
+  Epoch [14/100] Batch 1800/2196 Loss: 0.1060
+  Epoch [14/100] Batch 2000/2196 Loss: 0.0237
+[EPOCH 14] Train: 0.0280 | Val: 0.0199 | LR: 0.001000 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [15/100] Batch 0/2196 Loss: 0.0175
+  Epoch [15/100] Batch 200/2196 Loss: 0.0292
+  Epoch [15/100] Batch 400/2196 Loss: 0.0298
+  Epoch [15/100] Batch 600/2196 Loss: 0.0325
+  Epoch [15/100] Batch 800/2196 Loss: 0.0250
+  Epoch [15/100] Batch 1000/2196 Loss: 0.0331
+  Epoch [15/100] Batch 1200/2196 Loss: 0.0265
+  Epoch [15/100] Batch 1400/2196 Loss: 0.0295
+  Epoch [15/100] Batch 1600/2196 Loss: 0.0296
+  Epoch [15/100] Batch 1800/2196 Loss: 0.0229
+  Epoch [15/100] Batch 2000/2196 Loss: 0.0200
+[EPOCH 15] Train: 0.0261 | Val: 0.0387 | LR: 0.001000 | Time: 17.7s
+  Epoch [16/100] Batch 0/2196 Loss: 0.0504
+  Epoch [16/100] Batch 200/2196 Loss: 0.0275
+  Epoch [16/100] Batch 400/2196 Loss: 0.0322
+  Epoch [16/100] Batch 600/2196 Loss: 0.0191
+  Epoch [16/100] Batch 800/2196 Loss: 0.0287
+  Epoch [16/100] Batch 1000/2196 Loss: 0.0231
+  Epoch [16/100] Batch 1200/2196 Loss: 0.0482
+  Epoch [16/100] Batch 1400/2196 Loss: 0.0180
+  Epoch [16/100] Batch 1600/2196 Loss: 0.0227
+  Epoch [16/100] Batch 1800/2196 Loss: 0.0194
+  Epoch [16/100] Batch 2000/2196 Loss: 0.0177
+[EPOCH 16] Train: 0.0260 | Val: 0.0281 | LR: 0.001000 | Time: 17.8s
+  Epoch [17/100] Batch 0/2196 Loss: 0.0296
+  Epoch [17/100] Batch 200/2196 Loss: 0.0270
+  Epoch [17/100] Batch 400/2196 Loss: 0.0226
+  Epoch [17/100] Batch 600/2196 Loss: 0.0341
+  Epoch [17/100] Batch 800/2196 Loss: 0.0303
+  Epoch [17/100] Batch 1000/2196 Loss: 0.0169
+  Epoch [17/100] Batch 1200/2196 Loss: 0.0304
+  Epoch [17/100] Batch 1400/2196 Loss: 0.0198
+  Epoch [17/100] Batch 1600/2196 Loss: 0.0214
+  Epoch [17/100] Batch 1800/2196 Loss: 0.0208
+  Epoch [17/100] Batch 2000/2196 Loss: 0.0488
+[EPOCH 17] Train: 0.0254 | Val: 0.0183 | LR: 0.001000 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [18/100] Batch 0/2196 Loss: 0.0270
+  Epoch [18/100] Batch 200/2196 Loss: 0.0384
+  Epoch [18/100] Batch 400/2196 Loss: 0.0225
+  Epoch [18/100] Batch 600/2196 Loss: 0.0344
+  Epoch [18/100] Batch 800/2196 Loss: 0.0147
+  Epoch [18/100] Batch 1000/2196 Loss: 0.0190
+  Epoch [18/100] Batch 1200/2196 Loss: 0.0323
+  Epoch [18/100] Batch 1400/2196 Loss: 0.0253
+  Epoch [18/100] Batch 1600/2196 Loss: 0.0290
+  Epoch [18/100] Batch 1800/2196 Loss: 0.0268
+  Epoch [18/100] Batch 2000/2196 Loss: 0.0237
+[EPOCH 18] Train: 0.0245 | Val: 0.0215 | LR: 0.001000 | Time: 17.8s
+  Epoch [19/100] Batch 0/2196 Loss: 0.0261
+  Epoch [19/100] Batch 200/2196 Loss: 0.0228
+  Epoch [19/100] Batch 400/2196 Loss: 0.0205
+  Epoch [19/100] Batch 600/2196 Loss: 0.0221
+  Epoch [19/100] Batch 800/2196 Loss: 0.0408
+  Epoch [19/100] Batch 1000/2196 Loss: 0.0281
+  Epoch [19/100] Batch 1200/2196 Loss: 0.0176
+  Epoch [19/100] Batch 1400/2196 Loss: 0.0140
+  Epoch [19/100] Batch 1600/2196 Loss: 0.0211
+  Epoch [19/100] Batch 1800/2196 Loss: 0.0210
+  Epoch [19/100] Batch 2000/2196 Loss: 0.0239
+[EPOCH 19] Train: 0.0239 | Val: 0.0175 | LR: 0.001000 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [20/100] Batch 0/2196 Loss: 0.0227
+  Epoch [20/100] Batch 200/2196 Loss: 0.0197
+  Epoch [20/100] Batch 400/2196 Loss: 0.0203
+  Epoch [20/100] Batch 600/2196 Loss: 0.0194
+  Epoch [20/100] Batch 800/2196 Loss: 0.0310
+  Epoch [20/100] Batch 1000/2196 Loss: 0.0156
+  Epoch [20/100] Batch 1200/2196 Loss: 0.0281
+  Epoch [20/100] Batch 1400/2196 Loss: 0.0234
+  Epoch [20/100] Batch 1600/2196 Loss: 0.0274
+  Epoch [20/100] Batch 1800/2196 Loss: 0.0210
+  Epoch [20/100] Batch 2000/2196 Loss: 0.0162
+[EPOCH 20] Train: 0.0235 | Val: 0.0184 | LR: 0.001000 | Time: 17.8s
+  Epoch [21/100] Batch 0/2196 Loss: 0.0235
+  Epoch [21/100] Batch 200/2196 Loss: 0.0240
+  Epoch [21/100] Batch 400/2196 Loss: 0.0239
+  Epoch [21/100] Batch 600/2196 Loss: 0.0149
+  Epoch [21/100] Batch 800/2196 Loss: 0.0310
+  Epoch [21/100] Batch 1000/2196 Loss: 0.0145
+  Epoch [21/100] Batch 1200/2196 Loss: 0.0240
+  Epoch [21/100] Batch 1400/2196 Loss: 0.0242
+  Epoch [21/100] Batch 1600/2196 Loss: 0.0215
+  Epoch [21/100] Batch 1800/2196 Loss: 0.0305
+  Epoch [21/100] Batch 2000/2196 Loss: 0.0190
+[EPOCH 21] Train: 0.0227 | Val: 0.0179 | LR: 0.001000 | Time: 17.8s
+  Epoch [22/100] Batch 0/2196 Loss: 0.0162
+  Epoch [22/100] Batch 200/2196 Loss: 0.0219
+  Epoch [22/100] Batch 400/2196 Loss: 0.0266
+  Epoch [22/100] Batch 600/2196 Loss: 0.0179
+  Epoch [22/100] Batch 800/2196 Loss: 0.0327
+  Epoch [22/100] Batch 1000/2196 Loss: 0.0140
+  Epoch [22/100] Batch 1200/2196 Loss: 0.0243
+  Epoch [22/100] Batch 1400/2196 Loss: 0.0187
+  Epoch [22/100] Batch 1600/2196 Loss: 0.0207
+  Epoch [22/100] Batch 1800/2196 Loss: 0.0256
+  Epoch [22/100] Batch 2000/2196 Loss: 0.0150
+[EPOCH 22] Train: 0.0225 | Val: 0.0175 | LR: 0.001000 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [23/100] Batch 0/2196 Loss: 0.0177
+  Epoch [23/100] Batch 200/2196 Loss: 0.0192
+  Epoch [23/100] Batch 400/2196 Loss: 0.0221
+  Epoch [23/100] Batch 600/2196 Loss: 0.0225
+  Epoch [23/100] Batch 800/2196 Loss: 0.0159
+  Epoch [23/100] Batch 1000/2196 Loss: 0.0198
+  Epoch [23/100] Batch 1200/2196 Loss: 0.0243
+  Epoch [23/100] Batch 1400/2196 Loss: 0.0210
+  Epoch [23/100] Batch 1600/2196 Loss: 0.0215
+  Epoch [23/100] Batch 1800/2196 Loss: 0.0156
+  Epoch [23/100] Batch 2000/2196 Loss: 0.0293
+[EPOCH 23] Train: 0.0220 | Val: 0.0160 | LR: 0.001000 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [24/100] Batch 0/2196 Loss: 0.0184
+  Epoch [24/100] Batch 200/2196 Loss: 0.0216
+  Epoch [24/100] Batch 400/2196 Loss: 0.0200
+  Epoch [24/100] Batch 600/2196 Loss: 0.0207
+  Epoch [24/100] Batch 800/2196 Loss: 0.0259
+  Epoch [24/100] Batch 1000/2196 Loss: 0.0240
+  Epoch [24/100] Batch 1200/2196 Loss: 0.0280
+  Epoch [24/100] Batch 1400/2196 Loss: 0.0179
+  Epoch [24/100] Batch 1600/2196 Loss: 0.0281
+  Epoch [24/100] Batch 1800/2196 Loss: 0.0161
+  Epoch [24/100] Batch 2000/2196 Loss: 0.0224
+[EPOCH 24] Train: 0.0214 | Val: 0.0229 | LR: 0.001000 | Time: 17.9s
+  Epoch [25/100] Batch 0/2196 Loss: 0.0291
+  Epoch [25/100] Batch 200/2196 Loss: 0.0170
+  Epoch [25/100] Batch 400/2196 Loss: 0.0150
+  Epoch [25/100] Batch 600/2196 Loss: 0.0109
+  Epoch [25/100] Batch 800/2196 Loss: 0.0192
+  Epoch [25/100] Batch 1000/2196 Loss: 0.0230
+  Epoch [25/100] Batch 1200/2196 Loss: 0.0429
+  Epoch [25/100] Batch 1400/2196 Loss: 0.0099
+  Epoch [25/100] Batch 1600/2196 Loss: 0.0223
+  Epoch [25/100] Batch 1800/2196 Loss: 0.0184
+  Epoch [25/100] Batch 2000/2196 Loss: 0.0251
+[EPOCH 25] Train: 0.0216 | Val: 0.0174 | LR: 0.001000 | Time: 17.9s
+  Epoch [26/100] Batch 0/2196 Loss: 0.0243
+  Epoch [26/100] Batch 200/2196 Loss: 0.0361
+  Epoch [26/100] Batch 400/2196 Loss: 0.0211
+  Epoch [26/100] Batch 600/2196 Loss: 0.0238
+  Epoch [26/100] Batch 800/2196 Loss: 0.0192
+  Epoch [26/100] Batch 1000/2196 Loss: 0.0157
+  Epoch [26/100] Batch 1200/2196 Loss: 0.0233
+  Epoch [26/100] Batch 1400/2196 Loss: 0.0163
+  Epoch [26/100] Batch 1600/2196 Loss: 0.0217
+  Epoch [26/100] Batch 1800/2196 Loss: 0.0219
+  Epoch [26/100] Batch 2000/2196 Loss: 0.0276
+[EPOCH 26] Train: 0.0211 | Val: 0.0153 | LR: 0.001000 | Time: 18.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [27/100] Batch 0/2196 Loss: 0.0178
+  Epoch [27/100] Batch 200/2196 Loss: 0.0242
+  Epoch [27/100] Batch 400/2196 Loss: 0.0200
+  Epoch [27/100] Batch 600/2196 Loss: 0.0198
+  Epoch [27/100] Batch 800/2196 Loss: 0.0213
+  Epoch [27/100] Batch 1000/2196 Loss: 0.0197
+  Epoch [27/100] Batch 1200/2196 Loss: 0.0199
+  Epoch [27/100] Batch 1400/2196 Loss: 0.0160
+  Epoch [27/100] Batch 1600/2196 Loss: 0.0212
+  Epoch [27/100] Batch 1800/2196 Loss: 0.0247
+  Epoch [27/100] Batch 2000/2196 Loss: 0.0240
+[EPOCH 27] Train: 0.0207 | Val: 0.0242 | LR: 0.001000 | Time: 18.2s
+  Epoch [28/100] Batch 0/2196 Loss: 0.0277
+  Epoch [28/100] Batch 200/2196 Loss: 0.0151
+  Epoch [28/100] Batch 400/2196 Loss: 0.0248
+  Epoch [28/100] Batch 600/2196 Loss: 0.0425
+  Epoch [28/100] Batch 800/2196 Loss: 0.0133
+  Epoch [28/100] Batch 1000/2196 Loss: 0.0219
+  Epoch [28/100] Batch 1200/2196 Loss: 0.0179
+  Epoch [28/100] Batch 1400/2196 Loss: 0.0201
+  Epoch [28/100] Batch 1600/2196 Loss: 0.0217
+  Epoch [28/100] Batch 1800/2196 Loss: 0.0207
+  Epoch [28/100] Batch 2000/2196 Loss: 0.0221
+[EPOCH 28] Train: 0.0202 | Val: 0.0158 | LR: 0.001000 | Time: 18.4s
+  Epoch [29/100] Batch 0/2196 Loss: 0.0198
+  Epoch [29/100] Batch 200/2196 Loss: 0.0263
+  Epoch [29/100] Batch 400/2196 Loss: 0.0181
+  Epoch [29/100] Batch 600/2196 Loss: 0.0188
+  Epoch [29/100] Batch 800/2196 Loss: 0.0152
+  Epoch [29/100] Batch 1000/2196 Loss: 0.0174
+  Epoch [29/100] Batch 1200/2196 Loss: 0.0223
+  Epoch [29/100] Batch 1400/2196 Loss: 0.0115
+  Epoch [29/100] Batch 1600/2196 Loss: 0.0232
+  Epoch [29/100] Batch 1800/2196 Loss: 0.0205
+  Epoch [29/100] Batch 2000/2196 Loss: 0.0160
+[EPOCH 29] Train: 0.0200 | Val: 0.0329 | LR: 0.001000 | Time: 18.4s
+  Epoch [30/100] Batch 0/2196 Loss: 0.0300
+  Epoch [30/100] Batch 200/2196 Loss: 0.0172
+  Epoch [30/100] Batch 400/2196 Loss: 0.0167
+  Epoch [30/100] Batch 600/2196 Loss: 0.0173
+  Epoch [30/100] Batch 800/2196 Loss: 0.0120
+  Epoch [30/100] Batch 1000/2196 Loss: 0.0270
+  Epoch [30/100] Batch 1200/2196 Loss: 0.0153
+  Epoch [30/100] Batch 1400/2196 Loss: 0.0137
+  Epoch [30/100] Batch 1600/2196 Loss: 0.0204
+  Epoch [30/100] Batch 1800/2196 Loss: 0.0166
+  Epoch [30/100] Batch 2000/2196 Loss: 0.0239
+[EPOCH 30] Train: 0.0198 | Val: 0.0166 | LR: 0.001000 | Time: 18.4s
+  Epoch [31/100] Batch 0/2196 Loss: 0.0230
+  Epoch [31/100] Batch 200/2196 Loss: 0.0209
+  Epoch [31/100] Batch 400/2196 Loss: 0.0209
+  Epoch [31/100] Batch 600/2196 Loss: 0.0134
+  Epoch [31/100] Batch 800/2196 Loss: 0.0932
+  Epoch [31/100] Batch 1000/2196 Loss: 0.0149
+  Epoch [31/100] Batch 1200/2196 Loss: 0.0160
+  Epoch [31/100] Batch 1400/2196 Loss: 0.0285
+  Epoch [31/100] Batch 1600/2196 Loss: 0.0188
+  Epoch [31/100] Batch 1800/2196 Loss: 0.0163
+  Epoch [31/100] Batch 2000/2196 Loss: 0.0160
+[EPOCH 31] Train: 0.0198 | Val: 0.0150 | LR: 0.001000 | Time: 18.3s
+[SAVE] Nuevo mejor modelo!
+  Epoch [32/100] Batch 0/2196 Loss: 0.0121
+  Epoch [32/100] Batch 200/2196 Loss: 0.0152
+  Epoch [32/100] Batch 400/2196 Loss: 0.0104
+  Epoch [32/100] Batch 600/2196 Loss: 0.0196
+  Epoch [32/100] Batch 800/2196 Loss: 0.0136
+  Epoch [32/100] Batch 1000/2196 Loss: 0.0108
+  Epoch [32/100] Batch 1200/2196 Loss: 0.0307
+  Epoch [32/100] Batch 1400/2196 Loss: 0.0175
+  Epoch [32/100] Batch 1600/2196 Loss: 0.0163
+  Epoch [32/100] Batch 1800/2196 Loss: 0.0138
+  Epoch [32/100] Batch 2000/2196 Loss: 0.0450
+[EPOCH 32] Train: 0.0198 | Val: 0.0139 | LR: 0.001000 | Time: 18.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [33/100] Batch 0/2196 Loss: 0.0184
+  Epoch [33/100] Batch 200/2196 Loss: 0.0149
+  Epoch [33/100] Batch 400/2196 Loss: 0.0167
+  Epoch [33/100] Batch 600/2196 Loss: 0.0153
+  Epoch [33/100] Batch 800/2196 Loss: 0.0121
+  Epoch [33/100] Batch 1000/2196 Loss: 0.0195
+  Epoch [33/100] Batch 1200/2196 Loss: 0.0132
+  Epoch [33/100] Batch 1400/2196 Loss: 0.0293
+  Epoch [33/100] Batch 1600/2196 Loss: 0.0204
+  Epoch [33/100] Batch 1800/2196 Loss: 0.0162
+  Epoch [33/100] Batch 2000/2196 Loss: 0.0208
+[EPOCH 33] Train: 0.0186 | Val: 0.0369 | LR: 0.001000 | Time: 18.0s
+  Epoch [34/100] Batch 0/2196 Loss: 0.0469
+  Epoch [34/100] Batch 200/2196 Loss: 0.0214
+  Epoch [34/100] Batch 400/2196 Loss: 0.0217
+  Epoch [34/100] Batch 600/2196 Loss: 0.0245
+  Epoch [34/100] Batch 800/2196 Loss: 0.0187
+  Epoch [34/100] Batch 1000/2196 Loss: 0.0097
+  Epoch [34/100] Batch 1200/2196 Loss: 0.0194
+  Epoch [34/100] Batch 1400/2196 Loss: 0.0180
+  Epoch [34/100] Batch 1600/2196 Loss: 0.0228
+  Epoch [34/100] Batch 1800/2196 Loss: 0.0187
+  Epoch [34/100] Batch 2000/2196 Loss: 0.0174
+[EPOCH 34] Train: 0.0189 | Val: 0.0185 | LR: 0.001000 | Time: 18.0s
+  Epoch [35/100] Batch 0/2196 Loss: 0.0241
+  Epoch [35/100] Batch 200/2196 Loss: 0.0155
+  Epoch [35/100] Batch 400/2196 Loss: 0.0113
+  Epoch [35/100] Batch 600/2196 Loss: 0.0167
+  Epoch [35/100] Batch 800/2196 Loss: 0.0208
+  Epoch [35/100] Batch 1000/2196 Loss: 0.0231
+  Epoch [35/100] Batch 1200/2196 Loss: 0.0077
+  Epoch [35/100] Batch 1400/2196 Loss: 0.0258
+  Epoch [35/100] Batch 1600/2196 Loss: 0.0222
+  Epoch [35/100] Batch 1800/2196 Loss: 0.0284
+  Epoch [35/100] Batch 2000/2196 Loss: 0.0144
+[EPOCH 35] Train: 0.0184 | Val: 0.0140 | LR: 0.001000 | Time: 18.0s
+  Epoch [36/100] Batch 0/2196 Loss: 0.0211
+  Epoch [36/100] Batch 200/2196 Loss: 0.0151
+  Epoch [36/100] Batch 400/2196 Loss: 0.0271
+  Epoch [36/100] Batch 600/2196 Loss: 0.0153
+  Epoch [36/100] Batch 800/2196 Loss: 0.0224
+  Epoch [36/100] Batch 1000/2196 Loss: 0.0158
+  Epoch [36/100] Batch 1200/2196 Loss: 0.0244
+  Epoch [36/100] Batch 1400/2196 Loss: 0.0180
+  Epoch [36/100] Batch 1600/2196 Loss: 0.0180
+  Epoch [36/100] Batch 1800/2196 Loss: 0.0107
+  Epoch [36/100] Batch 2000/2196 Loss: 0.0190
+[EPOCH 36] Train: 0.0184 | Val: 0.0157 | LR: 0.001000 | Time: 18.0s
+  Epoch [37/100] Batch 0/2196 Loss: 0.0137
+  Epoch [37/100] Batch 200/2196 Loss: 0.0191
+  Epoch [37/100] Batch 400/2196 Loss: 0.0133
+  Epoch [37/100] Batch 600/2196 Loss: 0.0216
+  Epoch [37/100] Batch 800/2196 Loss: 0.0186
+  Epoch [37/100] Batch 1000/2196 Loss: 0.0200
+  Epoch [37/100] Batch 1200/2196 Loss: 0.0127
+  Epoch [37/100] Batch 1400/2196 Loss: 0.0160
+  Epoch [37/100] Batch 1600/2196 Loss: 0.0196
+  Epoch [37/100] Batch 1800/2196 Loss: 0.0220
+  Epoch [37/100] Batch 2000/2196 Loss: 0.0238
+[EPOCH 37] Train: 0.0184 | Val: 0.0129 | LR: 0.001000 | Time: 18.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [38/100] Batch 0/2196 Loss: 0.0191
+  Epoch [38/100] Batch 200/2196 Loss: 0.0217
+  Epoch [38/100] Batch 400/2196 Loss: 0.0153
+  Epoch [38/100] Batch 600/2196 Loss: 0.0222
+  Epoch [38/100] Batch 800/2196 Loss: 0.0266
+  Epoch [38/100] Batch 1000/2196 Loss: 0.0173
+  Epoch [38/100] Batch 1200/2196 Loss: 0.0136
+  Epoch [38/100] Batch 1400/2196 Loss: 0.0496
+  Epoch [38/100] Batch 1600/2196 Loss: 0.0174
+  Epoch [38/100] Batch 1800/2196 Loss: 0.0177
+  Epoch [38/100] Batch 2000/2196 Loss: 0.0178
+[EPOCH 38] Train: 0.0182 | Val: 0.0137 | LR: 0.001000 | Time: 18.0s
+  Epoch [39/100] Batch 0/2196 Loss: 0.0130
+  Epoch [39/100] Batch 200/2196 Loss: 0.0197
+  Epoch [39/100] Batch 400/2196 Loss: 0.0124
+  Epoch [39/100] Batch 600/2196 Loss: 0.0159
+  Epoch [39/100] Batch 800/2196 Loss: 0.0177
+  Epoch [39/100] Batch 1000/2196 Loss: 0.0198
+  Epoch [39/100] Batch 1200/2196 Loss: 0.0131
+  Epoch [39/100] Batch 1400/2196 Loss: 0.0131
+  Epoch [39/100] Batch 1600/2196 Loss: 0.0275
+  Epoch [39/100] Batch 1800/2196 Loss: 0.0201
+  Epoch [39/100] Batch 2000/2196 Loss: 0.0135
+[EPOCH 39] Train: 0.0180 | Val: 0.0129 | LR: 0.001000 | Time: 18.0s
+  Epoch [40/100] Batch 0/2196 Loss: 0.0224
+  Epoch [40/100] Batch 200/2196 Loss: 0.0143
+  Epoch [40/100] Batch 400/2196 Loss: 0.0146
+  Epoch [40/100] Batch 600/2196 Loss: 0.0146
+  Epoch [40/100] Batch 800/2196 Loss: 0.0179
+  Epoch [40/100] Batch 1000/2196 Loss: 0.0139
+  Epoch [40/100] Batch 1200/2196 Loss: 0.0112
+  Epoch [40/100] Batch 1400/2196 Loss: 0.0115
+  Epoch [40/100] Batch 1600/2196 Loss: 0.0137
+  Epoch [40/100] Batch 1800/2196 Loss: 0.0158
+  Epoch [40/100] Batch 2000/2196 Loss: 0.0129
+[EPOCH 40] Train: 0.0177 | Val: 0.0148 | LR: 0.001000 | Time: 18.0s
+  Epoch [41/100] Batch 0/2196 Loss: 0.0192
+  Epoch [41/100] Batch 200/2196 Loss: 0.0120
+  Epoch [41/100] Batch 400/2196 Loss: 0.0100
+  Epoch [41/100] Batch 600/2196 Loss: 0.0159
+  Epoch [41/100] Batch 800/2196 Loss: 0.0193
+  Epoch [41/100] Batch 1000/2196 Loss: 0.0172
+  Epoch [41/100] Batch 1200/2196 Loss: 0.0120
+  Epoch [41/100] Batch 1400/2196 Loss: 0.0208
+  Epoch [41/100] Batch 1600/2196 Loss: 0.0158
+  Epoch [41/100] Batch 1800/2196 Loss: 0.0158
+  Epoch [41/100] Batch 2000/2196 Loss: 0.0134
+[EPOCH 41] Train: 0.0176 | Val: 0.0142 | LR: 0.001000 | Time: 18.0s
+  Epoch [42/100] Batch 0/2196 Loss: 0.0155
+  Epoch [42/100] Batch 200/2196 Loss: 0.0085
+  Epoch [42/100] Batch 400/2196 Loss: 0.0171
+  Epoch [42/100] Batch 600/2196 Loss: 0.0254
+  Epoch [42/100] Batch 800/2196 Loss: 0.0152
+  Epoch [42/100] Batch 1000/2196 Loss: 0.0184
+  Epoch [42/100] Batch 1200/2196 Loss: 0.0192
+  Epoch [42/100] Batch 1400/2196 Loss: 0.0188
+  Epoch [42/100] Batch 1600/2196 Loss: 0.0126
+  Epoch [42/100] Batch 1800/2196 Loss: 0.0206
+  Epoch [42/100] Batch 2000/2196 Loss: 0.0123
+[EPOCH 42] Train: 0.0175 | Val: 0.0124 | LR: 0.001000 | Time: 18.0s
+[SAVE] Nuevo mejor modelo!
+  Epoch [43/100] Batch 0/2196 Loss: 0.0160
+  Epoch [43/100] Batch 200/2196 Loss: 0.0122
+  Epoch [43/100] Batch 400/2196 Loss: 0.0185
+  Epoch [43/100] Batch 600/2196 Loss: 0.0212
+  Epoch [43/100] Batch 800/2196 Loss: 0.0189
+  Epoch [43/100] Batch 1000/2196 Loss: 0.0158
+  Epoch [43/100] Batch 1200/2196 Loss: 0.0168
+  Epoch [43/100] Batch 1400/2196 Loss: 0.0155
+  Epoch [43/100] Batch 1600/2196 Loss: 0.0196
+  Epoch [43/100] Batch 1800/2196 Loss: 0.0278
+  Epoch [43/100] Batch 2000/2196 Loss: 0.0048
+[EPOCH 43] Train: 0.0171 | Val: 0.0131 | LR: 0.001000 | Time: 18.0s
+  Epoch [44/100] Batch 0/2196 Loss: 0.0170
+  Epoch [44/100] Batch 200/2196 Loss: 0.0122
+  Epoch [44/100] Batch 400/2196 Loss: 0.0144
+  Epoch [44/100] Batch 600/2196 Loss: 0.0139
+  Epoch [44/100] Batch 800/2196 Loss: 0.0121
+  Epoch [44/100] Batch 1000/2196 Loss: 0.0192
+  Epoch [44/100] Batch 1200/2196 Loss: 0.0109
+  Epoch [44/100] Batch 1400/2196 Loss: 0.0166
+  Epoch [44/100] Batch 1600/2196 Loss: 0.0278
+  Epoch [44/100] Batch 1800/2196 Loss: 0.0174
+  Epoch [44/100] Batch 2000/2196 Loss: 0.0162
+[EPOCH 44] Train: 0.0177 | Val: 0.0165 | LR: 0.001000 | Time: 18.0s
+  Epoch [45/100] Batch 0/2196 Loss: 0.0187
+  Epoch [45/100] Batch 200/2196 Loss: 0.0127
+  Epoch [45/100] Batch 400/2196 Loss: 0.0118
+  Epoch [45/100] Batch 600/2196 Loss: 0.0109
+  Epoch [45/100] Batch 800/2196 Loss: 0.0223
+  Epoch [45/100] Batch 1000/2196 Loss: 0.0119
+  Epoch [45/100] Batch 1200/2196 Loss: 0.0179
+  Epoch [45/100] Batch 1400/2196 Loss: 0.0473
+  Epoch [45/100] Batch 1600/2196 Loss: 0.0157
+  Epoch [45/100] Batch 1800/2196 Loss: 0.0108
+  Epoch [45/100] Batch 2000/2196 Loss: 0.0401
+[EPOCH 45] Train: 0.0178 | Val: 0.0129 | LR: 0.001000 | Time: 18.0s
+  Epoch [46/100] Batch 0/2196 Loss: 0.0197
+  Epoch [46/100] Batch 200/2196 Loss: 0.0095
+  Epoch [46/100] Batch 400/2196 Loss: 0.0270
+  Epoch [46/100] Batch 600/2196 Loss: 0.0139
+  Epoch [46/100] Batch 800/2196 Loss: 0.0182
+  Epoch [46/100] Batch 1000/2196 Loss: 0.0178
+  Epoch [46/100] Batch 1200/2196 Loss: 0.0132
+  Epoch [46/100] Batch 1400/2196 Loss: 0.0166
+  Epoch [46/100] Batch 1600/2196 Loss: 0.0185
+  Epoch [46/100] Batch 1800/2196 Loss: 0.0124
+  Epoch [46/100] Batch 2000/2196 Loss: 0.0217
+[EPOCH 46] Train: 0.0164 | Val: 0.0149 | LR: 0.001000 | Time: 17.8s
+  Epoch [47/100] Batch 0/2196 Loss: 0.0253
+  Epoch [47/100] Batch 200/2196 Loss: 0.0167
+  Epoch [47/100] Batch 400/2196 Loss: 0.0170
+  Epoch [47/100] Batch 600/2196 Loss: 0.0145
+  Epoch [47/100] Batch 800/2196 Loss: 0.0123
+  Epoch [47/100] Batch 1000/2196 Loss: 0.0120
+  Epoch [47/100] Batch 1200/2196 Loss: 0.0198
+  Epoch [47/100] Batch 1400/2196 Loss: 0.0153
+  Epoch [47/100] Batch 1600/2196 Loss: 0.0055
+  Epoch [47/100] Batch 1800/2196 Loss: 0.0131
+  Epoch [47/100] Batch 2000/2196 Loss: 0.0151
+[EPOCH 47] Train: 0.0172 | Val: 0.0135 | LR: 0.001000 | Time: 17.8s
+  Epoch [48/100] Batch 0/2196 Loss: 0.0150
+  Epoch [48/100] Batch 200/2196 Loss: 0.0147
+  Epoch [48/100] Batch 400/2196 Loss: 0.0118
+  Epoch [48/100] Batch 600/2196 Loss: 0.0167
+  Epoch [48/100] Batch 800/2196 Loss: 0.0154
+  Epoch [48/100] Batch 1000/2196 Loss: 0.0128
+  Epoch [48/100] Batch 1200/2196 Loss: 0.0124
+  Epoch [48/100] Batch 1400/2196 Loss: 0.0169
+  Epoch [48/100] Batch 1600/2196 Loss: 0.0158
+  Epoch [48/100] Batch 1800/2196 Loss: 0.0170
+  Epoch [48/100] Batch 2000/2196 Loss: 0.0271
+[EPOCH 48] Train: 0.0169 | Val: 0.0130 | LR: 0.001000 | Time: 17.8s
+  Epoch [49/100] Batch 0/2196 Loss: 0.0116
+  Epoch [49/100] Batch 200/2196 Loss: 0.0138
+  Epoch [49/100] Batch 400/2196 Loss: 0.0165
+  Epoch [49/100] Batch 600/2196 Loss: 0.0200
+  Epoch [49/100] Batch 800/2196 Loss: 0.0163
+  Epoch [49/100] Batch 1000/2196 Loss: 0.0102
+  Epoch [49/100] Batch 1200/2196 Loss: 0.0141
+  Epoch [49/100] Batch 1400/2196 Loss: 0.0154
+  Epoch [49/100] Batch 1600/2196 Loss: 0.0202
+  Epoch [49/100] Batch 1800/2196 Loss: 0.0157
+  Epoch [49/100] Batch 2000/2196 Loss: 0.0132
+[EPOCH 49] Train: 0.0163 | Val: 0.0133 | LR: 0.001000 | Time: 17.8s
+  Epoch [50/100] Batch 0/2196 Loss: 0.0152
+  Epoch [50/100] Batch 200/2196 Loss: 0.0335
+  Epoch [50/100] Batch 400/2196 Loss: 0.0136
+  Epoch [50/100] Batch 600/2196 Loss: 0.0133
+  Epoch [50/100] Batch 800/2196 Loss: 0.0177
+  Epoch [50/100] Batch 1000/2196 Loss: 0.0173
+  Epoch [50/100] Batch 1200/2196 Loss: 0.0163
+  Epoch [50/100] Batch 1400/2196 Loss: 0.0160
+  Epoch [50/100] Batch 1600/2196 Loss: 0.0313
+  Epoch [50/100] Batch 1800/2196 Loss: 0.0117
+  Epoch [50/100] Batch 2000/2196 Loss: 0.0206
+[EPOCH 50] Train: 0.0165 | Val: 0.0140 | LR: 0.001000 | Time: 17.8s
+  Epoch [51/100] Batch 0/2196 Loss: 0.0187
+  Epoch [51/100] Batch 200/2196 Loss: 0.0163
+  Epoch [51/100] Batch 400/2196 Loss: 0.0229
+  Epoch [51/100] Batch 600/2196 Loss: 0.0185
+  Epoch [51/100] Batch 800/2196 Loss: 0.0100
+  Epoch [51/100] Batch 1000/2196 Loss: 0.0137
+  Epoch [51/100] Batch 1200/2196 Loss: 0.0234
+  Epoch [51/100] Batch 1400/2196 Loss: 0.0163
+  Epoch [51/100] Batch 1600/2196 Loss: 0.0105
+  Epoch [51/100] Batch 1800/2196 Loss: 0.0164
+  Epoch [51/100] Batch 2000/2196 Loss: 0.0197
+[EPOCH 51] Train: 0.0163 | Val: 0.0123 | LR: 0.001000 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [52/100] Batch 0/2196 Loss: 0.0154
+  Epoch [52/100] Batch 200/2196 Loss: 0.0173
+  Epoch [52/100] Batch 400/2196 Loss: 0.0194
+  Epoch [52/100] Batch 600/2196 Loss: 0.0152
+  Epoch [52/100] Batch 800/2196 Loss: 0.0207
+  Epoch [52/100] Batch 1000/2196 Loss: 0.0195
+  Epoch [52/100] Batch 1200/2196 Loss: 0.0194
+  Epoch [52/100] Batch 1400/2196 Loss: 0.0212
+  Epoch [52/100] Batch 1600/2196 Loss: 0.0147
+  Epoch [52/100] Batch 1800/2196 Loss: 0.0193
+  Epoch [52/100] Batch 2000/2196 Loss: 0.0214
+[EPOCH 52] Train: 0.0162 | Val: 0.0122 | LR: 0.001000 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [53/100] Batch 0/2196 Loss: 0.0132
+  Epoch [53/100] Batch 200/2196 Loss: 0.0119
+  Epoch [53/100] Batch 400/2196 Loss: 0.0209
+  Epoch [53/100] Batch 600/2196 Loss: 0.0128
+  Epoch [53/100] Batch 800/2196 Loss: 0.0167
+  Epoch [53/100] Batch 1000/2196 Loss: 0.0155
+  Epoch [53/100] Batch 1200/2196 Loss: 0.0155
+  Epoch [53/100] Batch 1400/2196 Loss: 0.0114
+  Epoch [53/100] Batch 1600/2196 Loss: 0.0161
+  Epoch [53/100] Batch 1800/2196 Loss: 0.0118
+  Epoch [53/100] Batch 2000/2196 Loss: 0.0228
+[EPOCH 53] Train: 0.0161 | Val: 0.0132 | LR: 0.001000 | Time: 17.8s
+  Epoch [54/100] Batch 0/2196 Loss: 0.0188
+  Epoch [54/100] Batch 200/2196 Loss: 0.0067
+  Epoch [54/100] Batch 400/2196 Loss: 0.0151
+  Epoch [54/100] Batch 600/2196 Loss: 0.0116
+  Epoch [54/100] Batch 800/2196 Loss: 0.0137
+  Epoch [54/100] Batch 1000/2196 Loss: 0.0203
+  Epoch [54/100] Batch 1200/2196 Loss: 0.0215
+  Epoch [54/100] Batch 1400/2196 Loss: 0.0155
+  Epoch [54/100] Batch 1600/2196 Loss: 0.0149
+  Epoch [54/100] Batch 1800/2196 Loss: 0.0126
+  Epoch [54/100] Batch 2000/2196 Loss: 0.0145
+[EPOCH 54] Train: 0.0162 | Val: 0.0166 | LR: 0.001000 | Time: 17.8s
+  Epoch [55/100] Batch 0/2196 Loss: 0.0202
+  Epoch [55/100] Batch 200/2196 Loss: 0.0119
+  Epoch [55/100] Batch 400/2196 Loss: 0.0185
+  Epoch [55/100] Batch 600/2196 Loss: 0.0115
+  Epoch [55/100] Batch 800/2196 Loss: 0.0193
+  Epoch [55/100] Batch 1000/2196 Loss: 0.0260
+  Epoch [55/100] Batch 1200/2196 Loss: 0.0148
+  Epoch [55/100] Batch 1400/2196 Loss: 0.0182
+  Epoch [55/100] Batch 1600/2196 Loss: 0.0175
+  Epoch [55/100] Batch 1800/2196 Loss: 0.0118
+  Epoch [55/100] Batch 2000/2196 Loss: 0.0111
+[EPOCH 55] Train: 0.0162 | Val: 0.0126 | LR: 0.001000 | Time: 17.8s
+  Epoch [56/100] Batch 0/2196 Loss: 0.0127
+  Epoch [56/100] Batch 200/2196 Loss: 0.0112
+  Epoch [56/100] Batch 400/2196 Loss: 0.0087
+  Epoch [56/100] Batch 600/2196 Loss: 0.0086
+  Epoch [56/100] Batch 800/2196 Loss: 0.0152
+  Epoch [56/100] Batch 1000/2196 Loss: 0.0151
+  Epoch [56/100] Batch 1200/2196 Loss: 0.0098
+  Epoch [56/100] Batch 1400/2196 Loss: 0.0110
+  Epoch [56/100] Batch 1600/2196 Loss: 0.0124
+  Epoch [56/100] Batch 1800/2196 Loss: 0.0194
+  Epoch [56/100] Batch 2000/2196 Loss: 0.0249
+[EPOCH 56] Train: 0.0157 | Val: 0.0124 | LR: 0.001000 | Time: 17.8s
+  Epoch [57/100] Batch 0/2196 Loss: 0.0158
+  Epoch [57/100] Batch 200/2196 Loss: 0.0097
+  Epoch [57/100] Batch 400/2196 Loss: 0.0132
+  Epoch [57/100] Batch 600/2196 Loss: 0.0164
+  Epoch [57/100] Batch 800/2196 Loss: 0.0214
+  Epoch [57/100] Batch 1000/2196 Loss: 0.0199
+  Epoch [57/100] Batch 1200/2196 Loss: 0.0136
+  Epoch [57/100] Batch 1400/2196 Loss: 0.0157
+  Epoch [57/100] Batch 1600/2196 Loss: 0.0111
+  Epoch [57/100] Batch 1800/2196 Loss: 0.0188
+  Epoch [57/100] Batch 2000/2196 Loss: 0.0108
+[EPOCH 57] Train: 0.0155 | Val: 0.0120 | LR: 0.001000 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [58/100] Batch 0/2196 Loss: 0.0162
+  Epoch [58/100] Batch 200/2196 Loss: 0.0142
+  Epoch [58/100] Batch 400/2196 Loss: 0.0131
+  Epoch [58/100] Batch 600/2196 Loss: 0.0118
+  Epoch [58/100] Batch 800/2196 Loss: 0.0185
+  Epoch [58/100] Batch 1000/2196 Loss: 0.0105
+  Epoch [58/100] Batch 1200/2196 Loss: 0.0099
+  Epoch [58/100] Batch 1400/2196 Loss: 0.0225
+  Epoch [58/100] Batch 1600/2196 Loss: 0.0117
+  Epoch [58/100] Batch 1800/2196 Loss: 0.0168
+  Epoch [58/100] Batch 2000/2196 Loss: 0.0160
+[EPOCH 58] Train: 0.0157 | Val: 0.0136 | LR: 0.001000 | Time: 17.8s
+  Epoch [59/100] Batch 0/2196 Loss: 0.0190
+  Epoch [59/100] Batch 200/2196 Loss: 0.0148
+  Epoch [59/100] Batch 400/2196 Loss: 0.0215
+  Epoch [59/100] Batch 600/2196 Loss: 0.0077
+  Epoch [59/100] Batch 800/2196 Loss: 0.0129
+  Epoch [59/100] Batch 1000/2196 Loss: 0.0154
+  Epoch [59/100] Batch 1200/2196 Loss: 0.0093
+  Epoch [59/100] Batch 1400/2196 Loss: 0.0112
+  Epoch [59/100] Batch 1600/2196 Loss: 0.0153
+  Epoch [59/100] Batch 1800/2196 Loss: 0.0235
+  Epoch [59/100] Batch 2000/2196 Loss: 0.0238
+[EPOCH 59] Train: 0.0155 | Val: 0.0123 | LR: 0.001000 | Time: 17.8s
+  Epoch [60/100] Batch 0/2196 Loss: 0.0142
+  Epoch [60/100] Batch 200/2196 Loss: 0.0188
+  Epoch [60/100] Batch 400/2196 Loss: 0.0161
+  Epoch [60/100] Batch 600/2196 Loss: 0.0120
+  Epoch [60/100] Batch 800/2196 Loss: 0.0214
+  Epoch [60/100] Batch 1000/2196 Loss: 0.0172
+  Epoch [60/100] Batch 1200/2196 Loss: 0.0165
+  Epoch [60/100] Batch 1400/2196 Loss: 0.0169
+  Epoch [60/100] Batch 1600/2196 Loss: 0.0136
+  Epoch [60/100] Batch 1800/2196 Loss: 0.0143
+  Epoch [60/100] Batch 2000/2196 Loss: 0.0254
+[EPOCH 60] Train: 0.0156 | Val: 0.0132 | LR: 0.001000 | Time: 17.8s
+  Epoch [61/100] Batch 0/2196 Loss: 0.0195
+  Epoch [61/100] Batch 200/2196 Loss: 0.0125
+  Epoch [61/100] Batch 400/2196 Loss: 0.0158
+  Epoch [61/100] Batch 600/2196 Loss: 0.0111
+  Epoch [61/100] Batch 800/2196 Loss: 0.0162
+  Epoch [61/100] Batch 1000/2196 Loss: 0.0118
+  Epoch [61/100] Batch 1200/2196 Loss: 0.0323
+  Epoch [61/100] Batch 1400/2196 Loss: 0.0183
+  Epoch [61/100] Batch 1600/2196 Loss: 0.0121
+  Epoch [61/100] Batch 1800/2196 Loss: 0.0190
+  Epoch [61/100] Batch 2000/2196 Loss: 0.0087
+[EPOCH 61] Train: 0.0152 | Val: 0.0138 | LR: 0.001000 | Time: 17.8s
+  Epoch [62/100] Batch 0/2196 Loss: 0.0184
+  Epoch [62/100] Batch 200/2196 Loss: 0.0127
+  Epoch [62/100] Batch 400/2196 Loss: 0.0227
+  Epoch [62/100] Batch 600/2196 Loss: 0.0202
+  Epoch [62/100] Batch 800/2196 Loss: 0.0099
+  Epoch [62/100] Batch 1000/2196 Loss: 0.0108
+  Epoch [62/100] Batch 1200/2196 Loss: 0.0154
+  Epoch [62/100] Batch 1400/2196 Loss: 0.0175
+  Epoch [62/100] Batch 1600/2196 Loss: 0.0195
+  Epoch [62/100] Batch 1800/2196 Loss: 0.0115
+  Epoch [62/100] Batch 2000/2196 Loss: 0.0125
+[EPOCH 62] Train: 0.0153 | Val: 0.0130 | LR: 0.001000 | Time: 17.8s
+  Epoch [63/100] Batch 0/2196 Loss: 0.0175
+  Epoch [63/100] Batch 200/2196 Loss: 0.0102
+  Epoch [63/100] Batch 400/2196 Loss: 0.0153
+  Epoch [63/100] Batch 600/2196 Loss: 0.0178
+  Epoch [63/100] Batch 800/2196 Loss: 0.0106
+  Epoch [63/100] Batch 1000/2196 Loss: 0.0158
+  Epoch [63/100] Batch 1200/2196 Loss: 0.0090
+  Epoch [63/100] Batch 1400/2196 Loss: 0.0128
+  Epoch [63/100] Batch 1600/2196 Loss: 0.0148
+  Epoch [63/100] Batch 1800/2196 Loss: 0.0133
+  Epoch [63/100] Batch 2000/2196 Loss: 0.0141
+[EPOCH 63] Train: 0.0152 | Val: 0.0111 | LR: 0.001000 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [64/100] Batch 0/2196 Loss: 0.0127
+  Epoch [64/100] Batch 200/2196 Loss: 0.0125
+  Epoch [64/100] Batch 400/2196 Loss: 0.0231
+  Epoch [64/100] Batch 600/2196 Loss: 0.0104
+  Epoch [64/100] Batch 800/2196 Loss: 0.0210
+  Epoch [64/100] Batch 1000/2196 Loss: 0.0148
+  Epoch [64/100] Batch 1200/2196 Loss: 0.0174
+  Epoch [64/100] Batch 1400/2196 Loss: 0.0169
+  Epoch [64/100] Batch 1600/2196 Loss: 0.0184
+  Epoch [64/100] Batch 1800/2196 Loss: 0.0102
+  Epoch [64/100] Batch 2000/2196 Loss: 0.0145
+[EPOCH 64] Train: 0.0151 | Val: 0.0139 | LR: 0.001000 | Time: 17.8s
+  Epoch [65/100] Batch 0/2196 Loss: 0.0162
+  Epoch [65/100] Batch 200/2196 Loss: 0.0136
+  Epoch [65/100] Batch 400/2196 Loss: 0.0084
+  Epoch [65/100] Batch 600/2196 Loss: 0.0134
+  Epoch [65/100] Batch 800/2196 Loss: 0.0108
+  Epoch [65/100] Batch 1000/2196 Loss: 0.0143
+  Epoch [65/100] Batch 1200/2196 Loss: 0.0196
+  Epoch [65/100] Batch 1400/2196 Loss: 0.0203
+  Epoch [65/100] Batch 1600/2196 Loss: 0.0161
+  Epoch [65/100] Batch 1800/2196 Loss: 0.0147
+  Epoch [65/100] Batch 2000/2196 Loss: 0.0122
+[EPOCH 65] Train: 0.0152 | Val: 0.0117 | LR: 0.001000 | Time: 17.8s
+  Epoch [66/100] Batch 0/2196 Loss: 0.0178
+  Epoch [66/100] Batch 200/2196 Loss: 0.0128
+  Epoch [66/100] Batch 400/2196 Loss: 0.0090
+  Epoch [66/100] Batch 600/2196 Loss: 0.0230
+  Epoch [66/100] Batch 800/2196 Loss: 0.0194
+  Epoch [66/100] Batch 1000/2196 Loss: 0.0126
+  Epoch [66/100] Batch 1200/2196 Loss: 0.0063
+  Epoch [66/100] Batch 1400/2196 Loss: 0.0200
+  Epoch [66/100] Batch 1600/2196 Loss: 0.0120
+  Epoch [66/100] Batch 1800/2196 Loss: 0.0118
+  Epoch [66/100] Batch 2000/2196 Loss: 0.0138
+[EPOCH 66] Train: 0.0150 | Val: 0.0157 | LR: 0.001000 | Time: 17.8s
+  Epoch [67/100] Batch 0/2196 Loss: 0.0133
+  Epoch [67/100] Batch 200/2196 Loss: 0.0203
+  Epoch [67/100] Batch 400/2196 Loss: 0.0120
+  Epoch [67/100] Batch 600/2196 Loss: 0.0138
+  Epoch [67/100] Batch 800/2196 Loss: 0.0163
+  Epoch [67/100] Batch 1000/2196 Loss: 0.0139
+  Epoch [67/100] Batch 1200/2196 Loss: 0.0156
+  Epoch [67/100] Batch 1400/2196 Loss: 0.0142
+  Epoch [67/100] Batch 1600/2196 Loss: 0.0221
+  Epoch [67/100] Batch 1800/2196 Loss: 0.0106
+  Epoch [67/100] Batch 2000/2196 Loss: 0.0159
+[EPOCH 67] Train: 0.0153 | Val: 0.0133 | LR: 0.001000 | Time: 17.8s
+  Epoch [68/100] Batch 0/2196 Loss: 0.0127
+  Epoch [68/100] Batch 200/2196 Loss: 0.0075
+  Epoch [68/100] Batch 400/2196 Loss: 0.0150
+  Epoch [68/100] Batch 600/2196 Loss: 0.0164
+  Epoch [68/100] Batch 800/2196 Loss: 0.0144
+  Epoch [68/100] Batch 1000/2196 Loss: 0.0210
+  Epoch [68/100] Batch 1200/2196 Loss: 0.0308
+  Epoch [68/100] Batch 1400/2196 Loss: 0.0273
+  Epoch [68/100] Batch 1600/2196 Loss: 0.0099
+  Epoch [68/100] Batch 1800/2196 Loss: 0.0179
+  Epoch [68/100] Batch 2000/2196 Loss: 0.0194
+[EPOCH 68] Train: 0.0145 | Val: 0.0117 | LR: 0.001000 | Time: 17.8s
+  Epoch [69/100] Batch 0/2196 Loss: 0.0101
+  Epoch [69/100] Batch 200/2196 Loss: 0.0163
+  Epoch [69/100] Batch 400/2196 Loss: 0.0149
+  Epoch [69/100] Batch 600/2196 Loss: 0.0142
+  Epoch [69/100] Batch 800/2196 Loss: 0.0206
+  Epoch [69/100] Batch 1000/2196 Loss: 0.0127
+  Epoch [69/100] Batch 1200/2196 Loss: 0.0140
+  Epoch [69/100] Batch 1400/2196 Loss: 0.0139
+  Epoch [69/100] Batch 1600/2196 Loss: 0.0134
+  Epoch [69/100] Batch 1800/2196 Loss: 0.0106
+  Epoch [69/100] Batch 2000/2196 Loss: 0.0134
+[EPOCH 69] Train: 0.0151 | Val: 0.0517 | LR: 0.001000 | Time: 17.8s
+  Epoch [70/100] Batch 0/2196 Loss: 0.0632
+  Epoch [70/100] Batch 200/2196 Loss: 0.0189
+  Epoch [70/100] Batch 400/2196 Loss: 0.0157
+  Epoch [70/100] Batch 600/2196 Loss: 0.0203
+  Epoch [70/100] Batch 800/2196 Loss: 0.0091
+  Epoch [70/100] Batch 1000/2196 Loss: 0.0074
+  Epoch [70/100] Batch 1200/2196 Loss: 0.0359
+  Epoch [70/100] Batch 1400/2196 Loss: 0.0129
+  Epoch [70/100] Batch 1600/2196 Loss: 0.0160
+  Epoch [70/100] Batch 1800/2196 Loss: 0.0181
+  Epoch [70/100] Batch 2000/2196 Loss: 0.0180
+[EPOCH 70] Train: 0.0149 | Val: 0.0113 | LR: 0.001000 | Time: 17.8s
+  Epoch [71/100] Batch 0/2196 Loss: 0.0146
+  Epoch [71/100] Batch 200/2196 Loss: 0.0165
+  Epoch [71/100] Batch 400/2196 Loss: 0.0150
+  Epoch [71/100] Batch 600/2196 Loss: 0.0193
+  Epoch [71/100] Batch 800/2196 Loss: 0.0120
+  Epoch [71/100] Batch 1000/2196 Loss: 0.0145
+  Epoch [71/100] Batch 1200/2196 Loss: 0.0129
+  Epoch [71/100] Batch 1400/2196 Loss: 0.0091
+  Epoch [71/100] Batch 1600/2196 Loss: 0.0194
+  Epoch [71/100] Batch 1800/2196 Loss: 0.0107
+  Epoch [71/100] Batch 2000/2196 Loss: 0.0100
+[EPOCH 71] Train: 0.0148 | Val: 0.0189 | LR: 0.001000 | Time: 17.8s
+  Epoch [72/100] Batch 0/2196 Loss: 0.0235
+  Epoch [72/100] Batch 200/2196 Loss: 0.0089
+  Epoch [72/100] Batch 400/2196 Loss: 0.0105
+  Epoch [72/100] Batch 600/2196 Loss: 0.0166
+  Epoch [72/100] Batch 800/2196 Loss: 0.0134
+  Epoch [72/100] Batch 1000/2196 Loss: 0.0092
+  Epoch [72/100] Batch 1200/2196 Loss: 0.0145
+  Epoch [72/100] Batch 1400/2196 Loss: 0.0133
+  Epoch [72/100] Batch 1600/2196 Loss: 0.0193
+  Epoch [72/100] Batch 1800/2196 Loss: 0.0208
+  Epoch [72/100] Batch 2000/2196 Loss: 0.0124
+[EPOCH 72] Train: 0.0145 | Val: 0.0112 | LR: 0.000700 | Time: 17.8s
+  Epoch [73/100] Batch 0/2196 Loss: 0.0100
+  Epoch [73/100] Batch 200/2196 Loss: 0.0174
+  Epoch [73/100] Batch 400/2196 Loss: 0.0150
+  Epoch [73/100] Batch 600/2196 Loss: 0.0140
+  Epoch [73/100] Batch 800/2196 Loss: 0.0130
+  Epoch [73/100] Batch 1000/2196 Loss: 0.0245
+  Epoch [73/100] Batch 1200/2196 Loss: 0.0131
+  Epoch [73/100] Batch 1400/2196 Loss: 0.0087
+  Epoch [73/100] Batch 1600/2196 Loss: 0.0154
+  Epoch [73/100] Batch 1800/2196 Loss: 0.0139
+  Epoch [73/100] Batch 2000/2196 Loss: 0.0074
+[EPOCH 73] Train: 0.0130 | Val: 0.0105 | LR: 0.000700 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [74/100] Batch 0/2196 Loss: 0.0148
+  Epoch [74/100] Batch 200/2196 Loss: 0.0081
+  Epoch [74/100] Batch 400/2196 Loss: 0.0194
+  Epoch [74/100] Batch 600/2196 Loss: 0.0097
+  Epoch [74/100] Batch 800/2196 Loss: 0.0107
+  Epoch [74/100] Batch 1000/2196 Loss: 0.0117
+  Epoch [74/100] Batch 1200/2196 Loss: 0.0170
+  Epoch [74/100] Batch 1400/2196 Loss: 0.0082
+  Epoch [74/100] Batch 1600/2196 Loss: 0.0111
+  Epoch [74/100] Batch 1800/2196 Loss: 0.0081
+  Epoch [74/100] Batch 2000/2196 Loss: 0.0169
+[EPOCH 74] Train: 0.0130 | Val: 0.0138 | LR: 0.000700 | Time: 17.8s
+  Epoch [75/100] Batch 0/2196 Loss: 0.0193
+  Epoch [75/100] Batch 200/2196 Loss: 0.0143
+  Epoch [75/100] Batch 400/2196 Loss: 0.0099
+  Epoch [75/100] Batch 600/2196 Loss: 0.0152
+  Epoch [75/100] Batch 800/2196 Loss: 0.0110
+  Epoch [75/100] Batch 1000/2196 Loss: 0.0104
+  Epoch [75/100] Batch 1200/2196 Loss: 0.0119
+  Epoch [75/100] Batch 1400/2196 Loss: 0.0103
+  Epoch [75/100] Batch 1600/2196 Loss: 0.0120
+  Epoch [75/100] Batch 1800/2196 Loss: 0.0155
+  Epoch [75/100] Batch 2000/2196 Loss: 0.0233
+[EPOCH 75] Train: 0.0130 | Val: 0.0103 | LR: 0.000700 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [76/100] Batch 0/2196 Loss: 0.0143
+  Epoch [76/100] Batch 200/2196 Loss: 0.0140
+  Epoch [76/100] Batch 400/2196 Loss: 0.0104
+  Epoch [76/100] Batch 600/2196 Loss: 0.0135
+  Epoch [76/100] Batch 800/2196 Loss: 0.0149
+  Epoch [76/100] Batch 1000/2196 Loss: 0.0102
+  Epoch [76/100] Batch 1200/2196 Loss: 0.0124
+  Epoch [76/100] Batch 1400/2196 Loss: 0.0075
+  Epoch [76/100] Batch 1600/2196 Loss: 0.0166
+  Epoch [76/100] Batch 1800/2196 Loss: 0.0105
+  Epoch [76/100] Batch 2000/2196 Loss: 0.0152
+[EPOCH 76] Train: 0.0127 | Val: 0.0103 | LR: 0.000700 | Time: 17.8s
+[SAVE] Nuevo mejor modelo!
+  Epoch [77/100] Batch 0/2196 Loss: 0.0080
+  Epoch [77/100] Batch 200/2196 Loss: 0.0139
+  Epoch [77/100] Batch 400/2196 Loss: 0.0146
+  Epoch [77/100] Batch 600/2196 Loss: 0.0085
+  Epoch [77/100] Batch 800/2196 Loss: 0.0122
+  Epoch [77/100] Batch 1000/2196 Loss: 0.0124
+  Epoch [77/100] Batch 1200/2196 Loss: 0.0129
+  Epoch [77/100] Batch 1400/2196 Loss: 0.0090
+  Epoch [77/100] Batch 1600/2196 Loss: 0.0125
+  Epoch [77/100] Batch 1800/2196 Loss: 0.0057
+  Epoch [77/100] Batch 2000/2196 Loss: 0.0171
+[EPOCH 77] Train: 0.0129 | Val: 0.0103 | LR: 0.000700 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [78/100] Batch 0/2196 Loss: 0.0130
+  Epoch [78/100] Batch 200/2196 Loss: 0.0092
+  Epoch [78/100] Batch 400/2196 Loss: 0.0134
+  Epoch [78/100] Batch 600/2196 Loss: 0.0191
+  Epoch [78/100] Batch 800/2196 Loss: 0.0099
+  Epoch [78/100] Batch 1000/2196 Loss: 0.0119
+  Epoch [78/100] Batch 1200/2196 Loss: 0.0114
+  Epoch [78/100] Batch 1400/2196 Loss: 0.0093
+  Epoch [78/100] Batch 1600/2196 Loss: 0.0109
+  Epoch [78/100] Batch 1800/2196 Loss: 0.0137
+  Epoch [78/100] Batch 2000/2196 Loss: 0.0134
+[EPOCH 78] Train: 0.0128 | Val: 0.0108 | LR: 0.000700 | Time: 17.9s
+  Epoch [79/100] Batch 0/2196 Loss: 0.0123
+  Epoch [79/100] Batch 200/2196 Loss: 0.0102
+  Epoch [79/100] Batch 400/2196 Loss: 0.0131
+  Epoch [79/100] Batch 600/2196 Loss: 0.0094
+  Epoch [79/100] Batch 800/2196 Loss: 0.0168
+  Epoch [79/100] Batch 1000/2196 Loss: 0.0095
+  Epoch [79/100] Batch 1200/2196 Loss: 0.0102
+  Epoch [79/100] Batch 1400/2196 Loss: 0.0236
+  Epoch [79/100] Batch 1600/2196 Loss: 0.0148
+  Epoch [79/100] Batch 1800/2196 Loss: 0.0086
+  Epoch [79/100] Batch 2000/2196 Loss: 0.0085
+[EPOCH 79] Train: 0.0127 | Val: 0.0105 | LR: 0.000700 | Time: 17.9s
+  Epoch [80/100] Batch 0/2196 Loss: 0.0107
+  Epoch [80/100] Batch 200/2196 Loss: 0.0112
+  Epoch [80/100] Batch 400/2196 Loss: 0.0102
+  Epoch [80/100] Batch 600/2196 Loss: 0.0093
+  Epoch [80/100] Batch 800/2196 Loss: 0.0085
+  Epoch [80/100] Batch 1000/2196 Loss: 0.0092
+  Epoch [80/100] Batch 1200/2196 Loss: 0.0133
+  Epoch [80/100] Batch 1400/2196 Loss: 0.0142
+  Epoch [80/100] Batch 1600/2196 Loss: 0.0114
+  Epoch [80/100] Batch 1800/2196 Loss: 0.0117
+  Epoch [80/100] Batch 2000/2196 Loss: 0.0211
+[EPOCH 80] Train: 0.0128 | Val: 0.0106 | LR: 0.000700 | Time: 17.9s
+  Epoch [81/100] Batch 0/2196 Loss: 0.0160
+  Epoch [81/100] Batch 200/2196 Loss: 0.0123
+  Epoch [81/100] Batch 400/2196 Loss: 0.0144
+  Epoch [81/100] Batch 600/2196 Loss: 0.0183
+  Epoch [81/100] Batch 800/2196 Loss: 0.0101
+  Epoch [81/100] Batch 1000/2196 Loss: 0.0090
+  Epoch [81/100] Batch 1200/2196 Loss: 0.0106
+  Epoch [81/100] Batch 1400/2196 Loss: 0.0133
+  Epoch [81/100] Batch 1600/2196 Loss: 0.0144
+  Epoch [81/100] Batch 1800/2196 Loss: 0.0115
+  Epoch [81/100] Batch 2000/2196 Loss: 0.0144
+[EPOCH 81] Train: 0.0126 | Val: 0.0104 | LR: 0.000700 | Time: 17.9s
+  Epoch [82/100] Batch 0/2196 Loss: 0.0100
+  Epoch [82/100] Batch 200/2196 Loss: 0.0176
+  Epoch [82/100] Batch 400/2196 Loss: 0.0124
+  Epoch [82/100] Batch 600/2196 Loss: 0.0108
+  Epoch [82/100] Batch 800/2196 Loss: 0.0137
+  Epoch [82/100] Batch 1000/2196 Loss: 0.0156
+  Epoch [82/100] Batch 1200/2196 Loss: 0.0145
+  Epoch [82/100] Batch 1400/2196 Loss: 0.0084
+  Epoch [82/100] Batch 1600/2196 Loss: 0.0129
+  Epoch [82/100] Batch 1800/2196 Loss: 0.0142
+  Epoch [82/100] Batch 2000/2196 Loss: 0.0166
+[EPOCH 82] Train: 0.0127 | Val: 0.0101 | LR: 0.000700 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [83/100] Batch 0/2196 Loss: 0.0090
+  Epoch [83/100] Batch 200/2196 Loss: 0.0130
+  Epoch [83/100] Batch 400/2196 Loss: 0.0229
+  Epoch [83/100] Batch 600/2196 Loss: 0.0138
+  Epoch [83/100] Batch 800/2196 Loss: 0.0201
+  Epoch [83/100] Batch 1000/2196 Loss: 0.0102
+  Epoch [83/100] Batch 1200/2196 Loss: 0.0088
+  Epoch [83/100] Batch 1400/2196 Loss: 0.0090
+  Epoch [83/100] Batch 1600/2196 Loss: 0.0089
+  Epoch [83/100] Batch 1800/2196 Loss: 0.0157
+  Epoch [83/100] Batch 2000/2196 Loss: 0.0162
+[EPOCH 83] Train: 0.0125 | Val: 0.0109 | LR: 0.000700 | Time: 17.9s
+  Epoch [84/100] Batch 0/2196 Loss: 0.0152
+  Epoch [84/100] Batch 200/2196 Loss: 0.0117
+  Epoch [84/100] Batch 400/2196 Loss: 0.0080
+  Epoch [84/100] Batch 600/2196 Loss: 0.0156
+  Epoch [84/100] Batch 800/2196 Loss: 0.0118
+  Epoch [84/100] Batch 1000/2196 Loss: 0.0129
+  Epoch [84/100] Batch 1200/2196 Loss: 0.0166
+  Epoch [84/100] Batch 1400/2196 Loss: 0.0109
+  Epoch [84/100] Batch 1600/2196 Loss: 0.0055
+  Epoch [84/100] Batch 1800/2196 Loss: 0.0135
+  Epoch [84/100] Batch 2000/2196 Loss: 0.0072
+[EPOCH 84] Train: 0.0125 | Val: 0.0122 | LR: 0.000700 | Time: 17.9s
+  Epoch [85/100] Batch 0/2196 Loss: 0.0143
+  Epoch [85/100] Batch 200/2196 Loss: 0.0154
+  Epoch [85/100] Batch 400/2196 Loss: 0.0143
+  Epoch [85/100] Batch 600/2196 Loss: 0.0096
+  Epoch [85/100] Batch 800/2196 Loss: 0.0065
+  Epoch [85/100] Batch 1000/2196 Loss: 0.0108
+  Epoch [85/100] Batch 1200/2196 Loss: 0.0214
+  Epoch [85/100] Batch 1400/2196 Loss: 0.0164
+  Epoch [85/100] Batch 1600/2196 Loss: 0.0093
+  Epoch [85/100] Batch 1800/2196 Loss: 0.0129
+  Epoch [85/100] Batch 2000/2196 Loss: 0.0147
+[EPOCH 85] Train: 0.0126 | Val: 0.0126 | LR: 0.000700 | Time: 17.9s
+  Epoch [86/100] Batch 0/2196 Loss: 0.0102
+  Epoch [86/100] Batch 200/2196 Loss: 0.0171
+  Epoch [86/100] Batch 400/2196 Loss: 0.0098
+  Epoch [86/100] Batch 600/2196 Loss: 0.0087
+  Epoch [86/100] Batch 800/2196 Loss: 0.0142
+  Epoch [86/100] Batch 1000/2196 Loss: 0.0100
+  Epoch [86/100] Batch 1200/2196 Loss: 0.0136
+  Epoch [86/100] Batch 1400/2196 Loss: 0.0156
+  Epoch [86/100] Batch 1600/2196 Loss: 0.0108
+  Epoch [86/100] Batch 1800/2196 Loss: 0.0154
+  Epoch [86/100] Batch 2000/2196 Loss: 0.0135
+[EPOCH 86] Train: 0.0124 | Val: 0.0102 | LR: 0.000700 | Time: 17.9s
+  Epoch [87/100] Batch 0/2196 Loss: 0.0099
+  Epoch [87/100] Batch 200/2196 Loss: 0.0130
+  Epoch [87/100] Batch 400/2196 Loss: 0.0081
+  Epoch [87/100] Batch 600/2196 Loss: 0.0129
+  Epoch [87/100] Batch 800/2196 Loss: 0.0132
+  Epoch [87/100] Batch 1000/2196 Loss: 0.0107
+  Epoch [87/100] Batch 1200/2196 Loss: 0.0098
+  Epoch [87/100] Batch 1400/2196 Loss: 0.0116
+  Epoch [87/100] Batch 1600/2196 Loss: 0.0137
+  Epoch [87/100] Batch 1800/2196 Loss: 0.0154
+  Epoch [87/100] Batch 2000/2196 Loss: 0.0072
+[EPOCH 87] Train: 0.0124 | Val: 0.0102 | LR: 0.000700 | Time: 17.9s
+  Epoch [88/100] Batch 0/2196 Loss: 0.0126
+  Epoch [88/100] Batch 200/2196 Loss: 0.0111
+  Epoch [88/100] Batch 400/2196 Loss: 0.0155
+  Epoch [88/100] Batch 600/2196 Loss: 0.0127
+  Epoch [88/100] Batch 800/2196 Loss: 0.0154
+  Epoch [88/100] Batch 1000/2196 Loss: 0.0110
+  Epoch [88/100] Batch 1200/2196 Loss: 0.0069
+  Epoch [88/100] Batch 1400/2196 Loss: 0.0163
+  Epoch [88/100] Batch 1600/2196 Loss: 0.0078
+  Epoch [88/100] Batch 1800/2196 Loss: 0.0081
+  Epoch [88/100] Batch 2000/2196 Loss: 0.0162
+[EPOCH 88] Train: 0.0124 | Val: 0.0100 | LR: 0.000700 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [89/100] Batch 0/2196 Loss: 0.0140
+  Epoch [89/100] Batch 200/2196 Loss: 0.0163
+  Epoch [89/100] Batch 400/2196 Loss: 0.0091
+  Epoch [89/100] Batch 600/2196 Loss: 0.0091
+  Epoch [89/100] Batch 800/2196 Loss: 0.0091
+  Epoch [89/100] Batch 1000/2196 Loss: 0.0072
+  Epoch [89/100] Batch 1200/2196 Loss: 0.0096
+  Epoch [89/100] Batch 1400/2196 Loss: 0.0137
+  Epoch [89/100] Batch 1600/2196 Loss: 0.0141
+  Epoch [89/100] Batch 1800/2196 Loss: 0.0096
+  Epoch [89/100] Batch 2000/2196 Loss: 0.0107
+[EPOCH 89] Train: 0.0123 | Val: 0.0118 | LR: 0.000700 | Time: 17.9s
+  Epoch [90/100] Batch 0/2196 Loss: 0.0193
+  Epoch [90/100] Batch 200/2196 Loss: 0.0108
+  Epoch [90/100] Batch 400/2196 Loss: 0.0130
+  Epoch [90/100] Batch 600/2196 Loss: 0.0114
+  Epoch [90/100] Batch 800/2196 Loss: 0.0099
+  Epoch [90/100] Batch 1000/2196 Loss: 0.0135
+  Epoch [90/100] Batch 1200/2196 Loss: 0.0093
+  Epoch [90/100] Batch 1400/2196 Loss: 0.0070
+  Epoch [90/100] Batch 1600/2196 Loss: 0.0123
+  Epoch [90/100] Batch 1800/2196 Loss: 0.0121
+  Epoch [90/100] Batch 2000/2196 Loss: 0.0095
+[EPOCH 90] Train: 0.0123 | Val: 0.0122 | LR: 0.000700 | Time: 17.9s
+  Epoch [91/100] Batch 0/2196 Loss: 0.0124
+  Epoch [91/100] Batch 200/2196 Loss: 0.0124
+  Epoch [91/100] Batch 400/2196 Loss: 0.0120
+  Epoch [91/100] Batch 600/2196 Loss: 0.0082
+  Epoch [91/100] Batch 800/2196 Loss: 0.0124
+  Epoch [91/100] Batch 1000/2196 Loss: 0.0093
+  Epoch [91/100] Batch 1200/2196 Loss: 0.0087
+  Epoch [91/100] Batch 1400/2196 Loss: 0.0113
+  Epoch [91/100] Batch 1600/2196 Loss: 0.0084
+  Epoch [91/100] Batch 1800/2196 Loss: 0.0105
+  Epoch [91/100] Batch 2000/2196 Loss: 0.0127
+[EPOCH 91] Train: 0.0122 | Val: 0.0097 | LR: 0.000700 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [92/100] Batch 0/2196 Loss: 0.0138
+  Epoch [92/100] Batch 200/2196 Loss: 0.0112
+  Epoch [92/100] Batch 400/2196 Loss: 0.0097
+  Epoch [92/100] Batch 600/2196 Loss: 0.0133
+  Epoch [92/100] Batch 800/2196 Loss: 0.0206
+  Epoch [92/100] Batch 1000/2196 Loss: 0.0071
+  Epoch [92/100] Batch 1200/2196 Loss: 0.0149
+  Epoch [92/100] Batch 1400/2196 Loss: 0.0137
+  Epoch [92/100] Batch 1600/2196 Loss: 0.0162
+  Epoch [92/100] Batch 1800/2196 Loss: 0.0162
+  Epoch [92/100] Batch 2000/2196 Loss: 0.0152
+[EPOCH 92] Train: 0.0122 | Val: 0.0097 | LR: 0.000700 | Time: 17.9s
+[SAVE] Nuevo mejor modelo!
+  Epoch [93/100] Batch 0/2196 Loss: 0.0140
+  Epoch [93/100] Batch 200/2196 Loss: 0.0129
+  Epoch [93/100] Batch 400/2196 Loss: 0.0180
+  Epoch [93/100] Batch 600/2196 Loss: 0.0105
+  Epoch [93/100] Batch 800/2196 Loss: 0.0185
+  Epoch [93/100] Batch 1000/2196 Loss: 0.0102
+  Epoch [93/100] Batch 1200/2196 Loss: 0.0070
+  Epoch [93/100] Batch 1400/2196 Loss: 0.0090
+  Epoch [93/100] Batch 1600/2196 Loss: 0.0076
+  Epoch [93/100] Batch 1800/2196 Loss: 0.0104
+  Epoch [93/100] Batch 2000/2196 Loss: 0.0136
+[EPOCH 93] Train: 0.0122 | Val: 0.0101 | LR: 0.000700 | Time: 17.9s
+  Epoch [94/100] Batch 0/2196 Loss: 0.0210
+  Epoch [94/100] Batch 200/2196 Loss: 0.0103
+  Epoch [94/100] Batch 400/2196 Loss: 0.0055
+  Epoch [94/100] Batch 600/2196 Loss: 0.0130
+  Epoch [94/100] Batch 800/2196 Loss: 0.0070
+  Epoch [94/100] Batch 1000/2196 Loss: 0.0155
+  Epoch [94/100] Batch 1200/2196 Loss: 0.0160
+  Epoch [94/100] Batch 1400/2196 Loss: 0.0141
+  Epoch [94/100] Batch 1600/2196 Loss: 0.0109
+  Epoch [94/100] Batch 1800/2196 Loss: 0.0091
+  Epoch [94/100] Batch 2000/2196 Loss: 0.0110
+[EPOCH 94] Train: 0.0122 | Val: 0.0102 | LR: 0.000700 | Time: 17.9s
+  Epoch [95/100] Batch 0/2196 Loss: 0.0171
+  Epoch [95/100] Batch 200/2196 Loss: 0.0214
+  Epoch [95/100] Batch 400/2196 Loss: 0.0098
+  Epoch [95/100] Batch 600/2196 Loss: 0.0129
+  Epoch [95/100] Batch 800/2196 Loss: 0.0148
+  Epoch [95/100] Batch 1000/2196 Loss: 0.0097
+  Epoch [95/100] Batch 1200/2196 Loss: 0.0097
+  Epoch [95/100] Batch 1400/2196 Loss: 0.0116
+  Epoch [95/100] Batch 1600/2196 Loss: 0.0122
+  Epoch [95/100] Batch 1800/2196 Loss: 0.0065
+  Epoch [95/100] Batch 2000/2196 Loss: 0.0087
+[EPOCH 95] Train: 0.0121 | Val: 0.0165 | LR: 0.000700 | Time: 17.9s
+  Epoch [96/100] Batch 0/2196 Loss: 0.0153
+  Epoch [96/100] Batch 200/2196 Loss: 0.0134
+  Epoch [96/100] Batch 400/2196 Loss: 0.0121
+  Epoch [96/100] Batch 600/2196 Loss: 0.0108
+  Epoch [96/100] Batch 800/2196 Loss: 0.0116
+  Epoch [96/100] Batch 1000/2196 Loss: 0.0152
+  Epoch [96/100] Batch 1200/2196 Loss: 0.0119
+  Epoch [96/100] Batch 1400/2196 Loss: 0.0151
+  Epoch [96/100] Batch 1600/2196 Loss: 0.0143
+  Epoch [96/100] Batch 1800/2196 Loss: 0.0120
+  Epoch [96/100] Batch 2000/2196 Loss: 0.0200
+[EPOCH 96] Train: 0.0121 | Val: 0.0101 | LR: 0.000700 | Time: 17.9s
+  Epoch [97/100] Batch 0/2196 Loss: 0.0143
+  Epoch [97/100] Batch 200/2196 Loss: 0.0138
+  Epoch [97/100] Batch 400/2196 Loss: 0.0105
+  Epoch [97/100] Batch 600/2196 Loss: 0.0091
+  Epoch [97/100] Batch 800/2196 Loss: 0.0124
+  Epoch [97/100] Batch 1000/2196 Loss: 0.0090
+  Epoch [97/100] Batch 1200/2196 Loss: 0.0136
+  Epoch [97/100] Batch 1400/2196 Loss: 0.0148
+  Epoch [97/100] Batch 1600/2196 Loss: 0.0143
+  Epoch [97/100] Batch 1800/2196 Loss: 0.0155
+  Epoch [97/100] Batch 2000/2196 Loss: 0.0103
+[EPOCH 97] Train: 0.0121 | Val: 0.0101 | LR: 0.000700 | Time: 17.9s
+  Epoch [98/100] Batch 0/2196 Loss: 0.0108
+  Epoch [98/100] Batch 200/2196 Loss: 0.0079
+  Epoch [98/100] Batch 400/2196 Loss: 0.0121
+  Epoch [98/100] Batch 600/2196 Loss: 0.0081
+  Epoch [98/100] Batch 800/2196 Loss: 0.0123
+  Epoch [98/100] Batch 1000/2196 Loss: 0.0144
+  Epoch [98/100] Batch 1200/2196 Loss: 0.0135
+  Epoch [98/100] Batch 1400/2196 Loss: 0.0158
+  Epoch [98/100] Batch 1600/2196 Loss: 0.0126
+  Epoch [98/100] Batch 1800/2196 Loss: 0.0106
+  Epoch [98/100] Batch 2000/2196 Loss: 0.0179
+[EPOCH 98] Train: 0.0122 | Val: 0.0101 | LR: 0.000700 | Time: 17.9s
+  Epoch [99/100] Batch 0/2196 Loss: 0.0052
+  Epoch [99/100] Batch 200/2196 Loss: 0.0061
+  Epoch [99/100] Batch 400/2196 Loss: 0.0095
+  Epoch [99/100] Batch 600/2196 Loss: 0.0088
+  Epoch [99/100] Batch 800/2196 Loss: 0.0140
+  Epoch [99/100] Batch 1000/2196 Loss: 0.0113
+  Epoch [99/100] Batch 1200/2196 Loss: 0.0050
+  Epoch [99/100] Batch 1400/2196 Loss: 0.0137
+  Epoch [99/100] Batch 1600/2196 Loss: 0.0096
+  Epoch [99/100] Batch 1800/2196 Loss: 0.0127
+  Epoch [99/100] Batch 2000/2196 Loss: 0.0175
+[EPOCH 99] Train: 0.0120 | Val: 0.0123 | LR: 0.000700 | Time: 17.9s
+  Epoch [100/100] Batch 0/2196 Loss: 0.0135
+  Epoch [100/100] Batch 200/2196 Loss: 0.0144
+  Epoch [100/100] Batch 400/2196 Loss: 0.0092
+  Epoch [100/100] Batch 600/2196 Loss: 0.0080
+  Epoch [100/100] Batch 800/2196 Loss: 0.0089
+  Epoch [100/100] Batch 1000/2196 Loss: 0.0062
+  Epoch [100/100] Batch 1200/2196 Loss: 0.0106
+  Epoch [100/100] Batch 1400/2196 Loss: 0.0090
+  Epoch [100/100] Batch 1600/2196 Loss: 0.0142
+  Epoch [100/100] Batch 1800/2196 Loss: 0.0147
+  Epoch [100/100] Batch 2000/2196 Loss: 0.0140
+[EPOCH 100] Train: 0.0120 | Val: 0.0106 | LR: 0.000700 | Time: 17.9s
+
+[DONE] 29.8 min. Mejor Val: 0.0097
