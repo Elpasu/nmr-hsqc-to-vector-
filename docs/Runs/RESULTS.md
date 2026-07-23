@@ -16,7 +16,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp E Fase 3 — DeepSets (2 conjuntos: crosspeaks + 13C) | n/a (sin imagen) | 19 | 202k | none | 0.0201 (97) | 2.28% | 82.96% | **exito** — agrega conjunto 13C (con cuaternarios); Cqsp2 con error 13.5%->5.2% vs E2. Ver seccion |
 | **Exp E Fase 3 — Set Transformer (2 conjuntos: crosspeaks + 13C)** | n/a (sin imagen) | 19 | 202k | none | **0.0097 (97)** | 2.26% | **91.35%** | **mejor resultado del proyecto** — primera vez que cruza el objetivo ~90% asistida limpio; rompe la confusion estructural Cqsp2<->=CH/Ar (persistia en V10/B/C/E2). Ver seccion |
 | Exp E Fase 3 — estudio de escalado (Set Transformer, 10-100% train) | n/a (sin imagen) | 19 | 18.7k-202k | none | 0.0097 (100%) | 0.9-2.3% | 83.67% -> 91.35% | **meseta de datos** — 75%->100% no mueve EMA ni val loss; ampliar el dataset no rendiria. Ver seccion |
-| Exp F — cabeza Poisson + 250 epocas (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.3051 Poisson-NLL (no comp.) | pendiente | pendiente | **TRAIN solo, eval PENDIENTE** — scheduler si actuo (LR 0.001->0.00002), saturo de verdad. Ver seccion |
+| Exp F — cabeza Poisson + 250 epocas (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.3051 Poisson-NLL (no comp.) | 0.60% | 90.63% | **NO mejoro** vs Fase 3 ST (91.35%): asistida -0.72pp, cruda cae (2.26->0.60); confusiones CH2<->CH2-N e Imina->=CH/Ar intactas. Ver seccion |
 
 ---
 
@@ -337,9 +337,9 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 
 ---
 
-## Exp F — cabeza Poisson + entrenamiento extendido (⚠️ TRAIN solo, eval PENDIENTE)
+## Exp F — cabeza Poisson + entrenamiento extendido (no mejoró)
 
-- **Fecha:** 2026-07-22 · **SLURM train:** 2377113 (250 ep, 98.3 min) · **Eval:** pendiente ·
+- **Fecha:** 2026-07-22 · **SLURM train:** 2377113 (250 ep, 98.3 min) · **SLURM eval:** 2377247 ·
   **Config:** `experiments/F_poisson_head/config.yaml` · **Params:** 70,163 (idéntico a Fase 3 Set
   Transformer — `softplus` no agrega parámetros).
 - **Qué cambia vs Fase 3 Set Transformer:** (1) cabeza `softplus` (`λ ≥ 0`) +
@@ -354,10 +354,24 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   y las últimas ~10 épocas están planas (Val 0.3052-0.3054). Entrenó **hasta saturación real** — lo
   que valida que en Fase 3 el presupuesto de épocas se había quedado corto. Si la EMA no mejora pese
   a esto, el cuello no era ni la cabeza de salida ni las épocas.
-- **Pendiente:** correr `run_eval.sh` (EMA cruda/asistida + confusiones) para el veredicto. Criterio
-  de éxito (spec): EMA asistida ≥ 91.35%, EMA cruda por sobre el techo histórico ~2-3%, y bajar
-  `CH2`↔`CH2-N` / `C-2X` / `=CH/Ar`↔`Imina`. Spec:
-  `docs/superpowers/specs/2026-07-22-exp-f-poisson-y-escalado-design.md`.
+- **EMA crude / assist:** 0.60% / 90.63%. **No mejoró** vs Fase 3 Set Transformer (2.26% / 91.35%):
+  la asistida quedó marginalmente por debajo (−0.72pp) y la cruda **cayó** (−1.66pp, 2.26→0.60). Por
+  entorno (asistida): Alifáticos 95.79%, Heteroatómicos O/N 93.57%, sp2 95.74%, X-Múltiples 98.13% —
+  casi calcado a Fase 3.
+- **Confusiones intactas:** el patrón residual es el MISMO que Fase 3, la cabeza Poisson y las 250
+  épocas no lo tocaron: `CH2`↔`CH2-N` sigue dominante (CH2→CH2-N 79.5%, CH2-N→CH2 60.5%),
+  `Imina`→`=CH/Ar` 82.6%, `C-2X`→`=CH/Ar`/`Cqsp2`.
+- **Interpretación (informativo, no solo negativo):** con el scheduler ya saturado (LR→0.00002) y una
+  cabeza de conteo más natural (Poisson), el modelo **no superó** a Fase 3 → el cuello ya **no es de
+  optimización** (loss / épocas / cabeza de salida). Fase 3 Set Transformer ya estaba en el techo de
+  lo que esta representación permite. El error residual (`CH2`↔`CH2-N`, `Imina`↔`=CH/Ar`) es robusto a
+  estos cambios ⇒ apunta a **límite de información/dominio** (separar un CH2/CH alifático de su versión
+  unida a N, o una imina de un aromático, sin señales adicionales), no a un problema de modelo. Nota:
+  la cabeza Poisson además **empeora el modo crudo** (softplus + NLL redondea peor sin el oráculo).
+- **Takeaway:** **Fase 3 Set Transformer (MSE, 100 ép) queda como el mejor modelo del proyecto** —
+  Exp F no lo desplaza. El próximo paso no es afinar la optimización sino inyectar **información
+  nueva**: HMBC simulado (ve conectividad de cuaternarios) o features que separen X-alifático de X-N.
+  Spec: `docs/superpowers/specs/2026-07-22-exp-f-poisson-y-escalado-design.md`.
 
 ---
 
