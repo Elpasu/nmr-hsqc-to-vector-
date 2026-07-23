@@ -8,7 +8,11 @@ model.arch del config (deepsets | settransformer).
 NO reentrena. Solo forward pass sobre val_indices_frozen.npy.
 
 Salida: predictions_<experiment_name>.parquet con columnas:
-  idx, smiles, y_true (19 ints), y_pred_crude (19 ints), y_pred_assisted (19 ints)
+  idx, smiles, y_true (19 ints), y_pred_crude (19 ints), y_pred_assisted (19 ints),
+  crosspeaks (lista de [delta_c, delta_h] en ppm), c13_shifts (lista de delta_c en ppm).
+
+Los desplazamientos se leen del .npz CRUDO (en ppm, sin normalizar) para que la
+GUI pueda dibujar el HSQC real y diagnosticar confusiones por shift (ej: CH2 vs CH2-N).
 
 Uso:
   python dump_predictions.py --config config_deepsets.yaml
@@ -90,6 +94,14 @@ def main(config_path):
                            str(smiles_path), cfg["normalization"])
     smiles_all = np.load(smiles_path, allow_pickle=True)
 
+    # --- Picos CRUDOS en ppm (sin normalizar) para la GUI (HSQC + delta 13C) ---
+    npz_ch = np.load(peaks_ch)
+    raw_peaks_ch = npz_ch["peaks"]         # (N, 32, 4): [dC, dH, amp0, amp1] en ppm
+    raw_mask_ch = npz_ch["peaks_mask"]     # (N, 32)
+    npz_13c = np.load(peaks_13c)
+    raw_peaks_13c = npz_13c["peaks_13c"]   # (N, M, 1): [dC] en ppm
+    raw_mask_13c = npz_13c["mask_13c"]     # (N, M)
+
     val_indices = np.load(val_indices_path)
     val_ds = Subset(ds, val_indices.tolist())
     loader = DataLoader(val_ds, batch_size=256, shuffle=False,
@@ -113,12 +125,23 @@ def main(config_path):
             for k in range(len(t)):
                 orig_idx = int(val_indices[ptr]); ptr += 1
                 total = int(c[k, 0]); ch2 = int(c[k, 1])
+
+                m_ch = raw_mask_ch[orig_idx].astype(bool)
+                cps = raw_peaks_ch[orig_idx][m_ch][:, :2]   # [dC, dH] en ppm
+                crosspeaks = [[round(float(dc), 2), round(float(dh), 3)]
+                              for dc, dh in cps]
+                m_13 = raw_mask_13c[orig_idx].astype(bool)
+                c13 = raw_peaks_13c[orig_idx][m_13][:, 0]   # dC en ppm
+                c13_shifts = [round(float(x), 2) for x in c13]
+
                 rows.append({
                     "idx": orig_idx,
                     "smiles": str(smiles_all[orig_idx]),
                     "y_true": t[k].tolist(),
                     "y_pred_crude": np.clip(np.floor(out[k]), 0, None).astype(int).tolist(),
                     "y_pred_assisted": oraculo_doble(out[k], total, ch2).tolist(),
+                    "crosspeaks": crosspeaks,
+                    "c13_shifts": c13_shifts,
                 })
 
     try:

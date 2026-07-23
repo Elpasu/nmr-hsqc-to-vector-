@@ -16,6 +16,7 @@ Luego se abre en el navegador. Ajusta PRED_FILE si tu parquet tiene otro nombre.
 import streamlit as st
 import pandas as pd
 import numpy as np
+import altair as alt
 from rdkit import Chem
 from rdkit.Chem import Draw
 
@@ -144,3 +145,51 @@ with right:
     else:
         errs = [(CLASSES[i], int(yp[i] - yt[i])) for i in range(N) if yp[i] != yt[i]]
         st.error("✗ Errores: " + ", ".join(f"{g} ({'+' if d>0 else ''}{d})" for g, d in errs))
+
+# ------------- HSQC: desplazamientos quimicos de las senales -------------
+# Solo si el parquet trae las columnas de picos (dump_predictions.py nuevo).
+if "crosspeaks" in df.columns:
+    st.divider()
+    st.subheader("Espectro HSQC — desplazamientos de las senales")
+    st.caption(
+        "Cada punto es un crosspeak C-H (delta_C en X, delta_H en Y, ejes invertidos "
+        "como un espectro real). Sirve para juzgar por shift si una senal es CH2 (~20-45 ppm) "
+        "o CH2-N (~40-60 ppm), donde el modelo suele confundir."
+    )
+
+    def _to_pairs(v):
+        # v puede venir como lista de listas o como array-de-arrays (parquet/pyarrow).
+        if v is None or len(v) == 0:
+            return np.empty((0, 2))
+        return np.array([[float(a), float(b)] for a, b in v])
+
+    cps = _to_pairs(row["crosspeaks"])
+    gl, gr = st.columns([2, 1])
+    with gl:
+        if len(cps):
+            dfc = pd.DataFrame({"δC (ppm)": cps[:, 0], "δH (ppm)": cps[:, 1]})
+            chart = (
+                alt.Chart(dfc)
+                .mark_circle(size=120, opacity=0.75)
+                .encode(
+                    x=alt.X("δC (ppm)", scale=alt.Scale(reverse=True),
+                            title="δ ¹³C (ppm)"),
+                    y=alt.Y("δH (ppm)", scale=alt.Scale(reverse=True),
+                            title="δ ¹H (ppm)"),
+                    tooltip=[alt.Tooltip("δC (ppm)", format=".2f"),
+                             alt.Tooltip("δH (ppm)", format=".3f")],
+                )
+                .properties(height=360)
+                .interactive()
+            )
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.info("Esta molecula no tiene crosspeaks C-H (todos cuaternarios).")
+    with gr:
+        st.markdown("**δ ¹³C (todos, incl. cuaternarios)**")
+        if "c13_shifts" in row and row["c13_shifts"] is not None and len(row["c13_shifts"]):
+            c13 = sorted((float(x) for x in row["c13_shifts"]), reverse=True)
+            st.dataframe(pd.DataFrame({"δ ¹³C (ppm)": [f"{v:.2f}" for v in c13]}),
+                         height=360, use_container_width=True, hide_index=True)
+        else:
+            st.info("Sin lista ¹³C.")
