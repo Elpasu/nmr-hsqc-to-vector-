@@ -15,6 +15,8 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp E Fase 2 — DeepSets (picos) | n/a (sin imagen) | 19 | 202k | none | 0.0323 (97) | 0.74% | 70.90% | **FRACASO segun criterio propio** — crude < Exp C (0.89%), confusiones de cuaternarios EMPEORARON; picos son crosspeaks puros y se quito la proj 1D. Ver seccion |
 | Exp E Fase 3 — DeepSets (2 conjuntos: crosspeaks + 13C) | n/a (sin imagen) | 19 | 202k | none | 0.0201 (97) | 2.28% | 82.96% | **exito** — agrega conjunto 13C (con cuaternarios); Cqsp2 con error 13.5%->5.2% vs E2. Ver seccion |
 | **Exp E Fase 3 — Set Transformer (2 conjuntos: crosspeaks + 13C)** | n/a (sin imagen) | 19 | 202k | none | **0.0097 (97)** | 2.26% | **91.35%** | **mejor resultado del proyecto** — primera vez que cruza el objetivo ~90% asistida limpio; rompe la confusion estructural Cqsp2<->=CH/Ar (persistia en V10/B/C/E2). Ver seccion |
+| Exp E Fase 3 — estudio de escalado (Set Transformer, 10-100% train) | n/a (sin imagen) | 19 | 18.7k-202k | none | 0.0097 (100%) | 0.9-2.3% | 83.67% -> 91.35% | **meseta de datos** — 75%->100% no mueve EMA ni val loss; ampliar el dataset no rendiria. Ver seccion |
+| Exp F — cabeza Poisson + 250 epocas (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.3051 Poisson-NLL (no comp.) | pendiente | pendiente | **TRAIN solo, eval PENDIENTE** — scheduler si actuo (LR 0.001->0.00002), saturo de verdad. Ver seccion |
 
 ---
 
@@ -300,6 +302,62 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   `docs/superpowers/specs/2026-07-22-exp-e-fase3-dos-conjuntos-picos-design.md`.
   Plan: `docs/superpowers/plans/2026-07-22-exp-e-fase3-dos-conjuntos-picos.md`.
   Código: `experiments/E3_dos_conjuntos/`.
+
+---
+
+## Exp E — Fase 3: estudio de escalado de datos (Set Transformer, sin cambios de modelo/loss)
+
+- **Fecha:** 2026-07-22 · **SLURM train:** 2377114-2377118 · **SLURM eval:** 2377168-2377172 ·
+  **Config:** `experiments/E3_dos_conjuntos/config_scaling_{10,25,50,75,100}.yaml`.
+- **Qué es:** ablación sobre el Set Transformer de Fase 3 (arquitectura y loss `ConstrainedMSELoss`
+  **sin cambios** — no es Poisson) entrenado sobre fracciones crecientes del train set, con el
+  **mismo val congelado** (14428) para las 5. Subsampleo determinístico anidado
+  (`RandomState(42)`), 100 épocas cada una. Pregunta: si se volviera a ampliar el dataset (como
+  144k→202k), ¿serviría?
+
+  | Fracción | Train N | Best Val Loss | EMA cruda | EMA asistida |
+  |---|---|---|---|---|
+  | 10%  | 18,731  | 0.0203 | 1.29% | 83.67% |
+  | 25%  | 46,828  | 0.0138 | 1.48% | 88.38% |
+  | 50%  | 93,657  | 0.0117 | 0.91% | 90.04% |
+  | 75%  | 140,485 | 0.0097 | 1.28% | 91.55% |
+  | 100% | 187,314 | 0.0097 | 2.26% | 91.35% |
+
+- **Resultado — meseta de datos.** Saltos de EMA asistida por tramo: 10→25% **+4.71pp**, 25→50%
+  +1.66pp, 50→75% +1.51pp, **75→100% −0.20pp** (plano, dentro del ruido). El val loss lo confirma
+  independientemente: 75% y 100% dan **exactamente 0.0097**. Las últimas ~47k moléculas (140k→187k)
+  no aportaron nada medible.
+- **Sanity checks:** el 100% (91.35%) reproduce exacto el Set Transformer de Fase 3 (mismo
+  modelo/data/seed ✓). La EMA cruda es ruidosa (0.9-2.3%, sin tendencia monótona), como se espera de
+  una métrica que exige los 19 conteos exactos sin oráculo.
+- **Takeaway:** volver a ampliar el dataset **no rendiría** — el esfuerzo va mejor a la cabeza de
+  salida (Exp F), a la representación, o al dominio (HMBC). Figuras en
+  `experiments/E3_dos_conjuntos/plots/` (`scaling_curve_ema.png` + las demás; se regeneran con
+  `python plots/make_plots.py`, sin torch).
+
+---
+
+## Exp F — cabeza Poisson + entrenamiento extendido (⚠️ TRAIN solo, eval PENDIENTE)
+
+- **Fecha:** 2026-07-22 · **SLURM train:** 2377113 (250 ep, 98.3 min) · **Eval:** pendiente ·
+  **Config:** `experiments/F_poisson_head/config.yaml` · **Params:** 70,163 (idéntico a Fase 3 Set
+  Transformer — `softplus` no agrega parámetros).
+- **Qué cambia vs Fase 3 Set Transformer:** (1) cabeza `softplus` (`λ ≥ 0`) +
+  `ConstrainedPoissonLoss` (Poisson NLL + restricción de suma) en vez de `ConstrainedMSELoss`;
+  (2) épocas 100 → 250. Dataset, split, arquitectura y scheduler (`patience=8/factor=0.7`) sin
+  cambios. Decisión explícita del usuario de combinar las dos variables en un solo experimento.
+- **Loss (Poisson NLL):** Train 0.3273 / Val **0.3051** (mejor, ep~245). **⚠️ Este valor NO es
+  comparable con el 0.0097 (MSE) de Fase 3** — son escalas distintas (Poisson NLL vs MSE). La
+  comparación F vs F3 se hace SOLO por EMA (pendiente).
+- **Comportamiento del entrenamiento — lo informativo hasta ahora:** a diferencia de Fase 3 (donde
+  el LR nunca bajó de 0.001 en 100 épocas), acá **el scheduler sí actuó**: LR 0.001 → 0.00002 (17×),
+  y las últimas ~10 épocas están planas (Val 0.3052-0.3054). Entrenó **hasta saturación real** — lo
+  que valida que en Fase 3 el presupuesto de épocas se había quedado corto. Si la EMA no mejora pese
+  a esto, el cuello no era ni la cabeza de salida ni las épocas.
+- **Pendiente:** correr `run_eval.sh` (EMA cruda/asistida + confusiones) para el veredicto. Criterio
+  de éxito (spec): EMA asistida ≥ 91.35%, EMA cruda por sobre el techo histórico ~2-3%, y bajar
+  `CH2`↔`CH2-N` / `C-2X` / `=CH/Ar`↔`Imina`. Spec:
+  `docs/superpowers/specs/2026-07-22-exp-f-poisson-y-escalado-design.md`.
 
 ---
 
