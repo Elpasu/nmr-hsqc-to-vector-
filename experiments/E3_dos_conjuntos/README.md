@@ -115,3 +115,29 @@ val congelado (14428) es idéntico en las 5 corridas.
    y agregarla a `docs/Runs/RESULTS.md`. Avisá a Claude Code con los 5
    números — si la pendiente entre 75% y 100% sigue siendo grande, vale la
    pena ampliar el dataset de nuevo; si se aplanó, no.
+
+## Oráculo v2 (zeroing por heteroátomos ausentes)
+
+Post-procesamiento nuevo sobre el **mismo checkpoint** (no reentrena). Usa N y O
+de la FM: si el elemento vale 0, fuerza a 0 las clases que lo requieren
+(`N==0` → CH*-N, Imina; `O==0` → CH*-O, Aldeh; `N+O<2` → C-2X; `N+O<3` → C-3X).
+Ataca la confusión CH2↔CH2-N en moléculas sin N. Diseño y química en
+`docs/superpowers/specs/2026-07-23-oraculo-v2-heteroatomos-design.md`.
+
+Lógica en `oraculo.py` (numpy puro, fuente única para `evaluate.py` y
+`dump_predictions.py`). Test local, sin torch:
+
+```bash
+python tests/test_oraculo_hetero.py
+```
+
+Evaluación comparativa (cruda / asistida v1 / asistida v2 + tabla 3-vías); ya es
+el default de `run_eval.sh`:
+
+```bash
+sbatch run_eval.sh config_settransformer.yaml   # --oraculo all
+```
+
+Para verlo en la GUI: `dump_predictions.py` agrega la columna
+`y_pred_assisted_v2`; el inspector muestra el modo "Asistida v2 (hetero)" si la
+columna está presente. Re-generá el parquet y traelo a tu PC como siempre.

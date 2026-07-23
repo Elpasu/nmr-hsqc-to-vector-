@@ -8,7 +8,8 @@ model.arch del config (deepsets | settransformer).
 NO reentrena. Solo forward pass sobre val_indices_frozen.npy.
 
 Salida: predictions_<experiment_name>.parquet con columnas:
-  idx, smiles, y_true (19 ints), y_pred_crude (19 ints), y_pred_assisted (19 ints),
+  idx, smiles, y_true (19 ints), y_pred_crude (19 ints), y_pred_assisted (v1, 19 ints),
+  y_pred_assisted_v2 (oraculo hetero, 19 ints),
   crosspeaks (lista de [delta_c, delta_h] en ppm), c13_shifts (lista de delta_c en ppm).
 
 Los desplazamientos se leen del .npz CRUDO (en ppm, sin normalizar) para que la
@@ -25,43 +26,14 @@ import torch
 from pathlib import Path
 from torch.utils.data import DataLoader, Subset
 
-N_CLASSES = 19
-IDX_CH2 = [1, 5, 9, 12]   # CH2, CH2-O, CH2-N, =CH2
+from oraculo import (
+    N_CLASSES, ajustar_conteo_doble_exacto, ajustar_conteo_hetero,
+)
 
 
 def load_config(path):
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
-
-
-def oraculo_doble(pred_raw, total_real, ch2_real):
-    """Ajuste de doble restriccion (modo asistido), identico al evaluate."""
-    pred = np.floor(pred_raw).astype(int)
-    rest = pred_raw - pred
-    idx_rest = [i for i in range(N_CLASSES) if i not in IDX_CH2]
-
-    falt = int(ch2_real - sum(pred[i] for i in IDX_CH2))
-    if falt > 0:
-        for i in sorted(IDX_CH2, key=lambda i: rest[i])[-falt:]:
-            pred[i] += 1
-    elif falt < 0:
-        s = -falt
-        for i in sorted(IDX_CH2, key=lambda i: rest[i]):
-            if pred[i] > 0:
-                pred[i] -= 1; s -= 1
-                if s == 0: break
-
-    falt = int((total_real - ch2_real) - sum(pred[i] for i in idx_rest))
-    if falt > 0:
-        for i in sorted(idx_rest, key=lambda i: rest[i])[-falt:]:
-            pred[i] += 1
-    elif falt < 0:
-        s = -falt
-        for i in sorted(idx_rest, key=lambda i: rest[i]):
-            if pred[i] > 0:
-                pred[i] -= 1; s -= 1
-                if s == 0: break
-    return pred
 
 
 def main(config_path):
@@ -125,6 +97,7 @@ def main(config_path):
             for k in range(len(t)):
                 orig_idx = int(val_indices[ptr]); ptr += 1
                 total = int(c[k, 0]); ch2 = int(c[k, 1])
+                n_at = int(c[k, 4]); o_at = int(c[k, 5])   # cond: [tot,ch2,C,H,N,O,S,Hal]
 
                 m_ch = raw_mask_ch[orig_idx].astype(bool)
                 cps = raw_peaks_ch[orig_idx][m_ch][:, :2]   # [dC, dH] en ppm
@@ -139,7 +112,9 @@ def main(config_path):
                     "smiles": str(smiles_all[orig_idx]),
                     "y_true": t[k].tolist(),
                     "y_pred_crude": np.clip(np.floor(out[k]), 0, None).astype(int).tolist(),
-                    "y_pred_assisted": oraculo_doble(out[k], total, ch2).tolist(),
+                    "y_pred_assisted": ajustar_conteo_doble_exacto(out[k], total, ch2).tolist(),
+                    "y_pred_assisted_v2": ajustar_conteo_hetero(
+                        out[k], total, ch2, n_at, o_at).tolist(),
                     "crosspeaks": crosspeaks,
                     "c13_shifts": c13_shifts,
                 })

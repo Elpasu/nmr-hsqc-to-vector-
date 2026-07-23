@@ -36,8 +36,11 @@ def load(path):
         df = pd.read_parquet(path)
     except Exception:
         df = pd.read_json(path.replace(".parquet", ".json"))
-    # asegurar arrays numpy
-    for col in ["y_true", "y_pred_crude", "y_pred_assisted"]:
+    # asegurar arrays numpy (y_pred_assisted_v2 solo si el dump la trae)
+    vec_cols = ["y_true", "y_pred_crude", "y_pred_assisted"]
+    if "y_pred_assisted_v2" in df.columns:
+        vec_cols.append("y_pred_assisted_v2")
+    for col in vec_cols:
         df[col] = df[col].apply(lambda v: np.array(v, dtype=int))
     return df
 
@@ -49,9 +52,17 @@ st.caption(f"{len(df)} moleculas del set de validacion · archivo: {PRED_FILE}")
 
 # ------------- SIDEBAR: modo y filtros -------------
 st.sidebar.header("Modo de prediccion")
-mode = st.sidebar.radio("¿Que prediccion mirar?",
-                        ["y_pred_assisted", "y_pred_crude"],
-                        format_func=lambda s: "Asistida (oraculo)" if "assist" in s else "Cruda (modelo solo)")
+_mode_labels = {
+    "y_pred_assisted": "Asistida v1 (oraculo doble)",
+    "y_pred_assisted_v2": "Asistida v2 (hetero)",
+    "y_pred_crude": "Cruda (modelo solo)",
+}
+_mode_options = ["y_pred_assisted"]
+if "y_pred_assisted_v2" in df.columns:
+    _mode_options.append("y_pred_assisted_v2")
+_mode_options.append("y_pred_crude")
+mode = st.sidebar.radio("¿Que prediccion mirar?", _mode_options,
+                        format_func=lambda s: _mode_labels.get(s, s))
 
 st.sidebar.header("Filtro por error")
 filt = st.sidebar.selectbox(

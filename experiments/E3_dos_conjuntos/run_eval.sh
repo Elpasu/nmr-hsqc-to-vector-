@@ -19,4 +19,5 @@ cd ~/nmr-hsqc-to-vector-/experiments/E3_dos_conjuntos
 #   sbatch run_eval.sh config_deepsets.yaml
 #   sbatch run_eval.sh config_settransformer.yaml
 CONFIG="${1:-config_deepsets.yaml}"
-python -u evaluate.py --config "$CONFIG" --oraculo both --batch-size 256
+# --oraculo all: cruda + asistida v1 (doble) + asistida v2 (hetero) con tabla 3-vias.
+python -u evaluate.py --config "$CONFIG" --oraculo all --batch-size 256

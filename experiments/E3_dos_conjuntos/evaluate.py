@@ -21,6 +21,12 @@ from pathlib import Path
 from torch.utils.data import DataLoader, Subset
 
 
+# Oraculo / post-procesamiento: fuente unica (numpy puro, sin torch).
+from oraculo import (
+    N_CLASSES, IDX_CH2,
+    crude_predict, ajustar_conteo_doble_exacto, ajustar_conteo_hetero,
+)
+
 # --- Clases 19v (orden EXACTO de config/db.yaml, no reordenar) --------------
 GROUP_NAMES = [
     "CH3", "CH2", "CH", "Cq",
@@ -29,8 +35,6 @@ GROUP_NAMES = [
     "=CH2", "=CH/Ar", "Cqsp2", "Aldeh", "Imina",
     "C-2X", "C-3X",
 ]
-N_CLASSES = 19
-IDX_CH2 = [1, 5, 9, 12]   # CH2, CH2-O, CH2-N, =CH2
 
 ENTORNOS = {
     "Alifaticos (sp3)":               ["CH3", "CH2", "CH", "Cq"],
@@ -47,51 +51,6 @@ ENTORNOS_IDX = {ent: [GROUP_NAMES.index(c) for c in cls]
 def load_config(path):
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
-
-
-# --- Post-procesamiento ------------------------------------------------------
-def crude_predict(pred_cruda):
-    """Modo CRUDO: floor con clip a >=0. Ignora el condicionante por completo."""
-    return np.clip(np.floor(pred_cruda), 0, None).astype(int)
-
-
-def ajustar_conteo_doble_exacto(pred_cruda, total_real, ch2_real):
-    """Modo ASISTIDO (oraculo): fuerza sum(pred)==total_real y
-    sum(pred[IDX_CH2])==ch2_real, repartiendo por el resto decimal."""
-    pred_int = np.floor(pred_cruda).astype(int)
-    restos = pred_cruda - pred_int
-    idx_resto = [i for i in range(N_CLASSES) if i not in IDX_CH2]
-
-    ch2_asignados = sum(pred_int[i] for i in IDX_CH2)
-    ch2_faltantes = int(ch2_real - ch2_asignados)
-    if ch2_faltantes > 0:
-        for i in sorted(IDX_CH2, key=lambda i: restos[i])[-ch2_faltantes:]:
-            pred_int[i] += 1
-    elif ch2_faltantes < 0:
-        sobran = abs(ch2_faltantes)
-        for i in sorted(IDX_CH2, key=lambda i: restos[i]):
-            if pred_int[i] > 0:
-                pred_int[i] -= 1
-                sobran -= 1
-                if sobran == 0:
-                    break
-
-    resto_real = total_real - ch2_real
-    resto_asignados = sum(pred_int[i] for i in idx_resto)
-    resto_faltantes = int(resto_real - resto_asignados)
-    if resto_faltantes > 0:
-        for i in sorted(idx_resto, key=lambda i: restos[i])[-resto_faltantes:]:
-            pred_int[i] += 1
-    elif resto_faltantes < 0:
-        sobran = abs(resto_faltantes)
-        for i in sorted(idx_resto, key=lambda i: restos[i]):
-            if pred_int[i] > 0:
-                pred_int[i] -= 1
-                sobran -= 1
-                if sobran == 0:
-                    break
-
-    return pred_int
 
 
 # --- Metricas ----------------------------------------------------------------
@@ -201,6 +160,27 @@ def print_tabla_comparativa(preds_on, preds_off, targets):
     print("  EMA reportada depende fuertemente del oraculo de doble restriccion.")
 
 
+def print_tabla_comparativa_3(preds_off, preds_on, preds_v2, targets):
+    """Cruda vs Asistida v1 (doble) vs Asistida v2 (hetero)."""
+    e_off = compute_ema(preds_off, targets)
+    e_on = compute_ema(preds_on, targets)
+    e_v2 = compute_ema(preds_v2, targets)
+    print("\n" + "=" * 68)
+    print("  TABLA COMPARATIVA: CRUDA vs ASISTIDA v1 (doble) vs ASISTIDA v2 (hetero)")
+    print("=" * 68)
+    print(f"\n  {'':<28}{'CRUDA':>9}{'ASIST v1':>10}{'ASIST v2':>10}{'v2-v1':>9}")
+    print("  " + "-" * 66)
+    print(f"  {'EMA GLOBAL':<28}{e_off:>8.2f}%{e_on:>9.2f}%{e_v2:>9.2f}%{e_v2 - e_on:>+8.2f}")
+    for entorno, indices in ENTORNOS_IDX.items():
+        a = ema_entorno(preds_off, targets, indices)
+        b = ema_entorno(preds_on, targets, indices)
+        c = ema_entorno(preds_v2, targets, indices)
+        print(f"  {entorno:<28}{a:>8.2f}%{b:>9.2f}%{c:>9.2f}%{c - b:>+8.2f}")
+    print("\n  v2-v1 = ganancia del zeroing por heteroatomos ausentes (N==0/O==0/N+O<2/3).")
+    print("  Si v2-v1 ~ 0, la confusion vive en moleculas CON el heteroatomo (fuera de")
+    print("  alcance del oraculo por conteos: ver el spec, seccion 6).")
+
+
 # --- Main --------------------------------------------------------------------
 def evaluate(config_path, oraculo, eval_batch_size):
     # Import perezoso: dataset trae rdkit; el test de oraculo no lo necesita.
@@ -219,9 +199,10 @@ def evaluate(config_path, oraculo, eval_batch_size):
 
     num_workers = int(cfg["system"]["num_workers"])   # 0 (rule 1)
 
-    modes = ["on", "off"] if oraculo == "both" else [oraculo]
-    run_on = "on" in modes
-    run_off = "off" in modes
+    run_off = oraculo in ("off", "both", "all")
+    run_on = oraculo in ("on", "both", "all")
+    run_v2 = oraculo in ("v2", "all")
+    modes = [m for m, f in (("off", run_off), ("on", run_on), ("v2", run_v2)) if f]
 
     print("=" * 60)
     print("  EVALUACION EXP E FASE 3 (dos conjuntos) - SPLIT CONGELADO")
@@ -255,7 +236,7 @@ def evaluate(config_path, oraculo, eval_batch_size):
     model.load_state_dict(torch.load(ckpt_path, map_location=device))
     model.eval()
 
-    all_targets, all_pred_on, all_pred_off = [], [], []
+    all_targets, all_pred_on, all_pred_off, all_pred_v2 = [], [], [], []
     with torch.no_grad():
         for inputs, targets in val_loader:
             pch = inputs[0].to(device); mch = inputs[1].to(device)
@@ -274,20 +255,37 @@ def evaluate(config_path, oraculo, eval_batch_size):
                     batch_on[k] = ajustar_conteo_doble_exacto(
                         pred_raw[k], int(cond_np[k, 0]), int(cond_np[k, 1]))
                 all_pred_on.append(batch_on)
+            if run_v2:
+                batch_v2 = np.empty_like(targs)
+                for k in range(len(targs)):
+                    # cond: [total, ch2, C, H, N, O, S, Hal] -> N=idx4, O=idx5
+                    batch_v2[k] = ajustar_conteo_hetero(
+                        pred_raw[k], int(cond_np[k, 0]), int(cond_np[k, 1]),
+                        int(cond_np[k, 4]), int(cond_np[k, 5]))
+                all_pred_v2.append(batch_v2)
 
     all_targets = np.vstack(all_targets)
     print(f"\n-> Set de validacion (congelado): {len(all_targets)} moleculas")
 
     preds_on = np.vstack(all_pred_on) if run_on else None
     preds_off = np.vstack(all_pred_off) if run_off else None
+    preds_v2 = np.vstack(all_pred_v2) if run_v2 else None
 
     if run_off:
         report_mode("CRUDO (--oraculo off)", preds_off, all_targets)
     if run_on:
-        report_mode("ASISTIDO (--oraculo on)", preds_on, all_targets)
+        report_mode("ASISTIDO v1 (--oraculo on)", preds_on, all_targets)
+    if run_v2:
+        report_mode("ASISTIDO v2 hetero (--oraculo v2)", preds_v2, all_targets)
+    # Mapa de confusiones sobre el mejor asistido disponible.
+    if run_v2:
+        print_confusiones(preds_v2, all_targets)
+    elif run_on:
         print_confusiones(preds_on, all_targets)
 
-    if run_on and run_off:
+    if run_off and run_on and run_v2:
+        print_tabla_comparativa_3(preds_off, preds_on, preds_v2, all_targets)
+    elif run_on and run_off:
         print_tabla_comparativa(preds_on, preds_off, all_targets)
 
 
@@ -295,8 +293,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Eval Exp E Fase 3 (split congelado)")
     parser.add_argument("--config", type=str, default="config_deepsets.yaml",
                         help="Config del experimento (deepsets o settransformer).")
-    parser.add_argument("--oraculo", choices=["on", "off", "both"], default="both",
-                        help="on=asistida, off=cruda, both=ambas + tabla (default).")
+    parser.add_argument("--oraculo", choices=["on", "off", "both", "v2", "all"],
+                        default="all",
+                        help="off=cruda, on=asistida v1, v2=asistida hetero, "
+                             "both=cruda+v1, all=cruda+v1+v2 con tabla 3-vias (default).")
     parser.add_argument("--batch-size", type=int, default=256,
                         help="Batch size de evaluacion.")
     args = parser.parse_args()
