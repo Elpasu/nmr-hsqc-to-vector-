@@ -19,6 +19,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp F — cabeza Poisson + 250 epocas (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.3051 Poisson-NLL (no comp.) | 0.60% | 90.63% | **NO mejoro** vs Fase 3 ST (91.35%): asistida -0.72pp, cruda cae (2.26->0.60); confusiones CH2<->CH2-N e Imina->=CH/Ar intactas. Ver seccion |
 | Oraculo v2 (hetero) — post-proc, mismo ckpt Fase 3 ST | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | 2.26% | 91.36% | **plano** (+0.01 vs v1); la FM ya esta exprimida. Proximo objetivo = cobertura@K, NO EMA. Ver seccion |
 | Migración XPU — Exp E Fase 3 Set Transformer en Intel XPU (Clementina) | n/a (sin imagen) | 19 | 202k | none | **0.0086 (99)** | 1.71% | **92.12% (v1) / 92.14% (v2)** | **mismo codigo/config que la fila de arriba, corrido en Intel XPU en vez de NVIDIA A10** — paridad confirmada (val loss y EMA dentro de la varianza esperada, incluso mejores). Ver seccion y `docs/MIGRACION_XPU_Clementina_XXI.md` |
+| Exp G Fase 1 — multi-vector (cobertura@K, mismo ckpt XPU) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | cobertura@K: 92.14 (K1) / 95.89 (K2) / 96.75 (K3) / 97.39 (K5) | métrica NUEVA (cobertura@K, no EMA). Sanity: coverage@1==EMA v2. Techo intra-nH ~98.7%; ranking L1 débil + sin especificidad → Fase 1b guiada por incertidumbre. Ver seccion |
 
 ---
 
@@ -508,6 +509,41 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   emitir también candidatos cross-nH (el 1.28% de multiplicidad mal) — extensión chica, fase 2.
   Otra fase 2 posible: reentrenar para que el modelo dé una distribución calibrada por grupo de nH
   (mejor ranking ⇒ K más chico a igual cobertura).
+
+---
+
+## Exp G — Fase 1 (multi-vector): primeros números de cobertura@K
+
+- **Fecha:** 2026-07-24 · **Checkpoint:** Set Transformer Fase 3 en XPU/Clementina (EMA v2 92.14%).
+  Dump con `y_pred_raw` corrido en snmgt01 (`NMR_DATA_DIR=/data/contrib/pci_78/Lucas/DB_202K`);
+  `coverage.py` corrido local. Código: `experiments/G_multivector/`. `max_swaps=2`.
+- **Sanity check ✅:** `coverage@1 = 92.14%` reproduce EXACTO la EMA asistida v2 del checkpoint →
+  el generador de candidatos está bien alineado con el oráculo v2, la métrica es confiable.
+- **Curva cobertura@K (val congelado, 14428):**
+
+  | K | cobertura | K prom emit | K max emit |
+  |---|-----------|-------------|-----------|
+  | 1 | 92.14% | 1.00 | 1 |
+  | 2 | 95.89% | 2.00 | 2 |
+  | 3 | 96.75% | 3.00 | 3 |
+  | 4 | 97.08% | 4.00 | 4 |
+  | 5 | 97.39% | 5.00 | 5 |
+
+- **Lectura:** con K=3 se cubre 96.75% (la fracción de moléculas que "pierden" el vector verdadero
+  baja de 7.86% a 3.25%). Pero queda **por debajo del techo teórico intra-nH (~98.7%)**, y el
+  `K prom emit == K` para todo K revela dos limitaciones de esta v1:
+  1. **Ranking L1 débil:** para ~1.3% de moléculas el verdadero está en el vecindario intra-nH pero
+     el ranking por `sum|c-raw|` no lo pone en el top-K (queda debajo de la posición 5).
+  2. **Sin especificidad:** el generador SIEMPRE emite los K candidatos (aún cuando el modelo está
+     seguro) → para el 92% donde el top-1 ya es correcto, igual emite K vectores, multiplicando la
+     generación aguas abajo sin necesidad. Va en contra del objetivo (achicar el espacio).
+- **Takeaway:** pipeline validado (sanity clava), pero el enfoque "generar todos los swaps + cortar
+  en K rankeado por L1" deja ~2-3pp de cobertura sobre la mesa y no gana especificidad. **Próximo
+  paso (Fase 1b, barato, sin reentrenar):** generación *guiada por incertidumbre* — emitir
+  alternativas SOLO donde el modelo duda (fracción ≈0.5 / 2da clase con masa), 1 solo vector cuando
+  está seguro. Sube especificidad (K prom baja) y libera presupuesto K para que el verdadero rankee
+  mejor. Si no alcanza → Fase 2: reentrenar con cabeza distribucional calibrada por grupo de nH.
+  Spec/plan: `docs/superpowers/{specs,plans}/2026-07-24-exp-g-multivector-coverage*.md`.
 
 ---
 
