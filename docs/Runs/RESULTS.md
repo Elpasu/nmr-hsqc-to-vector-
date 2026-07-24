@@ -17,6 +17,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | **Exp E Fase 3 — Set Transformer (2 conjuntos: crosspeaks + 13C)** | n/a (sin imagen) | 19 | 202k | none | **0.0097 (97)** | 2.26% | **91.35%** | **mejor resultado del proyecto** — primera vez que cruza el objetivo ~90% asistida limpio; rompe la confusion estructural Cqsp2<->=CH/Ar (persistia en V10/B/C/E2). Ver seccion |
 | Exp E Fase 3 — estudio de escalado (Set Transformer, 10-100% train) | n/a (sin imagen) | 19 | 18.7k-202k | none | 0.0097 (100%) | 0.9-2.3% | 83.67% -> 91.35% | **meseta de datos** — 75%->100% no mueve EMA ni val loss; ampliar el dataset no rendiria. Ver seccion |
 | Exp F — cabeza Poisson + 250 epocas (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.3051 Poisson-NLL (no comp.) | 0.60% | 90.63% | **NO mejoro** vs Fase 3 ST (91.35%): asistida -0.72pp, cruda cae (2.26->0.60); confusiones CH2<->CH2-N e Imina->=CH/Ar intactas. Ver seccion |
+| Oraculo v2 (hetero) — post-proc, mismo ckpt Fase 3 ST | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | 2.26% | 91.36% | **plano** (+0.01 vs v1); la FM ya esta exprimida. Proximo objetivo = cobertura@K, NO EMA. Ver seccion |
 
 ---
 
@@ -398,6 +399,78 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   (Exp C) — el desbalance de clases (`Cqsp2`/`=CH/Ar` dominan el conteo) sugiere que una loss que
   pondere por clase, o una cabeza de conteo específica para las clases dominantes, podría mover
   más la aguja que solo rebalancear la fusión. Ver discusión de próximos pasos en curso.
+
+---
+
+## Oráculo v2 (zeroing por heteroátomos ausentes) + auditoría de consistencia con la FM
+
+- **Fecha:** 2026-07-24 · **SLURM eval:** 2378113 (`--oraculo all`, checkpoint Fase 3 Set
+  Transformer, sin reentrenar) · **Código:** `experiments/E3_dos_conjuntos/oraculo.py` (fuente
+  única numpy pura), `evaluate.py --oraculo {v2,all}`, `tests/test_oraculo_hetero.py` · **Spec:**
+  `docs/superpowers/specs/2026-07-23-oraculo-v2-heteroatomos-design.md`.
+- **Qué es v2:** post-procesamiento que usa N y O de la FM. Si el elemento vale 0, fuerza a 0 las
+  clases que lo requieren (N==0 → CH\*-N/Imina; O==0 → CH\*-O/Aldeh; N+O<2 → C-2X; N+O<3 → C-3X).
+  Reglas derivadas del clasificador real (`Gen_vector.py`): X = heteroátomo (N/O), dataset CHON.
+- **Resultado:** EMA asistida **v1 91.35% → v2 91.36% (+0.01)**. **Plano.** El zeroing por ausencia
+  casi no dispara porque la confusión CH2↔CH2-N vive en moléculas que **sí tienen** N.
+- **Auditoría: ¿usa el oráculo TODA la info de la FM? Sí, salvo migajas — y la FM ya está exprimida.**
+  Se midió sobre el parquet (rdkit local, val congelado 14428):
+  - **La FM ya hace el trabajo grande:** cruda 2.26% → asistida 91.36% (**+89 pp** por total de
+    señales + cupo CH2). Darle la FM NO es al pedo.
+  - Restricciones exactas de la FM y cuánto quedan sin usar: **presencia N** (N≥1 ⇒ ≥1 C unido a N)
+    la violan solo **12** fallas, y **no es segura** (rompería ~22 moléculas legítimas); presencia O
+    2; cotas ≤3N/≤2O 11; **balance de H INVÁLIDO** porque el vector cuenta *entornos únicos*
+    (`CanonicalRankAtoms`, dedup por simetría), no átomos. Techo de exprimir más la FM: ~+0.1%.
+  - **Corrección honesta:** en un análisis previo reporté "282 fallas de presencia-N, techo ~93%".
+    Estaba MAL: usaba un conjunto de clases-N incompleto (un C unido a N puede ser aromático
+    `=CH/Ar` o amida/nitrilo `Cqsp2`, no solo `CH*-N`). Con la química bien son **12**, no 282.
+- **Diagnóstico de las 1247 fallas (v2):** el **85% tiene la multiplicidad (nH) correcta** — el
+  modelo clava cuántos H tiene el carbono; solo confunde el *entorno* dentro de ese nH
+  (CH2↔CH2-N, CH↔CH-N, Imina↔=CH/Ar). Dos vectores distintos son igual de válidos para la misma FM
+  ⇒ **no desambiguable por conteos**; la info está en el **desplazamiento**, no en la fórmula.
+- **Takeaway:** el oráculo llegó a su techo (~91.4%). No hay más jugo en la FM ni en la optimización
+  (ver Exp F). El próximo salto NO es EMA top-1 → ver la entrada siguiente (cambio de objetivo).
+
+---
+
+## ► PRÓXIMO OBJETIVO — Cobertura@K (multi-vector para alimentar el generador de estructuras)
+
+- **Fecha del análisis:** 2026-07-24 (planteo; sin implementar aún) · **Estado:** diseño acordado,
+  pendiente de spec (Exp G) · **Datos:** análisis sobre `predictions_nmr_202k_e3_settransformer_2sets_19v.parquet`.
+- **CAMBIO DE OBJETIVO (clave para entender todo lo que sigue):** el vector NO es el resultado final.
+  Alimenta un **generador de estructuras**; su función es **achicar el espacio de generación sin
+  perder la estructura correcta**. Por eso la métrica correcta **no es EMA top-1** sino
+  **cobertura@K**: que el vector verdadero esté *sí o sí* dentro de los K vectores emitidos.
+  Perder especificidad (emitir 2-3 y generar de más) es tolerable; perder al verdadero es gravísimo.
+  (Qué estructura generada es la correcta se resuelve en OTRA línea de trabajo, aguas abajo.)
+- **El hallazgo que lo habilita (medido, no opinión):** el 85% de las fallas conserva el nH; el error
+  es reasignación *dentro del mismo grupo de multiplicidad*. Cobertura si el generador de candidatos
+  mueve conteos **dentro del mismo nH** (FM-consistente), sobre el checkpoint Fase 3 **sin reentrenar**:
+
+  | Candidatos (K) | Cobertura (verdadero ∈ set) |
+  |---|---|
+  | top-1 | 91.36% |
+  | + 1 swap intra-nH | **98.18%** |
+  | + 2 swaps | 98.70% |
+  | cap intra-nH | 98.72% |
+
+  984 moléculas (6.82%) están a **exactamente 1 swap** (ej. CH2→CH2-N). Solo **185 (1.28%)** necesitan
+  un movimiento **cross-nH** (multiplicidad mal) — ése es el límite duro dato/modelo.
+- **Plan Exp G — generador de candidatos post-hoc (sin reentrenar):**
+  1. Dumpear el **output crudo** del modelo (conteos reales pre-redondeo) — un cambio chico + 1 corrida
+     de dump. La incertidumbre vive en las partes fraccionarias y las masas relativas dentro de cada nH.
+  2. Generador (numpy puro, corre local sin GPU): desde el top-1 FM-consistente (v2), enumerar swaps
+     intra-nH en las posiciones ambiguas, manteniendo total + cupo CH2, y emitir **top-K** rankeado
+     por la masa blanda. Ej: 2H con `CH2=1.4, CH2-N=0.6` y cupo=2 → candidatos `(2,0)` y `(1,1)`.
+  3. Métrica: **curva cobertura@K** en el val congelado. Elegir el K que da ~100% (probablemente 2-3).
+  - Una vez dumpeado el crudo, TODO el tuning es **local, sin GPU** → iteración rapidísima.
+- **A (redefinir el vector) vs B (multi-vector):** se funden — mergear CH2+CH2-N es emitir *siempre*
+  los dos candidatos; B los emite **solo donde el modelo duda** → misma cobertura, más especificidad.
+  **Se eligió B.**
+- **Techo honesto:** este approach llega a ~98.7% de cobertura (intra-nH). Para pasar de ahí hay que
+  emitir también candidatos cross-nH (el 1.28% de multiplicidad mal) — extensión chica, fase 2.
+  Otra fase 2 posible: reentrenar para que el modelo dé una distribución calibrada por grupo de nH
+  (mejor ranking ⇒ K más chico a igual cobertura).
 
 ---
 
