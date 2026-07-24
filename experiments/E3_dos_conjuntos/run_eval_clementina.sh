@@ -23,7 +23,7 @@ unset ZE_AFFINITY_MASK || true
 export ZE_FLAT_DEVICE_HIERARCHY=FLAT
 
 # Ver la nota sobre CONDA_SH en run_train_settransformer_clementina.sh.
-CONDA_SH="${CONDA_SH:-/data/contrib/pci_78/envs/miniconda3/etc/profile.d/conda.sh}"
+CONDA_SH="${CONDA_SH:-$HOME/miniconda3/etc/profile.d/conda.sh}"
 if [ ! -f "$CONDA_SH" ]; then
     echo "ERROR: no encuentro conda.sh en $CONDA_SH" >&2
     echo "       Corri 'conda info --base' en el login y exporta:" >&2
@@ -33,10 +33,11 @@ fi
 source "$CONDA_SH"
 conda activate /data/contrib/pci_78/envs/nmr_xpu
 
-export NMR_DATA_DIR=/data/contrib/pci_78/Lucas/DB_202K
+export NMR_DATA_DIR="${NMR_DATA_DIR:-/data/contrib/pci_78/Lucas/DB_202K}"
 export NMR_DEVICE=xpu
 
-cd /home/lpassaglia/nmr-hsqc-to-vector-/experiments/E3_dos_conjuntos
+NMR_REPO="${NMR_REPO:-$HOME/nmr-hsqc-to-vector-}"
+cd "$NMR_REPO/experiments/E3_dos_conjuntos"
 
 CONFIG="${1:-config_settransformer.yaml}"
 

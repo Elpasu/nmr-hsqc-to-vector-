@@ -385,14 +385,17 @@ Leyenda: `[x]` hecho y validado · `[~]` en curso · `[ ]` pendiente.
   los 7 tests de E3 pasan (incluye los 11 casos nuevos de
   [`tests/test_device_utils.py`](../experiments/E3_dos_conjuntos/tests/test_device_utils.py)).
   **Falta validar en XPU real** (es el checkpoint de la Fase 2).
-- [ ] **Fase 2 — Validación funcional / paridad** CPU↔XPU en E3. *(Requiere el cluster: correr
-  `tests/test_device_utils.py` en un nodo `gpunode` y el test de paridad numérica, aún sin escribir.)*
+- [~] **Fase 2 — Validación funcional / paridad** CPU↔XPU en E3.
+  **Validado el 2026-07-23 en `cn073`:** `tests/test_device_utils.py` pasa los 11 casos y
+  `pick_device('auto')` devuelve **`xpu`** en el hardware real — la abstracción funciona.
+  Falta correr [`tests/test_paridad_cpu_xpu.py`](../experiments/E3_dos_conjuntos/tests/test_paridad_cpu_xpu.py)
+  (forward, molécula vacía, gradientes y determinismo) en el nodo GPU.
 - [~] **Fase 3 — SLURM + rutas** de E3 para Clementina XXI. Escritos
   [`run_train_settransformer_clementina.sh`](../experiments/E3_dos_conjuntos/run_train_settransformer_clementina.sh)
   y [`run_eval_clementina.sh`](../experiments/E3_dos_conjuntos/run_eval_clementina.sh) (los `.sh` de
   login-1 quedan intactos). Rutas desacopladas vía `${NMR_DATA_DIR}` / `${NMR_DEVICE}` con
-  [`config_utils.py`](../experiments/E3_dos_conjuntos/config_utils.py). **Pendiente de verificar en
-  el cluster: la ruta de `conda.sh`** (ver §13.3).
+  [`config_utils.py`](../experiments/E3_dos_conjuntos/config_utils.py). Ruta de `conda.sh`
+  **confirmada** el 2026-07-23 (ver §13.3). Falta el `sbatch` real.
 - [ ] **Fase 4 — Corrida de referencia** E3-SetTransformer en XPU (single-tile, FP32); paridad con A10.
 - [ ] **Fase 5 *(opcional)* — Optimización** (BF16, multi-tile, pipeline de datos).
 
@@ -530,11 +533,38 @@ ve la GPU el entrenamiento aborta al arrancar en lugar de caer a CPU y quemar ho
 
 **Ubicaciones (repo en Clementina):** `/home/lpassaglia/nmr-hsqc-to-vector-`.
 
-> ⚠ **Dato NO verificado:** la ruta del `conda.sh` de Clementina. En un job no interactivo conda
-> no está inicializado y hay que sourcear `<base>/etc/profile.d/conda.sh` antes de `conda
-> activate`. Los `.sh` usan `/data/contrib/pci_78/envs/miniconda3/etc/profile.d/conda.sh` como
-> valor tentativo y **abortan con un mensaje explícito** si no existe. Confirmar en el login con
-> `conda info --base` y, si difiere, exportar `CONDA_SH` o corregir el default en los dos `.sh`.
+### 13.4 Conda en los jobs (verificado 2026-07-23)
+
+En un job no interactivo conda **no está inicializado**: hay que sourcear
+`<base>/etc/profile.d/conda.sh` antes de `conda activate`, o el job muere con
+"CommandNotFoundError: Your shell has not been properly configured".
+
+`conda info --base` en Clementina devuelve **`/home/<user>/miniconda3`** — es decir, cada
+usuario tiene **su propio conda en el HOME**, no hay uno compartido. Por eso los `.sh` derivan
+la ruta de `$HOME` en vez de hardcodearla:
+
+```bash
+CONDA_SH="${CONDA_SH:-$HOME/miniconda3/etc/profile.d/conda.sh}"
+```
+
+Así el mismo `.sh` sirve para cualquier integrante del grupo (objetivo 3 del §5). Si alguien
+tiene conda en otro lado, exporta `CONDA_SH` y listo. El script **aborta con un mensaje
+explícito** si no lo encuentra, en vez de fallar de forma oscura. Lo mismo con el repo:
+`NMR_REPO` con default `$HOME/nmr-hsqc-to-vector-`.
+
+> **Lo compartido es el env** (`/data/contrib/pci_78/envs/nmr_xpu`), no el conda que lo activa.
+
+### 13.5 Proxy de red (verificado 2026-07-23)
+
+Los nodos de Clementina **no resuelven DNS externo directamente**: un `git clone` desde GitHub
+falla con `Could not resolve host: github.com`. Hay que exportar el proxy del clúster antes:
+
+```bash
+export http_proxy=172.28.3.3:3128
+export https_proxy=172.28.3.3:3128
+```
+
+Con eso el clone funciona normalmente. Necesario para clonar y para cualquier `pip install`.
 
 ---
 
