@@ -385,11 +385,13 @@ Leyenda: `[x]` hecho y validado · `[~]` en curso · `[ ]` pendiente.
   los 7 tests de E3 pasan (incluye los 11 casos nuevos de
   [`tests/test_device_utils.py`](../experiments/E3_dos_conjuntos/tests/test_device_utils.py)).
   **Falta validar en XPU real** (es el checkpoint de la Fase 2).
-- [~] **Fase 2 — Validación funcional / paridad** CPU↔XPU en E3.
-  **Validado el 2026-07-23 en `cn073`:** `tests/test_device_utils.py` pasa los 11 casos y
-  `pick_device('auto')` devuelve **`xpu`** en el hardware real — la abstracción funciona.
-  Falta correr [`tests/test_paridad_cpu_xpu.py`](../experiments/E3_dos_conjuntos/tests/test_paridad_cpu_xpu.py)
-  (forward, molécula vacía, gradientes y determinismo) en el nodo GPU.
+- [x] **Fase 2 — Validación funcional / paridad** CPU↔XPU en E3. **Validada el 2026-07-23 en
+  `cn073`.** `tests/test_device_utils.py`: 11/11, `pick_device('auto')` → `xpu` en hardware
+  real. [`tests/test_paridad_cpu_xpu.py`](../experiments/E3_dos_conjuntos/tests/test_paridad_cpu_xpu.py):
+  forward, molécula 100% enmascarada (el caso de riesgo,
+  `masked_fill(-inf)`+softmax+`nan_to_num`), gradientes y determinismo — los 4 pasan, con
+  diferencias CPU↔XPU de `~1e-7`–`1e-9` (ruido de FP32 entre hardware, muy por debajo de la
+  tolerancia `atol=2e-5`). **Migración de E3 a XPU funcionalmente validada.**
 - [~] **Fase 3 — SLURM + rutas** de E3 para Clementina XXI. Escritos
   [`run_train_settransformer_clementina.sh`](../experiments/E3_dos_conjuntos/run_train_settransformer_clementina.sh)
   y [`run_eval_clementina.sh`](../experiments/E3_dos_conjuntos/run_eval_clementina.sh) (los `.sh` de
@@ -565,6 +567,23 @@ export https_proxy=172.28.3.3:3128
 ```
 
 Con eso el clone funciona normalmente. Necesario para clonar y para cualquier `pip install`.
+
+### 13.6 `git pull`/`clone` falla con el env activado (verificado 2026-07-23)
+
+Con `nmr_xpu` activado, `git pull`/`clone` por HTTPS puede fallar así:
+
+```
+/usr/libexec/git-core/git-remote-https: symbol lookup error: /lib64/libldap.so.2:
+undefined symbol: EVP_md2, version OPENSSL_3.0.0
+```
+
+El env prioriza su propio OpenSSL en `LD_LIBRARY_PATH`, y `git-remote-https` (binario del
+sistema) termina cargando una combinación de libs incompatible entre sí. Solución (probada en
+`cn073`): limpiar la variable solo para ese comando, sin desactivar el env —
+
+```bash
+LD_LIBRARY_PATH= git pull
+```
 
 ---
 
