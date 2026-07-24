@@ -13,6 +13,8 @@ Uso:
     streamlit run gui_inspector.py
 Luego se abre en el navegador. Ajusta PRED_FILE si tu parquet tiene otro nombre.
 """
+import os
+import sys
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -21,13 +23,60 @@ from rdkit import Chem
 from rdkit.Chem import Draw
 
 # --- CONFIG ---
-PRED_FILE = r"E:\Proyectos\SciTrix\nmr-hsqc-to-vector\docs\Runs\E3_settransformer\predictions_nmr_202k_e3_settransformer_2sets_19v.parquet"   # el archivo que trajiste del cluster
+# PRED_FILE portable: usa la ruta hardcodeada si existe (PC de dev), si no cae a
+# la ruta relativa al repo (anda en cualquier clon).
+_HARDCODED = r"E:\Proyectos\SciTrix\nmr-hsqc-to-vector\docs\Runs\E3_settransformer\predictions_nmr_202k_e3_settransformer_2sets_19v.parquet"
+_REL = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), "..", "..",
+    "docs", "Runs", "E3_settransformer",
+    "predictions_nmr_202k_e3_settransformer_2sets_19v.parquet"))
+PRED_FILE = _HARDCODED if os.path.exists(_HARDCODED) else _REL
+
 CLASSES = ["CH3","CH2","CH","Cq","CH3-O","CH2-O","CH-O","Cq-O",
            "CH3-N","CH2-N","CH-N","Cq-N","=CH2","=CH/Ar","Cqsp2",
            "Aldeh","Imina","C-2X","C-3X"]
 N = len(CLASSES)
+IDX_CH2 = [1, 5, 9, 12]   # grupo 2H (cupo CH2 del oraculo)
+
+# Generador de candidatos multi-vector (Exp G), si esta disponible en el repo.
+_G_DIR = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), "..", "..", "experiments", "G_multivector"))
+if _G_DIR not in sys.path:
+    sys.path.insert(0, _G_DIR)
+try:
+    from candidates import generate_candidates
+    HAS_GEN = True
+except Exception:
+    HAS_GEN = False
 
 st.set_page_config(page_title="NMR Inspector", layout="wide")
+
+
+def _formula_no(smiles):
+    """(N, O) de un SMILES; (0, 0) si no parsea."""
+    mol = Chem.MolFromSmiles(str(smiles))
+    if not mol:
+        return 0, 0
+    n = sum(1 for a in mol.GetAtoms() if a.GetAtomicNum() == 7)
+    o = sum(1 for a in mol.GetAtoms() if a.GetAtomicNum() == 8)
+    return n, o
+
+
+def _candidates_for_row(row, K):
+    """Lista de candidatos (np.int19) para una fila, y el rank (1-based) en el
+    que aparece el verdadero (0 = no cubierto en K)."""
+    raw = np.array(row["y_pred_raw"], dtype=float)
+    yt = np.array(row["y_true"], dtype=int)
+    total = int(yt.sum())
+    ch2 = int(sum(yt[i] for i in IDX_CH2))
+    n_at, o_at = _formula_no(row["smiles"])
+    cands = generate_candidates(raw, total, ch2, n_at, o_at, K=K)
+    rank = 0
+    for r, c in enumerate(cands, 1):
+        if np.array_equal(c, yt):
+            rank = r
+            break
+    return cands, rank
 
 
 @st.cache_data
@@ -46,6 +95,20 @@ def load(path):
 
 
 df = load(PRED_FILE)
+MV_AVAILABLE = HAS_GEN and ("y_pred_raw" in df.columns)
+
+
+@st.cache_data(show_spinner="Calculando cobertura multi-vector (una vez)...")
+def mv_ranks(path, K_max):
+    """Para cada molecula: rank (1-based) donde aparece el verdadero entre los
+    K_max candidatos (0 = no cubierto). Aligned al orden posicional del df."""
+    d = load(path)
+    ranks = np.zeros(len(d), dtype=int)
+    for m in range(len(d)):
+        _, r = _candidates_for_row(d.iloc[m], K_max)
+        ranks[m] = r
+    return ranks
+
 
 st.title("NMR Inspector — real vs predicho")
 st.caption(f"{len(df)} moleculas del set de validacion · archivo: {PRED_FILE}")
@@ -64,13 +127,20 @@ _mode_options.append("y_pred_crude")
 mode = st.sidebar.radio("¿Que prediccion mirar?", _mode_options,
                         format_func=lambda s: _mode_labels.get(s, s))
 
+K = 3
+if MV_AVAILABLE:
+    st.sidebar.header("Multi-vector (Exp G)")
+    K = st.sidebar.slider("K (candidatos a emitir)", 1, 6, 3)
+
 st.sidebar.header("Filtro por error")
-filt = st.sidebar.selectbox(
-    "Mostrar...",
-    ["Todas",
-     "Solo las que fallan (vector != real)",
-     "Fallan en un grupo especifico",
-     "Confusion direccional (X de mas, Y de menos)"])
+_filt_opts = ["Todas",
+              "Solo las que fallan (vector != real)",
+              "Fallan en un grupo especifico",
+              "Confusion direccional (X de mas, Y de menos)"]
+if MV_AVAILABLE:
+    _filt_opts += ["Multi-vector: RECUPERADO (top-1 falla, cubierto en K)",
+                   "Multi-vector: NO cubierto en K"]
+filt = st.sidebar.selectbox("Mostrar...", _filt_opts)
 
 # construir mascara segun filtro
 pred_col = mode
@@ -97,6 +167,14 @@ elif filt == "Confusion direccional (X de mas, Y de menos)":
     mask = df.apply(
         lambda r: (r[pred_col][io] > r["y_true"][io]) and (r[pred_col][iu] < r["y_true"][iu]),
         axis=1)
+
+elif filt == "Multi-vector: RECUPERADO (top-1 falla, cubierto en K)":
+    ranks = mv_ranks(PRED_FILE, 6)
+    mask = pd.Series((ranks > 1) & (ranks <= K), index=df.index)
+
+elif filt == "Multi-vector: NO cubierto en K":
+    ranks = mv_ranks(PRED_FILE, 6)
+    mask = pd.Series((ranks == 0) | (ranks > K), index=df.index)
 
 sub = df[mask].reset_index(drop=True)
 st.sidebar.metric("Moleculas que matchean el filtro", len(sub))
@@ -156,6 +234,53 @@ with right:
     else:
         errs = [(CLASSES[i], int(yp[i] - yt[i])) for i in range(N) if yp[i] != yt[i]]
         st.error("✗ Errores: " + ", ".join(f"{g} ({'+' if d>0 else ''}{d})" for g, d in errs))
+
+# ------------- MULTI-VECTOR: candidatos (Exp G) -------------
+if MV_AVAILABLE:
+    st.divider()
+    cands, cov_rank = _candidates_for_row(row, K)
+    st.subheader(f"Candidatos multi-vector (Exp G) — K={K}, emitidos={len(cands)}")
+
+    if cov_rank == 1:
+        st.success("✓ El top-1 (oraculo v2) ya es el verdadero (cubierto en #1).")
+    elif cov_rank > 1:
+        st.success(f"✓ RECUPERADO: el verdadero es el candidato #{cov_rank} — el top-1 fallaba, "
+                   f"pero multi-vector lo captura con K={K}.")
+    else:
+        st.error(f"✗ El verdadero NO esta entre los {len(cands)} candidatos (K={K}). "
+                 "Necesita mover entre grupos de nH (cross-nH) o un modelo que lea mejor el shift.")
+
+    yt_mv = np.array(row["y_true"], dtype=int)
+    raw_mv = np.array(row["y_pred_raw"], dtype=float)
+    cand_mat = np.vstack(cands)   # (n_cand, 19)
+    # filas interesantes: donde los candidatos difieren entre si, o del real
+    rows_int = [i for i in range(N)
+                if (cand_mat[:, i] != cand_mat[0, i]).any() or (cand_mat[:, i] != yt_mv[i]).any()]
+    if not rows_int:
+        st.info("Todos los candidatos son identicos al verdadero en las 19 clases.")
+    else:
+        data = {"Grupo": [CLASSES[i] for i in rows_int],
+                "crudo": [round(float(raw_mv[i]), 2) for i in rows_int],
+                "Real": [int(yt_mv[i]) for i in rows_int]}
+        for k in range(len(cands)):
+            tag = f"C{k+1}" + (" ✓" if np.array_equal(cand_mat[k], yt_mv) else "")
+            data[tag] = [int(cand_mat[k, i]) for i in rows_int]
+        disp = pd.DataFrame(data)
+        cand_cols = [c for c in disp.columns if c.startswith("C")]
+
+        def _hl_cand(r):
+            out = []
+            for c in disp.columns:
+                if c in cand_cols and r[c] != r["Real"]:
+                    out.append("background-color:#fff3cd")   # amarillo: difiere del Real
+                else:
+                    out.append("")
+            return out
+        st.dataframe(disp.style.apply(_hl_cand, axis=1),
+                     use_container_width=True, hide_index=True)
+        st.caption("Solo las clases donde los candidatos difieren (los 'puntos de duda'). "
+                   "'crudo' = conteo del modelo pre-redondeo (ahi se ve la duda). "
+                   "La marca ✓ es el candidato que coincide con el verdadero; amarillo = celda != Real.")
 
 # ------------- HSQC: desplazamientos quimicos de las senales -------------
 # Solo si el parquet trae las columnas de picos (dump_predictions.py nuevo).
