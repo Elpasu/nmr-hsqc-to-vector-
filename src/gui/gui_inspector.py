@@ -44,7 +44,7 @@ _G_DIR = os.path.abspath(os.path.join(
 if _G_DIR not in sys.path:
     sys.path.insert(0, _G_DIR)
 try:
-    from candidates import generate_candidates
+    from candidates import generate_candidates, generate_candidates_uncertainty
     HAS_GEN = True
 except Exception:
     HAS_GEN = False
@@ -62,15 +62,18 @@ def _formula_no(smiles):
     return n, o
 
 
-def _candidates_for_row(row, K):
-    """Lista de candidatos (np.int19) para una fila, y el rank (1-based) en el
-    que aparece el verdadero (0 = no cubierto en K)."""
+def _candidates_for_row(row, K, gen="fase1", tau=0.5):
+    """Lista de candidatos para una fila y el rank (1-based) del verdadero (0=no cubierto).
+    gen='fase1' -> generate_candidates (todos, top-K); gen='fase1b' -> guiada por tau."""
     raw = np.array(row["y_pred_raw"], dtype=float)
     yt = np.array(row["y_true"], dtype=int)
     total = int(yt.sum())
     ch2 = int(sum(yt[i] for i in IDX_CH2))
     n_at, o_at = _formula_no(row["smiles"])
-    cands = generate_candidates(raw, total, ch2, n_at, o_at, K=K)
+    if gen == "fase1b":
+        cands = generate_candidates_uncertainty(raw, total, ch2, n_at, o_at, tau, K)
+    else:
+        cands = generate_candidates(raw, total, ch2, n_at, o_at, K=K)
     rank = 0
     for r, c in enumerate(cands, 1):
         if np.array_equal(c, yt):
@@ -128,9 +131,18 @@ mode = st.sidebar.radio("¿Que prediccion mirar?", _mode_options,
                         format_func=lambda s: _mode_labels.get(s, s))
 
 K = 3
+_gen = "fase1"
+_tau = 0.5
 if MV_AVAILABLE:
     st.sidebar.header("Multi-vector (Exp G)")
-    K = st.sidebar.slider("K (candidatos a emitir)", 1, 6, 3)
+    _gen = st.sidebar.radio(
+        "Generador",
+        ["fase1", "fase1b"],
+        format_func=lambda s: "Fase 1 (todos, top-K)" if s == "fase1"
+        else "Fase 1b (guiada por duda)")
+    K = st.sidebar.slider("K (tope de candidatos)", 1, 6, 3)
+    if _gen == "fase1b":
+        _tau = st.sidebar.slider("tau (umbral de duda)", 0.0, 2.0, 0.5, 0.05)
 
 st.sidebar.header("Filtro por error")
 _filt_opts = ["Todas",
@@ -238,8 +250,9 @@ with right:
 # ------------- MULTI-VECTOR: candidatos (Exp G) -------------
 if MV_AVAILABLE:
     st.divider()
-    cands, cov_rank = _candidates_for_row(row, K)
-    st.subheader(f"Candidatos multi-vector (Exp G) — K={K}, emitidos={len(cands)}")
+    cands, cov_rank = _candidates_for_row(row, K, gen=_gen, tau=_tau)
+    _gen_lbl = "Fase 1b (τ=%.2f)" % _tau if _gen == "fase1b" else "Fase 1 (todos)"
+    st.subheader(f"Candidatos multi-vector — {_gen_lbl}, K_max={K}, emitidos={len(cands)}")
 
     if cov_rank == 1:
         st.success("✓ El top-1 (oraculo v2) ya es el verdadero (cubierto en #1).")
