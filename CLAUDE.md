@@ -34,6 +34,15 @@ de 19 clases** de entornos de carbono (CH3, CH2, CH, Cq, …, C-2X, C-3X).
 **El código del V10 es la REFERENCIA — no se modifica.** Las variantes V11 se generan
 por diferencia respecto a él.
 
+> **Actualización 2026-07-24 — Exp E Fase 3 (Set Transformer) corre en dos clusters.**
+> Además de login-1 (NVIDIA A10, CUDA), `experiments/E3_dos_conjuntos/` fue migrado y
+> **validado** en Clementina XXI (Intel Data Center GPU Max 1550, backend `xpu`): mismo
+> código, mismo config, resultado equivalente (de hecho mejor: EMA asistida 92.12% vs
+> 91.35% baseline). Ver [Los dos clusters de entrenamiento](#los-dos-clusters-de-entrenamiento)
+> más abajo y `docs/MIGRACION_XPU_Clementina_XXI.md`. **El resto de los experimentos
+> (V10, B, C, E2, F, D) NO están migrados — siguen atados a CUDA/login-1**, es una
+> decisión explícita de alcance, no un olvido.
+
 ---
 
 ## Serie histórica (para contexto, EMA en val hermético 144k)
@@ -53,7 +62,8 @@ Lección de la serie: **inyectar conocimiento químico explícito como condicion
    se cuelga sin tirar error. Ya pasó: 4h de GPU desperdiciadas. Alternativa avanzada:
    abrir el h5 por worker con `worker_init_fn` (fork-safe). Por defecto: 0 workers.
 2. **SLURM usa `#SBATCH --gres=gpu:1`, NO `--gpus=1`.** Con `--gpus=1` el job queda
-   pending eterno con "Nodes DOWN/DRAINED".
+   pending eterno con "Nodes DOWN/DRAINED". (En Clementina/XPU es distinto:
+   `--gres=gpu:intel_xt1550:1` — ver regla 9.)
 3. **Nada hardcodeado.** Rutas, nombres de archivo y constantes salen SIEMPRE de
    `config/db.yaml`. (Bug real: `train_v9.py` tenía el `smiles_path` fijo, ignorando
    el config → riesgo de entrenar con la FM de las moléculas equivocadas.)
@@ -70,6 +80,17 @@ Lección de la serie: **inyectar conocimiento químico explícito como condicion
    silencio.
 8. **Comparabilidad:** val set y seed (42) idénticos entre experimentos, o las EMAs
    no son comparables. Ver Exp D (val set congelado).
+9. **`set -u` en los `.sh` de Clementina/XPU rompe la activación de conda.** Los hooks
+   internos de oneAPI (`mpivars.deactivate.sh`) referencian variables sin default
+   (`SETVARS_CALL`); con `nounset` activo, el job aborta con "unbound variable" antes
+   de llegar a `train.py`. Bajar la guarda (`set +u` / `set -u`) solo alrededor de
+   `source conda.sh` + `conda activate`. Ver los `.sh` en `experiments/E3_dos_conjuntos/`.
+10. **Windows no distingue mayúsculas/minúsculas en rutas; Linux (el cluster) sí.** Un
+    `mkdir docs/runs/` descuidado en Windows, cuando el repo ya tiene `docs/Runs/`
+    (mayúscula) trackeado, crea una carpeta indistinguible en Windows pero **otra
+    carpeta completamente distinta** al clonar en el cluster. Antes de `git add` de un
+    directorio nuevo, chequear `git ls-tree HEAD <ruta_padre>/` por si ya existe con
+    otra capitalización.
 
 ---
 
@@ -85,11 +106,39 @@ Todos los experimentos de este repo usan **2 canales (V3)**.
 
 ## Infraestructura
 
-- **Cluster de entrenamiento:** login-1, user `lpassaglia.iquir`, env conda `NMR_env`,
-  partición `gpua10_hi` (GPUs A10, 23 GB).
+- **Cluster de entrenamiento (histórico, todos los experimentos):** login-1, user
+  `lpassaglia.iquir`, env conda `NMR_env`, partición `gpua10_hi` (GPUs A10, 23 GB).
 - **Cluster de datos (DFT/pkl/mapas):** snmgt01. Los datos ya están procesados; el
   pipeline de generación no forma parte del trabajo diario de este repo.
 - **Datasets finales:** en `/home/lpassaglia.iquir/DB_200k` (login-1).
+
+### Los dos clusters de entrenamiento (desde 2026-07-24, solo Exp E Fase 3)
+
+| | login-1 (histórico, todos los exp.) | Clementina XXI (nuevo, **solo E3**) |
+|---|---|---|
+| GPU / backend | NVIDIA A10 / `cuda` | Intel Data Center GPU Max 1550 / `xpu` |
+| Partición SLURM | `gpua10_hi`, `--gres=gpu:1` | `gpunode`, `--gres=gpu:intel_xt1550:1` |
+| Datos | `/home/lpassaglia.iquir/DB_200k` | `/data/contrib/pci_78/Lucas/DB_202K` |
+| Conda | `NMR_env` (prefijo del usuario) | `/data/contrib/pci_78/envs/nmr_xpu` (compartido) |
+| `.sh` | `run_train_settransformer.sh`, `run_eval.sh` | `run_train_settransformer_clementina.sh`, `run_eval_clementina.sh` |
+
+`experiments/E3_dos_conjuntos/` corre en ambos **sin tocar código**: `train.py`,
+`evaluate.py` y `dump_predictions.py` usan `device_utils.pick_device()` (`cuda → xpu →
+cpu`, config `system.device`) y `config_utils.load_config()` (expande `${VAR:-default}`
+en `paths.base_dir` y `system.device`). Sin exportar nada, el comportamiento es el
+histórico de login-1. Detalle completo: `docs/MIGRACION_XPU_Clementina_XXI.md` (por qué
+y decisiones) y `docs/TUTORIAL_XPU_Clementina.md` (cómo usarlo, paso a paso).
+
+**Para que un script nuevo de E3 sea igual de agnóstico:** importar `pick_device()` /
+`wants_pin_memory()` / `synchronize()` de `device_utils.py` en vez de
+`torch.device("cuda" if torch.cuda.is_available() else "cpu")`, y `load_config()` de
+`config_utils.py` en vez de `yaml.safe_load()` directo. Si el script necesita una ruta
+nueva del config, escribirla como `"${MI_VAR:-valor_por_defecto_de_login-1}"`.
+
+**Los demás experimentos (V10, B, C, E2, F, D) NO están migrados** — su `device` y
+`base_dir` siguen hardcodeados a CUDA/login-1. Es alcance explícito de la migración
+(`docs/MIGRACION_XPU_Clementina_XXI.md` §5), no un olvido: no asumir que corren en
+Clementina sin antes revisar si fueron migrados.
 
 ---
 
