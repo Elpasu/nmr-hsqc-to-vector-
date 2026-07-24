@@ -10,7 +10,7 @@ Uso (tras dumpear y_pred_raw):
 import argparse
 import numpy as np
 from oraculo import IDX_CH2
-from candidates import generate_candidates
+from candidates import generate_candidates, generate_candidates_uncertainty
 
 
 def coverage_curve(y_true, y_pred_raw, n_atoms, o_atoms, Ks, max_swaps=2):
@@ -41,6 +41,27 @@ def coverage_curve(y_true, y_pred_raw, n_atoms, o_atoms, Ks, max_swaps=2):
             "k_max": int(emit_k.max()),
         }
     return res
+
+
+def coverage_uncertainty(y_true, y_pred_raw, n_atoms, o_atoms, tau, K_max, max_swaps=2):
+    """Cobertura, K promedio y K maximo emitido para el generador guiado (Fase 1b)
+    a un tau dado. total/ch2 se derivan de y_true."""
+    y_true = np.asarray(y_true, dtype=int)
+    y_pred_raw = np.asarray(y_pred_raw, dtype=float)
+    M = len(y_true)
+    covered = np.zeros(M, dtype=bool)
+    nemit = np.zeros(M, dtype=int)
+    for m in range(M):
+        total = int(y_true[m].sum())
+        ch2 = int(sum(y_true[m, i] for i in IDX_CH2))
+        cands = generate_candidates_uncertainty(
+            y_pred_raw[m], total, ch2, int(n_atoms[m]), int(o_atoms[m]),
+            tau, K_max, max_swaps=max_swaps)
+        nemit[m] = len(cands)
+        covered[m] = any(np.array_equal(c, y_true[m]) for c in cands)
+    return {"coverage": float(covered.mean() * 100),
+            "k_mean": float(nemit.mean()),
+            "k_max": int(nemit.max())}
 
 
 def _formulas(smiles):
@@ -79,9 +100,34 @@ def main(parquet_path, Ks=(1, 2, 3, 4, 5), max_swaps=2):
     return res
 
 
+def main_uncertainty(parquet_path, taus=(0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0), K_max=6):
+    import pandas as pd
+    df = pd.read_parquet(parquet_path)
+    yt = np.vstack(df["y_true"].apply(lambda v: np.array(v, dtype=int)))
+    raw = np.vstack(df["y_pred_raw"].apply(lambda v: np.array(v, dtype=float)))
+    n, o = _formulas(df["smiles"].tolist())
+    print("=" * 60)
+    print("  COBERTURA guiada por incertidumbre (Exp G Fase 1b) -- val congelado")
+    print("=" * 60)
+    print(f"  moleculas: {len(df)}   K_max: {K_max}")
+    print(f"\n  {'tau':>5}  {'cobertura':>10}  {'K prom emit':>12}  {'K max emit':>11}")
+    print("  " + "-" * 46)
+    res_all = {}
+    for tau in taus:
+        r = coverage_uncertainty(yt, raw, n, o, tau, K_max)
+        res_all[tau] = r
+        print(f"  {tau:>5.2f}  {r['coverage']:>9.2f}%  {r['k_mean']:>12.2f}  {r['k_max']:>11d}")
+    return res_all
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Cobertura@K Exp G")
     ap.add_argument("--parquet", required=True, help="parquet con y_true, y_pred_raw, smiles")
     ap.add_argument("--max-swaps", type=int, default=2)
+    ap.add_argument("--uncertainty", action="store_true",
+                    help="Corre el barrido de tau (Fase 1b) en vez de la curva de K (Fase 1).")
     args = ap.parse_args()
-    main(args.parquet, max_swaps=args.max_swaps)
+    if args.uncertainty:
+        main_uncertainty(args.parquet, K_max=6)
+    else:
+        main(args.parquet, max_swaps=args.max_swaps)
