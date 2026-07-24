@@ -36,7 +36,9 @@ def test_k_mean_y_k_max_reportados():
     yt = _v({1: 2})[None, :]
     raw = np.zeros((1, N)); raw[0, 1] = 1.4; raw[0, 9] = 0.6
     res = coverage_curve(yt, raw, np.array([1]), np.array([1]), Ks=[3])
-    assert res[3]["k_mean"] >= 1.0 and res[3]["k_max"] >= 1
+    # Con esa entrada se generan 3 candidatos (anchor + movimientos hasta K=3),
+    # ambos emitidos -> k_mean y k_max son 3.0 y 3 respectivamente.
+    assert res[3]["k_mean"] == 3.0 and res[3]["k_max"] == 3
 
 
 def _run():

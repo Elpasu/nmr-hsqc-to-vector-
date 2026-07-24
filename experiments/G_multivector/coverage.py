@@ -1,4 +1,4 @@
-# coding: ascii
+# coding: utf-8
 """Metrica cobertura@K para Exp G (multi-vector). numpy puro.
 
 cobertura@K = fraccion de moleculas con y_true dentro de los K candidatos.
@@ -44,6 +44,12 @@ def coverage_curve(y_true, y_pred_raw, n_atoms, o_atoms, Ks, max_swaps=2):
 
 
 def _formulas(smiles):
+    """Extrae N y O desde SMILES con rdkit.
+
+    Caveat: si un SMILES no parsea (mol == None), N y O quedan en 0.
+    Esto prohíbe las clases hetero de esa molécula y puede hacer que
+    coverage@1 diverja levemente de EMA v2 (donde se usa la FM exacta).
+    """
     from rdkit import Chem
     n = np.zeros(len(smiles), int); o = np.zeros(len(smiles), int)
     for i, s in enumerate(smiles):

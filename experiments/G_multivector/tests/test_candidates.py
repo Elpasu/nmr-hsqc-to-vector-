@@ -61,6 +61,30 @@ def test_no_puebla_clases_prohibidas():
         assert all(c[i] == 0 for i in [8, 9, 10, 11, 16]), f"poblo clase -N: {c}"
 
 
+def test_no_puebla_clases_prohibidas_o():
+    # o_atoms=0 -> ninguna clase -O poblada en ningun candidato
+    raw = _raw({0: 1.0, 4: 0.5, 6: 0.5})
+    cands = generate_candidates(raw, total=2, ch2=0, n_atoms=1, o_atoms=0, K=5)
+    for c in cands:
+        assert all(c[i] == 0 for i in [4, 5, 6, 7, 15]), f"poblo clase -O: {c}"
+
+
+def test_no_puebla_c2x_cuando_n_o_menos_2():
+    # n_atoms+o_atoms < 2 -> C-2X (idx 17) en 0
+    raw = _raw({0: 0.9, 17: 1.1})
+    cands = generate_candidates(raw, total=2, ch2=0, n_atoms=1, o_atoms=0, K=5)
+    for c in cands:
+        assert c[17] == 0, f"poblo C-2X con n_o < 2: {c}"
+
+
+def test_no_puebla_c3x_cuando_n_o_menos_3():
+    # n_atoms+o_atoms < 3 -> C-3X (idx 18) en 0
+    raw = _raw({0: 0.9, 18: 1.1})
+    cands = generate_candidates(raw, total=2, ch2=0, n_atoms=2, o_atoms=0, K=5)
+    for c in cands:
+        assert c[18] == 0, f"poblo C-3X con n_o < 3: {c}"
+
+
 def test_sin_duplicados_y_len_max_K():
     raw = _raw({1: 1.4, 9: 0.6, 2: 1.5, 6: 0.5})
     cands = generate_candidates(raw, total=4, ch2=2, n_atoms=1, o_atoms=1, K=3)
