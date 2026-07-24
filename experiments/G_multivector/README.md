@@ -38,3 +38,21 @@ cobertura@K sobre el val congelado.
 
 v1 = solo intra-nH (techo 98.7%). Fase 2: candidatos cross-nH (el 1.28% de
 multiplicidad mal) y/o reentrenar con distribucion calibrada por grupo de nH.
+
+## Fase 1b — guiada por incertidumbre
+
+Emite alternativas SOLO donde el modelo duda (K adaptativo), podando por
+`extra-L1 < tau` desde el ancla v2. Molecula segura -> 1 vector.
+
+Tests locales:
+```bash
+python tests/test_candidates_uncertainty.py
+python tests/test_coverage_uncertainty.py
+```
+
+Barrido de tau sobre el parquet (elegir el punto cobertura vs K promedio):
+```bash
+python coverage.py --parquet /ruta/al/predictions_...parquet --uncertainty
+```
+
+En la GUI: el panel multi-vector tiene un toggle "Fase 1 / Fase 1b" y un slider de tau.

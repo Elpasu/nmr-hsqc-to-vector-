@@ -18,3 +18,11 @@ cross-nH (fuera de alcance v1).
 generador o el ranking.
 
 Spec: docs/superpowers/specs/2026-07-24-exp-g-multivector-coverage-design.md
+
+## Fase 1b
+
+Fase 1 emitia K vectores SIEMPRE (K prom == K), sin especificidad. Fase 1b emite
+alternativas solo donde hay duda real (costo extra de L1 < tau), dando K adaptativo:
+molecula segura -> 1 vector; con dudas -> pocas mas. Objetivo: misma cobertura que
+Fase 1 (~97-98%) con K promedio mucho mas bajo. tau y K_max se calibran con el barrido.
+Spec: docs/superpowers/specs/2026-07-24-exp-g-fase1b-guiada-incertidumbre-design.md
