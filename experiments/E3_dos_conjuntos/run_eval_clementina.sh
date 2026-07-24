@@ -30,8 +30,12 @@ if [ ! -f "$CONDA_SH" ]; then
     echo "       export CONDA_SH=<base>/etc/profile.d/conda.sh" >&2
     exit 1
 fi
+# Los hooks internos de conda/oneAPI no son compatibles con `set -u` (ver
+# run_train_settransformer_clementina.sh para el detalle del error).
+set +u
 source "$CONDA_SH"
 conda activate /data/contrib/pci_78/envs/nmr_xpu
+set -u
 
 export NMR_DATA_DIR="${NMR_DATA_DIR:-/data/contrib/pci_78/Lucas/DB_202K}"
 export NMR_DEVICE=xpu

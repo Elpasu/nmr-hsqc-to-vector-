@@ -35,9 +35,16 @@ if [ ! -f "$CONDA_SH" ]; then
     echo "       export CONDA_SH=<base>/etc/profile.d/conda.sh" >&2
     exit 1
 fi
+# Los hooks internos de conda/oneAPI (ej. mpivars.deactivate.sh) referencian
+# variables sin default (SETVARS_CALL) y no son compatibles con `set -u`:
+# con nounset activo, sourcearlos aborta el job con "unbound variable" antes
+# de llegar a train.py. Se baja la guarda solo para la activacion.
+# Verificado el job 1489555 (2026-07-23): fallo con -u, no sin el.
+set +u
 source "$CONDA_SH"
 # El env SI es compartido por todo el grupo (objetivo 3 del documento).
 conda activate /data/contrib/pci_78/envs/nmr_xpu
+set -u
 
 # El wheel torch==2.13.0+xpu trae su propio runtime oneAPI: no hace falta
 # `module load intel/2025.3.0` (verificado en cn073, Fase 0).
