@@ -7,8 +7,11 @@
 > dentro de uno o dos años, las decisiones tomadas y pueda reproducir el entorno.
 >
 > **Autor de la migración:** Lucas Passaglia (UCA Team).
-> **Fecha de inicio:** 2026-07-23.
-> **Estado global:** en curso — ver [§11 Estado actual (checklist)](#11-estado-actual-checklist).
+> **Fecha de inicio:** 2026-07-23. **Fecha de cierre (Fases 0-4):** 2026-07-24.
+> **Estado global:** migración de E3 a XPU **validada** (Fases 0-4 completas). Fase 5
+> (optimización) es opcional y queda pendiente. Extender la migración a otros experimentos
+> (V10, B, C, E2, F, D) es una decisión aparte, fuera de alcance de este documento — ver §5.
+> Detalle en [§11 Estado actual (checklist)](#11-estado-actual-checklist).
 
 ---
 
@@ -398,9 +401,16 @@ Leyenda: `[x]` hecho y validado · `[~]` en curso · `[ ]` pendiente.
   arrancó con `[INFO] Dispositivo: xpu`. Encontrado y corregido en el camino: `set -euo pipefail`
   mataba el job al activar conda (los hooks de oneAPI referencian variables sin default, ej.
   `SETVARS_CALL`) — solucionado acotando `set +u`/`set -u` alrededor de la activación (ver §13.6).
-- [~] **Fase 4 — Corrida de referencia** E3-SetTransformer en XPU (single-tile, FP32); paridad con A10.
-  **En curso:** job 1489556 (`cn073`), iniciada 2026-07-23. Objetivo: igualar el baseline A10
-  (val loss 0.0097, EMA asistida 91.35%, ver §5).
+- [x] **Fase 4 — Corrida de referencia** E3-SetTransformer en XPU (single-tile, FP32); paridad con A10.
+  **Cerrada el 2026-07-24.** Job de entrenamiento 1489559 + evaluación 1489606 (`cn073`, `.err`
+  limpios en los dos). Resultado: **val loss 0.0086** (vs 0.0097 en A10) y **EMA asistida 92.12%
+  / 92.14% v2** (vs 91.35% en A10) — dentro de tolerancia, de hecho ligeramente mejor. La pequeña
+  diferencia viene de que el scheduler disparó en un punto distinto por ruido de FP32 acumulado
+  entre hardware (ya visto en la paridad numérica de Fase 2), no de un error de implementación.
+  Contrapartida esperada: ~1.8× más lento (70.3 min vs 39.0 min) — FP32 puro sin XMX/BF16, fuera
+  de alcance de esta fase. Detalle completo y logs crudos en
+  `docs/runs/RESULTS.md` (sección "Migración XPU") y `docs/runs/XPU_Clementina_E3_settransformer/`.
+  **Migración de E3 a Intel XPU validada de punta a punta.**
 - [ ] **Fase 5 *(opcional)* — Optimización** (BF16, multi-tile, pipeline de datos).
 
 ---
