@@ -392,13 +392,15 @@ Leyenda: `[x]` hecho y validado · `[~]` en curso · `[ ]` pendiente.
   `masked_fill(-inf)`+softmax+`nan_to_num`), gradientes y determinismo — los 4 pasan, con
   diferencias CPU↔XPU de `~1e-7`–`1e-9` (ruido de FP32 entre hardware, muy por debajo de la
   tolerancia `atol=2e-5`). **Migración de E3 a XPU funcionalmente validada.**
-- [~] **Fase 3 — SLURM + rutas** de E3 para Clementina XXI. Escritos
-  [`run_train_settransformer_clementina.sh`](../experiments/E3_dos_conjuntos/run_train_settransformer_clementina.sh)
-  y [`run_eval_clementina.sh`](../experiments/E3_dos_conjuntos/run_eval_clementina.sh) (los `.sh` de
-  login-1 quedan intactos). Rutas desacopladas vía `${NMR_DATA_DIR}` / `${NMR_DEVICE}` con
-  [`config_utils.py`](../experiments/E3_dos_conjuntos/config_utils.py). Ruta de `conda.sh`
-  **confirmada** el 2026-07-23 (ver §13.3). Falta el `sbatch` real.
-- [ ] **Fase 4 — Corrida de referencia** E3-SetTransformer en XPU (single-tile, FP32); paridad con A10.
+- [x] **Fase 3 — SLURM + rutas** de E3 para Clementina XXI. `sbatch run_train_settransformer_clementina.sh`
+  validado de punta a punta el 2026-07-23 (job 1489556, `cn073`): los 4 chequeos previos
+  pasaron en el nodo real, `torch.xpu.is_available() == True` con `n_dev=2`, y el entrenamiento
+  arrancó con `[INFO] Dispositivo: xpu`. Encontrado y corregido en el camino: `set -euo pipefail`
+  mataba el job al activar conda (los hooks de oneAPI referencian variables sin default, ej.
+  `SETVARS_CALL`) — solucionado acotando `set +u`/`set -u` alrededor de la activación (ver §13.6).
+- [~] **Fase 4 — Corrida de referencia** E3-SetTransformer en XPU (single-tile, FP32); paridad con A10.
+  **En curso:** job 1489556 (`cn073`), iniciada 2026-07-23. Objetivo: igualar el baseline A10
+  (val loss 0.0097, EMA asistida 91.35%, ver §5).
 - [ ] **Fase 5 *(opcional)* — Optimización** (BF16, multi-tile, pipeline de datos).
 
 ---
