@@ -78,3 +78,38 @@ def generate_candidates(raw, total, ch2, n_atoms, o_atoms, K, max_swaps=2):
 
     rest = sorted(all_vecs[1:], key=lambda c: float(np.abs(c - raw).sum()))
     return [anchor] + rest[:max(0, K - 1)]
+
+
+def generate_candidates_uncertainty(raw, total, ch2, n_atoms, o_atoms, tau, K_max,
+                                    max_swaps=2):
+    """Fase 1b: candidatos guiados por incertidumbre. Emite una alternativa solo
+    si su distancia L1 al crudo supera a la del ancla en menos de tau
+    (sum|c-raw| <= sum|anchor-raw| + tau). K adaptativo: molecula segura -> [anchor].
+
+    [0] es siempre el oraculo v2; el resto rankeado por L1; sin duplicados; <= K_max.
+    """
+    raw = np.asarray(raw, dtype=np.float64)
+    anchor = ajustar_conteo_hetero(raw, total, ch2, n_atoms, o_atoms).astype(int)
+    forbidden = _forbidden_set(n_atoms, o_atoms)
+    thresh = float(np.abs(anchor - raw).sum()) + tau
+
+    seen = {anchor.tobytes()}
+    kept = [anchor]
+    frontier = [anchor]
+    for _ in range(max_swaps):
+        nxt = []
+        for v in frontier:
+            for nv in _intra_group_moves(v, forbidden):
+                key = nv.tobytes()
+                if key in seen:
+                    continue
+                if float(np.abs(nv - raw).sum()) <= thresh:
+                    seen.add(key)
+                    kept.append(nv)
+                    nxt.append(nv)
+        frontier = nxt
+        if not frontier:
+            break
+
+    rest = sorted(kept[1:], key=lambda c: float(np.abs(c - raw).sum()))
+    return [anchor] + rest[:max(0, K_max - 1)]
