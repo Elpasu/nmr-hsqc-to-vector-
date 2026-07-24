@@ -33,6 +33,6 @@ hyperparameters:
     factor: 0.7
 
 system:
-  device: "cuda"
+  device: "auto"
   num_workers: 0
   pin_memory: true

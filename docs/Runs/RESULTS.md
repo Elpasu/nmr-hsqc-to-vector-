@@ -18,6 +18,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp E Fase 3 — estudio de escalado (Set Transformer, 10-100% train) | n/a (sin imagen) | 19 | 18.7k-202k | none | 0.0097 (100%) | 0.9-2.3% | 83.67% -> 91.35% | **meseta de datos** — 75%->100% no mueve EMA ni val loss; ampliar el dataset no rendiria. Ver seccion |
 | Exp F — cabeza Poisson + 250 epocas (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.3051 Poisson-NLL (no comp.) | 0.60% | 90.63% | **NO mejoro** vs Fase 3 ST (91.35%): asistida -0.72pp, cruda cae (2.26->0.60); confusiones CH2<->CH2-N e Imina->=CH/Ar intactas. Ver seccion |
 | Oraculo v2 (hetero) — post-proc, mismo ckpt Fase 3 ST | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | 2.26% | 91.36% | **plano** (+0.01 vs v1); la FM ya esta exprimida. Proximo objetivo = cobertura@K, NO EMA. Ver seccion |
+| Migración XPU — Exp E Fase 3 Set Transformer en Intel XPU (Clementina) | n/a (sin imagen) | 19 | 202k | none | **0.0086 (99)** | 1.71% | **92.12% (v1) / 92.14% (v2)** | **mismo codigo/config que la fila de arriba, corrido en Intel XPU en vez de NVIDIA A10** — paridad confirmada (val loss y EMA dentro de la varianza esperada, incluso mejores). Ver seccion y `docs/MIGRACION_XPU_Clementina_XXI.md` |
 
 ---
 
@@ -373,6 +374,42 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   Exp F no lo desplaza. El próximo paso no es afinar la optimización sino inyectar **información
   nueva**: HMBC simulado (ve conectividad de cuaternarios) o features que separen X-alifático de X-N.
   Spec: `docs/superpowers/specs/2026-07-22-exp-f-poisson-y-escalado-design.md`.
+
+---
+
+## Migración XPU — Exp E Fase 3 Set Transformer en Intel XPU (Clementina XXI)
+
+- **Fecha:** 2026-07-23/24 · **SLURM train:** 1489559 (`cn073`, 70.3 min) · **SLURM eval:** 1489606 ·
+  **Config:** `experiments/E3_dos_conjuntos/config_settransformer.yaml` (idéntico al de la fila
+  "Exp E Fase 3 — Set Transformer" de arriba, mismo checkpoint name, mismo split congelado,
+  mismo `patience=8/factor=0.7`). **Único cambio:** hardware — NVIDIA A10 (`login-1`, CUDA) →
+  Intel Data Center GPU Max 1550 (Clementina XXI, backend `xpu`). Detalle completo del proceso
+  de migración, decisiones de diseño y gotchas de infraestructura en
+  `docs/MIGRACION_XPU_Clementina_XXI.md`.
+- **Qué NO cambia:** arquitectura (`model_e3_settransformer.py`), dataset (`dataset_e3.py`),
+  loss (`ConstrainedMSELoss`), split (`val_indices_frozen.npy`, Exp D), hiperparámetros. El código
+  de entrenamiento/evaluación es aditivo (`device_utils.pick_device()`): sigue corriendo en CUDA
+  sin cambios de comportamiento si no se exporta nada.
+- **Paridad numérica CPU↔XPU (pre-requisito, `tests/test_paridad_cpu_xpu.py`):** mismos pesos,
+  mismas entradas, forward/gradientes/molécula-100%-enmascarada — diferencias de `~1e-7`–`1e-9`
+  (ruido de FP32 entre hardware, `atol=2e-5`). Validado antes de correr el entrenamiento real.
+- **Best Val Loss:** **0.0086 @ ep99** (vs 0.0097 @ ep97 en A10 — mejor, no peor).
+- **EMA crude / assist:** 1.71% / **92.12%** (oráculo v1) / **92.14%** (oráculo v2, zeroing por
+  heteroatómos) — vs 2.26% / 91.35% en A10. Por entorno (asistida v1): Alifáticos 96.47%,
+  Heteroatómicos O/N 94.63%, sp2 96.71%, X-Múltiples 98.17% — prácticamente calcado a A10.
+- **Por qué difiere un poco (no es un bug):** el `ReduceLROnPlateau` disparó en un punto distinto
+  entre las dos corridas (A10: LR se mantuvo en 0.001 las 100 épocas; XPU: bajó a 0.00049 desde
+  ep95) — consecuencia acumulada del ruido de FP32 entre hardware sobre 100 épocas, no un error de
+  implementación. Confirmado por la paridad numérica pre-entrenamiento: los operadores dan lo
+  mismo, la trayectoria estocástica diverge un poco, como es esperable.
+- **Tiempo:** 70.3 min (XPU) vs 39.0 min (A10) — **~1.8× más lento**, esperado y fuera de alcance
+  de esta migración: FP32 puro (sin XMX/BF16, eso es Fase 5 opcional), modelo chico (70k
+  parámetros, el overhead de lanzamiento de kernels pesa proporcionalmente más), y
+  `num_workers=0` (regla dura 1) sin optimizar. El objetivo de esta fase era paridad de
+  resultados, no velocidad.
+- **Takeaway:** **migración de E3 a Intel XPU funcionalmente validada** — mismo código, mismos
+  hiperparámetros, resultado equivalente (de hecho ligeramente mejor) al baseline A10. Logs crudos
+  en `docs/Runs/XPU_Clementina_E3_settransformer/`.
 
 ---
 

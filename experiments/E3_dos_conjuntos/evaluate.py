@@ -26,6 +26,8 @@ from oraculo import (
     N_CLASSES, IDX_CH2,
     crude_predict, ajustar_conteo_doble_exacto, ajustar_conteo_hetero,
 )
+from device_utils import pick_device, wants_pin_memory
+from config_utils import load_config as _load_config
 
 # --- Clases 19v (orden EXACTO de config/db.yaml, no reordenar) --------------
 GROUP_NAMES = [
@@ -49,8 +51,8 @@ ENTORNOS_IDX = {ent: [GROUP_NAMES.index(c) for c in cls]
 
 # --- Config ------------------------------------------------------------------
 def load_config(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    """Alias historico; la logica vive en config_utils (expande ${VAR})."""
+    return _load_config(path)
 
 
 # --- Metricas ----------------------------------------------------------------
@@ -211,7 +213,7 @@ def evaluate(config_path, oraculo, eval_batch_size):
     print(f"-> Modos: {modes}   | idx_ch2: {IDX_CH2}")
     print(f"-> num_workers={num_workers} (rule 1)  batch_size={eval_batch_size}")
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = pick_device(cfg["system"].get("device", "auto"))
     print(f"-> Dispositivo: {device.type.upper()}")
 
     if not os.path.exists(ckpt_path):
@@ -228,7 +230,7 @@ def evaluate(config_path, oraculo, eval_batch_size):
     val_indices = np.load(val_indices_path)
     val_ds = Subset(full_dataset, val_indices.tolist())
 
-    use_pin = bool(cfg["system"].get("pin_memory", False)) and device.type == "cuda"
+    use_pin = bool(cfg["system"].get("pin_memory", False)) and wants_pin_memory(device)
     val_loader = DataLoader(val_ds, batch_size=eval_batch_size, shuffle=False,
                             num_workers=num_workers, pin_memory=use_pin)
 

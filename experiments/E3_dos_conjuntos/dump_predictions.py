@@ -29,11 +29,13 @@ from torch.utils.data import DataLoader, Subset
 from oraculo import (
     N_CLASSES, ajustar_conteo_doble_exacto, ajustar_conteo_hetero,
 )
+from device_utils import pick_device, wants_pin_memory
+from config_utils import load_config as _load_config
 
 
 def load_config(path):
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    """Alias historico; la logica vive en config_utils (expande ${VAR})."""
+    return _load_config(path)
 
 
 def main(config_path):
@@ -50,7 +52,7 @@ def main(config_path):
     val_indices_path = base_dir / cfg["paths"]["val_indices_filename"]
     out_file = f"predictions_{cfg['experiment_name']}.parquet"
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = pick_device(cfg["system"].get("device", "auto"))
     print(f"[INFO] Dispositivo: {device}")
 
     if not os.path.exists(ckpt_path):
@@ -77,7 +79,7 @@ def main(config_path):
     val_indices = np.load(val_indices_path)
     val_ds = Subset(ds, val_indices.tolist())
     loader = DataLoader(val_ds, batch_size=256, shuffle=False,
-                        num_workers=0, pin_memory=(device.type == "cuda"))
+                        num_workers=0, pin_memory=wants_pin_memory(device))
 
     print(f"[INFO] Val set (congelado): {len(val_ds)} moleculas")
     model = build_model(cfg, num_classes=N_CLASSES).to(device)
