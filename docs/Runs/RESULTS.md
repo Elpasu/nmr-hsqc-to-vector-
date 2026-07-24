@@ -20,6 +20,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Oraculo v2 (hetero) — post-proc, mismo ckpt Fase 3 ST | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | 2.26% | 91.36% | **plano** (+0.01 vs v1); la FM ya esta exprimida. Proximo objetivo = cobertura@K, NO EMA. Ver seccion |
 | Migración XPU — Exp E Fase 3 Set Transformer en Intel XPU (Clementina) | n/a (sin imagen) | 19 | 202k | none | **0.0086 (99)** | 1.71% | **92.12% (v1) / 92.14% (v2)** | **mismo codigo/config que la fila de arriba, corrido en Intel XPU en vez de NVIDIA A10** — paridad confirmada (val loss y EMA dentro de la varianza esperada, incluso mejores). Ver seccion y `docs/MIGRACION_XPU_Clementina_XXI.md` |
 | Exp G Fase 1 — multi-vector (cobertura@K, mismo ckpt XPU) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | cobertura@K: 92.14 (K1) / 95.89 (K2) / 96.75 (K3) / 97.39 (K5) | métrica NUEVA (cobertura@K, no EMA). Sanity: coverage@1==EMA v2. Techo intra-nH ~98.7%; ranking L1 débil + sin especificidad → Fase 1b guiada por incertidumbre. Ver seccion |
+| Exp G Fase 1b — multi-vector guiada por incertidumbre (τ) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | K ADAPTATIVO: misma cobertura que Fase 1 con ~40% menos vectores (96.75% a K prom 1.78 vs K=3; 95.6% a 1.23 vs K=2). Punto sugerido τ=1.5. Ver seccion |
 
 ---
 
@@ -544,6 +545,48 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   está seguro. Sube especificidad (K prom baja) y libera presupuesto K para que el verdadero rankee
   mejor. Si no alcanza → Fase 2: reentrenar con cabeza distribucional calibrada por grupo de nH.
   Spec/plan: `docs/superpowers/{specs,plans}/2026-07-24-exp-g-multivector-coverage*.md`.
+
+---
+
+## Exp G — Fase 1b (multi-vector guiada por incertidumbre): K adaptativo
+
+- **Fecha:** 2026-07-24 · **Mismo checkpoint/parquet que Fase 1** (Set Transformer XPU, EMA v2 92.14%).
+  `coverage.py --uncertainty` (barrido de τ), corrido local. Código: `experiments/G_multivector/`
+  (`generate_candidates_uncertainty`, poda por `extra-L1 < τ`). `K_max=6`, `max_swaps=2`.
+- **Qué cambia vs Fase 1:** Fase 1 emitía K vectores SIEMPRE (K prom == K, sin especificidad).
+  Fase 1b emite alternativas **solo donde el modelo duda** (una alternativa entra si empeora el
+  ajuste al crudo en menos de τ) → **K adaptativo**: molécula segura = 1 vector; con dudas = más.
+- **Barrido de τ (val congelado, 14428):**
+
+  | τ | cobertura | K prom emit | K max emit |
+  |---|-----------|-------------|-----------|
+  | 0.00 | 92.14% | 1.00 | 1 |
+  | 0.25 | 93.21% | 1.03 | 4 |
+  | 0.50 | 94.14% | 1.07 | 6 |
+  | 0.75 | 94.87% | 1.13 | 6 |
+  | 1.00 | 95.61% | 1.23 | 6 |
+  | 1.50 | 96.75% | 1.78 | 6 |
+  | 2.00 | 97.61% | 5.87 | 6 |
+
+- **Comparación a IGUAL cobertura vs Fase 1 (K fijo) — el resultado del experimento:**
+
+  | cobertura | Fase 1 (K, K prom) | Fase 1b (τ, K prom) | ahorro de vectores |
+  |---|---|---|---|
+  | ~95.7% | K=2, **2.00** | τ=1.0, **1.23** | **−38%** |
+  | 96.75% | K=3, **3.00** | τ=1.5, **1.78** | **−41%** |
+
+- **Lectura:** **éxito** — Fase 1b alcanza la misma cobertura que Fase 1 con **~40% menos vectores
+  emitidos** en el rango útil (τ ≈ 1.0–1.5, K prom 1.2–1.8). Se cumple el criterio del spec
+  (cobertura ~97% con K promedio ~1.8). La especificidad recuperada = para el ~92% de moléculas
+  donde el modelo acierta, emite **1 solo** vector; gasta candidatos solo en las dudosas.
+- **Límites:** a τ=2.0 el umbral es tan laxo que ramifica casi todo (K prom 5.87, ~= Fase 1 con
+  K=6) → fuera del punto de operación. El techo de cobertura sigue siendo ~98.7% (intra-nH); pasar
+  de ahí es Fase 2 (candidatos cross-nH para el 1.28% de multiplicidad mal, y/o reentrenar con
+  cabeza distribucional calibrada). Nota de completitud: la poda por-nivel del BFS pierde ~0.05%
+  de candidatos-empate solo a τ=0 (verificado con brute-force 20k; nulo a τ>0).
+- **Punto de operación sugerido:** τ ≈ 1.5 → 96.75% de cobertura a 1.78 vec/molécula. Ajustable
+  según cuánta cobertura exija el generador de estructuras aguas abajo vs presupuesto de generación.
+  Spec/plan: `docs/superpowers/{specs,plans}/2026-07-24-exp-g-fase1b-guiada-incertidumbre*.md`.
 
 ---
 
