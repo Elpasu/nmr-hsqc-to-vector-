@@ -9,7 +9,7 @@ NO reentrena. Solo forward pass sobre val_indices_frozen.npy.
 
 Salida: predictions_<experiment_name>.parquet con columnas:
   idx, smiles, y_true (19 ints), y_pred_crude (19 ints), y_pred_assisted (v1, 19 ints),
-  y_pred_assisted_v2 (oraculo hetero, 19 ints),
+  y_pred_assisted_v2 (oraculo hetero, 19 ints), y_pred_raw (19 floats, output crudo pre-redondeo),
   crosspeaks (lista de [delta_c, delta_h] en ppm), c13_shifts (lista de delta_c en ppm).
 
 Los desplazamientos se leen del .npz CRUDO (en ppm, sin normalizar) para que la
@@ -117,6 +117,7 @@ def main(config_path):
                     "y_pred_assisted": ajustar_conteo_doble_exacto(out[k], total, ch2).tolist(),
                     "y_pred_assisted_v2": ajustar_conteo_hetero(
                         out[k], total, ch2, n_at, o_at).tolist(),
+                    "y_pred_raw": [round(float(x), 4) for x in out[k]],
                     "crosspeaks": crosspeaks,
                     "c13_shifts": c13_shifts,
                 })
