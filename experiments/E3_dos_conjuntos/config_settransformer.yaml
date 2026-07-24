@@ -6,7 +6,10 @@
 experiment_name: "nmr_202k_e3_settransformer_2sets_19v"
 
 paths:
-  base_dir: "/home/lpassaglia.iquir/DB_200k"
+  # Exportar NMR_DATA_DIR para apuntar a otro cluster (Clementina XXI usa
+  # /data/contrib/pci_78/Lucas/DB_202K). Sin exportar nada -> login-1, igual
+  # que siempre. Ver docs/MIGRACION_XPU_Clementina_XXI.md seccion 13.
+  base_dir: "${NMR_DATA_DIR:-/home/lpassaglia.iquir/DB_200k}"
   peaks_ch_filename: "peaks_pkl_202465.npz"
   peaks_13c_filename: "peaks_13c_202465.npz"
   labels_filename: "vectors_13c_19v_202465.npy"
@@ -37,6 +40,10 @@ hyperparameters:
     factor: 0.7
 
 system:
-  device: "cuda"
+  # "auto" = cuda -> xpu -> cpu. Poner "xpu" o "cuda" explicito (via NMR_DEVICE)
+  # EXIGE ese backend: falla al arrancar si no esta, en vez de caer a CPU en
+  # silencio y entrenar dias sin que te enteres. Los .sh de Clementina exportan
+  # NMR_DEVICE=xpu justamente por eso.
+  device: "${NMR_DEVICE:-auto}"
   num_workers: 0
   pin_memory: true

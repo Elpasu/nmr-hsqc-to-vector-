@@ -11,20 +11,20 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader, Subset
-import time, os, yaml, argparse, random
+import time, os, yaml, argparse
 import numpy as np
 from pathlib import Path
 
 from dataset_e3 import NMRTwoSetsDataset
 from split_utils import canonicalize_smiles, remove_leaking_from_train, subsample_train_idx
+from device_utils import pick_device, wants_pin_memory, synchronize, seed_everything
+from config_utils import load_config as _load_config
 
 
 def set_seed(seed=42):
-    random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed(seed); torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    """Alias historico; la logica vive en device_utils.seed_everything()
+    (cubre CUDA y XPU). Se conserva el nombre para no romper llamadores."""
+    seed_everything(seed)
 
 
 class ConstrainedMSELoss(nn.Module):
@@ -39,8 +39,8 @@ class ConstrainedMSELoss(nn.Module):
 
 
 def load_config(p):
-    with open(p, 'r', encoding='utf-8') as f:
-        return yaml.safe_load(f)
+    """Alias historico; la logica vive en config_utils (expande ${VAR})."""
+    return _load_config(p)
 
 
 def build_model(cfg, num_classes=19):
@@ -114,7 +114,7 @@ def train(config_path):
     ckpt_dir = base_dir / cfg['paths']['checkpoint_dir']
     ckpt_dir.mkdir(parents=True, exist_ok=True)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = pick_device(cfg['system'].get('device', 'auto'))
     print(f"[INFO] Dispositivo: {device}")
 
     full_dataset = NMRTwoSetsDataset(str(peaks_ch), str(peaks_13c), str(labels_path),
@@ -123,7 +123,7 @@ def train(config_path):
     train_ds = Subset(full_dataset, train_idx.tolist())
     val_ds = Subset(full_dataset, val_idx.tolist())
 
-    use_pin = cfg['system'].get('pin_memory', False) and device.type == 'cuda'
+    use_pin = cfg['system'].get('pin_memory', False) and wants_pin_memory(device)
     train_loader = DataLoader(train_ds, batch_size=cfg['hyperparameters']['batch_size'],
                               shuffle=True, num_workers=cfg['system']['num_workers'], pin_memory=use_pin)
     val_loader = DataLoader(val_ds, batch_size=cfg['hyperparameters']['batch_size'],
@@ -158,8 +158,7 @@ def train(config_path):
             if batch_idx % 200 == 0:
                 print(f"  Epoch [{epoch+1}/{epochs}] Batch {batch_idx}/{len(train_loader)} Loss: {loss.item():.4f}")
 
-        if device.type == 'cuda':
-            torch.cuda.synchronize()
+        synchronize(device)
         val_loss = validate(model, val_loader, criterion, device)
         avg_train = running_loss / len(train_loader)
         scheduler.step(val_loss)

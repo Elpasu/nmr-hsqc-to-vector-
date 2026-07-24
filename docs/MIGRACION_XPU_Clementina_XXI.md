@@ -377,9 +377,22 @@ Leyenda: `[x]` hecho y validado · `[~]` en curso · `[ ]` pendiente.
 - [x] **Documento de migración** (este archivo).
 - [x] **Etapa 2 — Rama `feature/intel-xpu-support`** creada (desde `main`, `ea3324a`); todo el desarrollo posterior va ahí.
 - [x] **Fase 0 — Entorno compartido XPU** en `/data/contrib/pci_78/envs/nmr_xpu`. Validado el 2026-07-23 en `cn073` (`gpunode`): **`torch 2.13.0+xpu`, `torch.xpu.is_available() == True`**, GPU *Intel Data Center GPU Max 1550* (Level-Zero, driver `1.6.33578`). `device_count()==2` = los 2 tiles de la GPU pedida (FLAT). Entorno congelado en [`env/environment_xpu.yml`](env/environment_xpu.yml).
-- [ ] **Fase 1 — Abstracción de dispositivo** en E3 (aditiva y guardada).
-- [ ] **Fase 2 — Validación funcional / paridad** CPU↔XPU en E3.
-- [ ] **Fase 3 — SLURM + rutas** de E3 para Clementina XXI.
+- [x] **Fase 1 — Abstracción de dispositivo** en E3 (aditiva y guardada). Nuevo módulo
+  [`device_utils.py`](../experiments/E3_dos_conjuntos/device_utils.py) con `pick_device()`,
+  `wants_pin_memory()`, `synchronize()` y `seed_everything()`; integrado en `train.py`,
+  `evaluate.py` y `dump_predictions.py`. `system.device` del config pasa a ser **respetado**
+  (`"auto"|"cuda"|"xpu"|"cpu"`), los 7 configs de E3 quedaron en `"auto"`. Validado en CPU:
+  los 7 tests de E3 pasan (incluye los 11 casos nuevos de
+  [`tests/test_device_utils.py`](../experiments/E3_dos_conjuntos/tests/test_device_utils.py)).
+  **Falta validar en XPU real** (es el checkpoint de la Fase 2).
+- [ ] **Fase 2 — Validación funcional / paridad** CPU↔XPU en E3. *(Requiere el cluster: correr
+  `tests/test_device_utils.py` en un nodo `gpunode` y el test de paridad numérica, aún sin escribir.)*
+- [~] **Fase 3 — SLURM + rutas** de E3 para Clementina XXI. Escritos
+  [`run_train_settransformer_clementina.sh`](../experiments/E3_dos_conjuntos/run_train_settransformer_clementina.sh)
+  y [`run_eval_clementina.sh`](../experiments/E3_dos_conjuntos/run_eval_clementina.sh) (los `.sh` de
+  login-1 quedan intactos). Rutas desacopladas vía `${NMR_DATA_DIR}` / `${NMR_DEVICE}` con
+  [`config_utils.py`](../experiments/E3_dos_conjuntos/config_utils.py). **Pendiente de verificar en
+  el cluster: la ruta de `conda.sh`** (ver §13.3).
 - [ ] **Fase 4 — Corrida de referencia** E3-SetTransformer en XPU (single-tile, FP32); paridad con A10.
 - [ ] **Fase 5 *(opcional)* — Optimización** (BF16, multi-tile, pipeline de datos).
 
@@ -387,9 +400,8 @@ Leyenda: `[x]` hecho y validado · `[~]` en curso · `[ ]` pendiente.
 
 ## 12. Mapa de cambios previstos en el código (solo E3)
 
-> **Todavía NO implementado.** Esta sección lista, para trazabilidad, exactamente qué se
-> tocará en la Fase 1 y qué **no**. Los cambios serán **aditivos y guardados**: el código
-> debe seguir corriendo en CUDA y en CPU.
+> **Implementado (Fase 1, 2026-07-23).** La tabla queda como registro de qué se tocó y qué
+> no. Los cambios son **aditivos y guardados**: el código sigue corriendo en CUDA y en CPU.
 
 Puntos de contacto con CUDA en E3 (referencias verificadas):
 
@@ -406,16 +418,42 @@ Puntos de contacto con CUDA en E3 (referencias verificadas):
 | `experiments/E3_dos_conjuntos/dump_predictions.py` | ~53, ~80 | `device` + `pin_memory` | Igual que arriba. |
 | `experiments/E3_dos_conjuntos/config_settransformer.yaml` | `system.device: "cuda"` | Campo informativo (el código usa `is_available()`, no este valor) | Actualizar a `"xpu"`/`"auto"` por coherencia documental. |
 
-Idea de la generalización de dispositivo (**ilustrativa**, se define en Fase 1):
+### 12.1 Lo que se implementó (Fase 1)
 
-```python
-def pick_device():
-    if torch.cuda.is_available():
-        return torch.device("cuda")
-    if hasattr(torch, "xpu") and torch.xpu.is_available():
-        return torch.device("xpu")
-    return torch.device("cpu")
-```
+Módulo nuevo `experiments/E3_dos_conjuntos/device_utils.py` (al lado de `split_utils.py`):
+
+| Función | Rol |
+|---|---|
+| `pick_device(prefer, has_cuda=, has_xpu=)` | Selección `cuda → xpu → cpu` (D5) |
+| `wants_pin_memory(device)` | `True` en cuda y xpu, `False` en cpu |
+| `synchronize(device)` | Despacha al backend correcto; no-op en cpu |
+| `seed_everything(seed)` | Semillas de python/numpy/torch + acelerador presente |
+
+Dos decisiones tomadas en la implementación, que **no** estaban en el boceto original:
+
+- **D9 — `system.device` del config pasa a ser respetado.** Antes era decorativo (el código
+  hacía `is_available()` e ignoraba el YAML). Ahora acepta `"auto"|"cuda"|"xpu"|"cpu"`, lo
+  que cumple la regla dura 3 del proyecto (*nada hardcodeado; todo sale del config*).
+  `"auto"` preserva exactamente el comportamiento histórico.
+- **D10 — Pedir un backend ausente levanta `RuntimeError`, no cae a CPU.** Si el config dice
+  `xpu` y el job no ve la GPU, revienta al arrancar. El fallback silencioso haría entrenar
+  días en CPU sin enterarse — el mismo patrón de fallo caro que ya está en las reglas duras
+  (deadlock de `num_workers`, split corrupto). `"auto"` sigue cayendo a CPU sin drama, que es
+  lo que necesitan los smoke tests.
+
+> **Corolario de D9:** los 7 configs de E3 decían `device: "cuda"`. Al volverse significativo
+> el campo, dejarlos así los habría hecho **exigir** CUDA y romper en cualquier máquina sin
+> ella. Los 7 quedaron en `"auto"`. Para la corrida de producción en Clementina se pondrá
+> `"xpu"` explícito (Fase 3), que es justamente donde D10 protege.
+
+**Hallazgo:** `torch.xpu` **existe como atributo incluso en builds CPU/CUDA sin soporte XPU**
+(verificado en `torch 2.13.0+cpu`), así que el `hasattr(torch, "xpu")` del boceto original no
+sirve como probe. El probe real llama `torch.xpu.is_available()` dentro de un `try/except`.
+
+**Validación (2026-07-23, en CPU, local):** los 7 tests de E3 pasan, incluidos los 11 casos
+nuevos de `tests/test_device_utils.py`, que cubren las tres plataformas inyectando los probes
+(`has_cuda`/`has_xpu`) — ninguna máquina tiene CUDA y XPU a la vez. `train.py`, `evaluate.py`
+y `dump_predictions.py` compilan e importan. **Falta correr en XPU real: es la Fase 2.**
 
 **Lo que NO se toca:** la arquitectura del modelo (`model_e3_settransformer.py`), el dataset
 (`dataset_e3.py`), la lógica de split (`split_utils.py`), el oráculo (`oraculo.py`, NumPy
@@ -464,9 +502,39 @@ Situación actual (a resolver más adelante): `config_settransformer.yaml` trae
 login-1. La reapuntada a `/data/contrib/pci_78/Lucas/DB_202K` se hará en la **Fase 3** como
 cambio controlado y revisado.
 
-> **Importante:** por decisión explícita, **todavía no se modifican las rutas**. Esta sección
-> las deja registradas para tenerlas presentes al diseñar cada fase; el cambio efectivo es un
-> paso posterior con su propia validación.
+### 13.3 Cómo quedó resuelto (Fase 3, 2026-07-23)
+
+Se implementó el desacople anunciado en D7, sin duplicar el YAML por clúster (duplicarlo
+garantiza que tarde o temprano se desincronicen los hiperparámetros, y eso sí rompe la
+comparabilidad de la regla dura 8). `config_settransformer.yaml` usa sintaxis de shell:
+
+```yaml
+base_dir: "${NMR_DATA_DIR:-/home/lpassaglia.iquir/DB_200k}"
+device:   "${NMR_DEVICE:-auto}"
+```
+
+La expansión la hace [`config_utils.py`](../experiments/E3_dos_conjuntos/config_utils.py)
+(`expand_env` + `load_config`), que reemplaza los tres `load_config` duplicados de
+`train.py`, `evaluate.py` y `dump_predictions.py`. Comportamiento:
+
+| Contexto | `NMR_DATA_DIR` | Resultado |
+|---|---|---|
+| login-1 (histórico) | sin exportar | `/home/lpassaglia.iquir/DB_200k`, `device: auto` — **intacto** |
+| Clementina (`.sh` nuevos) | exportada | `/data/contrib/pci_78/Lucas/DB_202K`, `device: xpu` |
+
+Una `${VAR}` sin valor **y** sin default levanta `RuntimeError` al arrancar, en vez de dejar el
+literal y morir mucho después con un `FileNotFoundError` de path absurdo.
+
+**`NMR_DEVICE=xpu` en los `.sh` de Clementina es deliberado:** combinado con D10, si el job no
+ve la GPU el entrenamiento aborta al arrancar en lugar de caer a CPU y quemar horas de cola.
+
+**Ubicaciones (repo en Clementina):** `/home/lpassaglia/nmr-hsqc-to-vector-`.
+
+> ⚠ **Dato NO verificado:** la ruta del `conda.sh` de Clementina. En un job no interactivo conda
+> no está inicializado y hay que sourcear `<base>/etc/profile.d/conda.sh` antes de `conda
+> activate`. Los `.sh` usan `/data/contrib/pci_78/envs/miniconda3/etc/profile.d/conda.sh` como
+> valor tentativo y **abortan con un mensaje explícito** si no existe. Confirmar en el login con
+> `conda info --base` y, si difiere, exportar `CONDA_SH` o corregir el default en los dos `.sh`.
 
 ---
 
