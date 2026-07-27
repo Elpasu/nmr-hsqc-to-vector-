@@ -86,11 +86,15 @@ if st.button("Predecir", type="primary"):
         peaks.append({"delta_c": float(r["delta_c"]), "delta_h": dh,
                       "mult": r["mult"], "clase": r.get("clase") or None})
 
-    fm = adapter.parse_formula(formula)
-    inp = adapter.build_inputs(peaks, fm, norm)
-    raw = predict_core.predict_raw(model, inp)
-    total, ch2 = int(inp[4][0]), int(inp[4][1])
-    cands = predict_core.candidatos(raw, fm, total, ch2, tau, k_max)
+    try:
+        fm = adapter.parse_formula(formula)
+        inp = adapter.build_inputs(peaks, fm, norm)
+        raw = predict_core.predict_raw(model, inp)
+        total, ch2 = int(inp[4][0]), int(inp[4][1])
+        cands = predict_core.candidatos(raw, fm, total, ch2, tau, k_max)
+    except ValueError as e:
+        st.error(f"Entrada inválida: {e}")
+        st.stop()
 
     st.subheader(f"Candidatos emitidos: K = {len(cands)}")
     df = pd.DataFrame({class_names[i]: [c[i] for c in cands]
