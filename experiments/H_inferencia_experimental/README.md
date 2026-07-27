@@ -156,33 +156,37 @@ python experiments/H_inferencia_experimental/tests/test_adapter.py
 
 ### Vía GUI (con datos de validación)
 
-1. **Toma una molécula del set de validación** del parquet:
-   ```
-   docs/Runs/E3_settransformer/predictions_nmr_202k_e3_settransformer_2sets_19v.parquet
-   ```
-   Columnas útiles: `smiles`, `crosspeaks`, `c13_shifts`, `y_pred_assisted_v2`.
+Este chequeo confirma que el adaptador reproduce el formato de entrenamiento:
+cargando los picos de una molécula del set de validación, el candidato 0 (ancla
+v2) que emite la GUI debe **coincidir exactamente** con el `y_pred_assisted_v2`
+de esa fila del parquet (ambos son el mismo oráculo v2 sobre la misma salida
+cruda del modelo congelado).
 
-2. **Extrae la fórmula molecular** del SMILES (ej. usando RDKit):
-   ```python
-   from rdkit import Chem
-   mol = Chem.MolFromSmiles("CCCCCCCCC(CCCC)c1ccccc1")
-   formula = Chem.rdMolDescriptors.CalcMolFormula(mol)  # 'C17H30'
-   ```
+**Ojo — la multiplicidad NO está en el parquet.** La columna `crosspeaks` guarda
+solo `[δC, δH]`: las amplitudes se descartan al dumpear (ver `dump_predictions.py`,
+`raw_peaks_ch[...][:, :2]`). La multiplicidad (`mult`) vive en las amplitudes del
+archivo de picos de entrenamiento `peaks_pkl_202465.npz` (array `peaks`, columna 2
+= `amp0`: CH3=+3, CH=+1, **CH2=−2**), que está en el cluster. Sin ese dato no se
+puede reconstruir la entrada exacta desde el parquet solo. Dos formas de obtener
+`mult` para el chequeo:
 
-3. **Carga las picos en la GUI:**
-   - Las columnas `crosspeaks` y `c13_shifts` provienen de Fase 1b (blob-detection + traceback).
-   - La multiplicidad de cada crosspeak está codificada en los datos de imagen (DEPT phase).
-   - En la tabla de la GUI, rellena cada fila con:
-     - `delta_c` del array `c13_shifts`
-     - `delta_h` del array `crosspeaks[i]` (segunda coordenada)
-     - `mult`: inferido del tipo de crosspeak (típicamente CH3, CH2, CH vienen con crosspeak; Cq no).
-     - `clase`: **vacío** (modo predicción).
+1. **Desde la estructura conocida** (la fila del parquet trae `smiles`): asignás a
+   mano CH3/CH2/CH/Cq a cada carbono. Lo más simple para 1-2 moléculas.
+2. **Desde el npz de entrenamiento** (cluster): `mult = |amp0|`, con signo negativo
+   ⇒ CH2.
 
-4. **Compara la predicción:**
-   - El vector predicho (candidato 0) debe coincidir o estar muy cerca de `y_pred_assisted_v2` del parquet.
-   - Pequeñas discrepancias (~±1 en alguna clase) son normales si el modelo fue reentrenado o τ es diferente.
+Pasos:
 
-**Nota:** Fase 1b (multiplicidad) está fuera del alcance de esta app. Los datos de `crosspeaks` y `c13_shifts` se extraen externamente. Para workflows completamente automatizados, ver Exp G (generador de estructuras).
+1. Elegí una fila del parquet
+   `docs/Runs/E3_settransformer/predictions_nmr_202k_e3_settransformer_2sets_19v.parquet`
+   (columnas `smiles`, `crosspeaks`, `c13_shifts`, `y_pred_assisted_v2`).
+2. Fórmula molecular desde el SMILES (RDKit `CalcMolFormula`).
+3. En la GUI, una fila por carbono: `delta_c` de `c13_shifts`; `delta_h` de la
+   segunda coordenada de `crosspeaks[i]` (solo los protonados); `mult` según arriba;
+   `clase` vacío.
+4. Poné τ=0 y K_max=1: el candidato 0 debe reproducir `y_pred_assisted_v2` de esa
+   fila. Si no coincide, el adaptador no es fiel al formato de entrenamiento —
+   revisá normalización y amplitudes.
 
 ---
 
