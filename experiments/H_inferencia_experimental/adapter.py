@@ -12,22 +12,38 @@ import numpy as np
 import yaml
 
 MULT_H = {"CH3": 3, "CH2": 2, "CH": 1, "Cq": 0}
-CH2_CLASS_IDX = [1, 5, 9, 12]
 _HALOGENS = {"F", "Cl", "Br", "I"}
+_KNOWN_ELEMS = {"C", "H", "N", "O", "S", "F", "Cl", "Br", "I"}
 
 
 def parse_formula(formula):
     """'C10H12N2O' -> {'C':10,'H':12,'N':2,'O':1,'S':0,'Hal':0}. Elementos
-    ausentes = 0; digito implicito = 1. Hal = F+Cl+Br+I."""
+    ausentes = 0; digito implicito = 1. Hal = F+Cl+Br+I. Falla fuerte (ValueError)
+    ante formula vacia, basura no parseable, o un elemento no soportado (ej. P, Si):
+    devolver ceros en silencio corromperia la prediccion sin avisar."""
     counts = {"C": 0, "H": 0, "N": 0, "O": 0, "S": 0, "Hal": 0}
-    for elem, num in re.findall(r"([A-Z][a-z]?)(\d*)", str(formula)):
-        if elem == "":
-            continue
+    s = str(formula).strip()
+    if not s:
+        raise ValueError("Formula molecular vacia")
+    pos = 0
+    matched_any = False
+    for m in re.finditer(r"([A-Z][a-z]?)(\d*)", s):
+        if m.start() != pos:
+            raise ValueError(f"Formula no parseable cerca de: {s[pos:m.start()]!r}")
+        pos = m.end()
+        elem, num = m.group(1), m.group(2)
+        if elem not in _KNOWN_ELEMS:
+            raise ValueError(
+                f"Elemento no soportado en la formula: {elem!r} "
+                f"(soportados: {sorted(_KNOWN_ELEMS)})")
         n = int(num) if num else 1
         if elem in _HALOGENS:
             counts["Hal"] += n
-        elif elem in counts:
+        else:
             counts[elem] += n
+        matched_any = True
+    if pos != len(s) or not matched_any:
+        raise ValueError(f"Formula no parseable: {s!r}")
     return counts
 
 
@@ -35,6 +51,17 @@ def build_inputs(peaks, formula, norm_cfg):
     """peaks: lista de {delta_c, delta_h|None, mult}. formula: dict de parse_formula.
     Devuelve (peaks_ch, mask_ch, peaks_13c, mask_13c, cond), todos np.float32.
     Sin padding (batch=1): mascaras todo-1 sobre los picos reales."""
+    if not peaks:
+        raise ValueError("build_inputs requiere al menos un pico")
+    for p in peaks:
+        if p["mult"] not in MULT_H:
+            raise ValueError(f"mult invalido: {p['mult']!r} (validos: {list(MULT_H)})")
+        is_cq = MULT_H[p["mult"]] == 0
+        has_h = p.get("delta_h") is not None
+        if is_cq and has_h:
+            raise ValueError("un carbono Cq no debe tener delta_h")
+        if not is_cq and not has_h:
+            raise ValueError(f"mult {p['mult']!r} requiere delta_h")
     c_min, c_max = float(norm_cfg["c13_ppm_min"]), float(norm_cfg["c13_ppm_max"])
     h_min, h_max = float(norm_cfg["h1_ppm_min"]), float(norm_cfg["h1_ppm_max"])
     amp0_scale = float(norm_cfg["amp_ch0_scale"])

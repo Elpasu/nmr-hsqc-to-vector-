@@ -88,6 +88,46 @@ def test_true_vector_histogram():
     assert tv[5] == 1        # CH2-O en indice 5
 
 
+def _expect_valueerror(fn):
+    try:
+        fn()
+    except ValueError:
+        return
+    raise AssertionError("se esperaba ValueError y no se lanzo")
+
+
+def test_parse_formula_rejects_unknown_element():
+    _expect_valueerror(lambda: parse_formula("C10H12P"))   # P no soportado
+    _expect_valueerror(lambda: parse_formula("C6H6Si"))    # Si no soportado
+
+
+def test_parse_formula_rejects_empty_and_junk():
+    _expect_valueerror(lambda: parse_formula(""))
+    _expect_valueerror(lambda: parse_formula("   "))
+    _expect_valueerror(lambda: parse_formula("xyz"))       # sin mayuscula inicial
+
+
+def test_build_inputs_rejects_empty_peaks():
+    _expect_valueerror(lambda: build_inputs([], parse_formula("C2H6O"), NORM))
+
+
+def test_build_inputs_rejects_bad_mult():
+    peaks = [{"delta_c": 40.0, "delta_h": 1.5, "mult": "CH4"}]
+    _expect_valueerror(lambda: build_inputs(peaks, parse_formula("C2H6"), NORM))
+
+
+def test_build_inputs_rejects_cq_with_dh_and_ch_without_dh():
+    cq_dh = [{"delta_c": 150.0, "delta_h": 7.0, "mult": "Cq"}]
+    _expect_valueerror(lambda: build_inputs(cq_dh, parse_formula("C3H6"), NORM))
+    ch_no_dh = [{"delta_c": 110.0, "delta_h": None, "mult": "CH"}]
+    _expect_valueerror(lambda: build_inputs(ch_no_dh, parse_formula("C6H6"), NORM))
+
+
+def test_true_vector_missing_clase_raises():
+    peaks = [{"delta_c": 18.0, "delta_h": 1.2, "mult": "CH3"}]  # sin 'clase'
+    _expect_valueerror(lambda: true_vector(peaks, CLASS_NAMES))
+
+
 if __name__ == "__main__":
     import traceback
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
