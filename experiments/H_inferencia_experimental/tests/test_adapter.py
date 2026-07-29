@@ -128,6 +128,37 @@ def test_true_vector_missing_clase_raises():
     _expect_valueerror(lambda: true_vector(peaks, CLASS_NAMES))
 
 
+def test_diastereotopic_delta_h_list_averages_to_one_row():
+    # CH2 con protones diastereotopicos: dos delta_h (3.20 y 3.80) para el
+    # MISMO carbono -- debe seguir siendo UN carbono (una fila en peaks_ch/13c),
+    # no dos, con delta_h = promedio. Igual que extract_peaks_pkl.py (Fase 1b),
+    # que promedia h_shifts por carbono en el pipeline de entrenamiento.
+    peaks = [{"delta_c": 58.0, "delta_h": [3.20, 3.80], "mult": "CH2"}]
+    peaks_ch, mask_ch, peaks_13c, mask_13c, cond = build_inputs(
+        peaks, parse_formula("C2H6O"), NORM)
+    assert peaks_ch.shape[0] == 1 and peaks_13c.shape[0] == 1
+    assert cond[0] == 1   # sigue contando como UN carbono
+    assert cond[1] == 1   # y UN CH2 en el cupo
+    promedio = (3.20 + 3.80) / 2.0
+    assert np.isclose(peaks_ch[0, 1], (promedio + 1.0) / 16.0, atol=1e-4)
+
+
+def test_diastereotopic_delta_h_tuple_and_single_float_equivalent():
+    # Una tupla de un solo valor debe dar el mismo resultado que un float suelto.
+    a, _, _, _, _ = build_inputs(
+        [{"delta_c": 18.0, "delta_h": 1.2, "mult": "CH3"}],
+        parse_formula("C2H6O"), NORM)
+    b, _, _, _, _ = build_inputs(
+        [{"delta_c": 18.0, "delta_h": (1.2,), "mult": "CH3"}],
+        parse_formula("C2H6O"), NORM)
+    assert np.allclose(a, b)
+
+
+def test_diastereotopic_delta_h_empty_list_rejected():
+    peaks = [{"delta_c": 58.0, "delta_h": [], "mult": "CH2"}]
+    _expect_valueerror(lambda: build_inputs(peaks, parse_formula("C2H6O"), NORM))
+
+
 if __name__ == "__main__":
     import traceback
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]

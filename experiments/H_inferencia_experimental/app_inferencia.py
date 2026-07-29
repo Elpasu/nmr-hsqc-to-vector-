@@ -64,21 +64,43 @@ with col2:
     tau = st.slider("τ (Fase 1b)", 0.0, 3.0, 1.5, 0.25)
     k_max = st.slider("K_max", 1, 10, 6, 1)
 
-st.caption("Una fila por carbono. δH vacío si es Cq. 'clase' es opcional "
-           "(solo para evaluar moléculas conocidas sin SMILES).")
+st.caption("Una fila por carbono. δH vacío si es Cq. Para protones "
+           "diastereotópicos (mismo carbono, dos δH) escribí ambos separados "
+           "por coma, ej. '3.20, 3.80' -- se promedian, sigue siendo UN carbono. "
+           "'clase' es opcional (solo para evaluar moléculas conocidas sin SMILES).")
 plantilla = pd.DataFrame([
-    {"delta_c": 18.0, "delta_h": 1.2, "mult": "CH3", "clase": "CH3"},
-    {"delta_c": 58.0, "delta_h": 3.7, "mult": "CH2", "clase": "CH2-O"},
+    {"delta_c": 18.0, "delta_h": "1.2", "mult": "CH3", "clase": "CH3"},
+    {"delta_c": 58.0, "delta_h": "3.7", "mult": "CH2", "clase": "CH2-O"},
 ])
 edited = st.data_editor(
     plantilla, num_rows="dynamic", use_container_width=True,
     column_config={
+        "delta_h": st.column_config.TextColumn(
+            "delta_h", help="Un valor, o varios separados por coma si el "
+                            "carbono tiene protones diastereotópicos (se "
+                            "promedian). Vacío si es Cq."),
         "mult": st.column_config.SelectboxColumn(
             "mult", options=list(adapter.MULT_H.keys()), required=True),
         "clase": st.column_config.SelectboxColumn(
             "clase", options=[""] + list(class_names)),
     },
 )
+
+
+def _parse_delta_h(raw):
+    """None/NaN/'' -> None (Cq). Un numero -> float. Varios separados por
+    coma (protones diastereotopicos del mismo carbono) -> lista de floats,
+    que adapter.build_inputs promedia (sigue siendo UN carbono)."""
+    if raw is None or (isinstance(raw, float) and np.isnan(raw)):
+        return None
+    s = str(raw).strip()
+    if not s:
+        return None
+    vals = [float(tok.strip()) for tok in s.split(",") if tok.strip()]
+    if not vals:
+        return None
+    return vals[0] if len(vals) == 1 else vals
+
 
 if st.button("Predecir", type="primary"):
     rows = edited.to_dict("records")
@@ -87,8 +109,7 @@ if st.button("Predecir", type="primary"):
         if r.get("delta_c") is None or (isinstance(r.get("delta_c"), float)
                                         and np.isnan(r["delta_c"])):
             continue
-        dh = r.get("delta_h")
-        dh = None if (dh is None or (isinstance(dh, float) and np.isnan(dh))) else float(dh)
+        dh = _parse_delta_h(r.get("delta_h"))
         peaks.append({"delta_c": float(r["delta_c"]), "delta_h": dh,
                       "mult": r["mult"], "clase": r.get("clase") or None})
 

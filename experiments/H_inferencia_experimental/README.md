@@ -71,13 +71,20 @@ Edita la tabla directamente en la GUI. Cada fila es un carbono.
 | Columna | Tipo | Requerido | Descripción |
 |---------|------|-----------|-------------|
 | `delta_c` | float | Sí | Desplazamiento ¹³C en ppm (0–220) |
-| `delta_h` | float | No* | Desplazamiento ¹H en ppm (−1–15) |
+| `delta_h` | texto | No* | Desplazamiento ¹H en ppm (−1–15). Uno o varios separados por coma |
 | `mult` | select | Sí | Multiplicidad vista en HSQC/DEPT: `CH3`, `CH2`, `CH`, `Cq` |
-| `clase` | select | No** | Clase verdadera (solo para evaluar) |
+| `clase` | select | No** | Clase verdadera (solo para evaluar, sin SMILES) |
 
 *) **`delta_h` es obligatorio excepto para `Cq`** (carbonos sin protones):
   - CH3, CH2, CH → requieren δ¹H
   - Cq → δ¹H debe estar vacío
+
+**Protones diastereotópicos (mismo carbono, dos δH distintos):** NO dupliques la
+fila del carbono — eso rompe el conteo total (`total_señales`) que el oráculo usa
+como restricción dura, y la predicción deja de cerrar. Escribí ambos δH en la
+**misma fila**, separados por coma: `3.20, 3.80`. Se promedian internamente
+(`adapter._mean_delta_h`), igual que hace `extract_peaks_pkl.py` en el pipeline de
+entrenamiento — sigue siendo UN carbono, UNA fila.
 
 **) **`clase` es opcional.** La entrada real es `mult` (lo que ves en el espectro).
 
@@ -265,6 +272,16 @@ Usa solo: `CH3`, `CH2`, `CH`, `Cq`. Case-sensitive.
 - Verifica τ y K_max (afectan los candidatos emitidos).
 - Si ingresaste `clase`, asegúrate de que la clase verdadera sea exacta.
 - Pequeñas diferencias (~1–2 átomos) son normales en moléculas complejas.
+
+### "y_true NO cubierto en K" con una sola clase de diferencia (típicamente `=CH2` o `CH2-...`)
+
+Síntoma clásico: **la cantidad de filas de tu tabla no coincide con la cantidad real
+de carbonos** de la molécula (el SMILES calcula el `y_true` de forma independiente
+de la tabla de picos — no se sincronizan solos). La causa más común: un carbono con
+**protones diastereotópicos** (dos δH distintos, mismo δC) cargado como **dos filas**
+en vez de una. Eso infla `total_señales` en 1 y el sobrante cae en el cupo CH2 (`=CH2`,
+`CH2-O`, `CH2-N`…). Solución: una sola fila, δH separados por coma (ver "Formato de
+la tabla" arriba).
 
 ---
 

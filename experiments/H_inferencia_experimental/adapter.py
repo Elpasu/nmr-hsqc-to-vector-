@@ -47,8 +47,22 @@ def parse_formula(formula):
     return counts
 
 
+def _mean_delta_h(delta_h):
+    """delta_h: float (un H) o lista/tupla de floats (protones diastereotopicos
+    del mismo carbono -- mismo delta_c, delta_h distintos). Devuelve el promedio,
+    igual que extract_peaks_pkl.py (pipeline de entrenamiento) promedia h_shifts
+    por carbono. Sigue siendo UNA fila = UN carbono, nunca una por H."""
+    if isinstance(delta_h, (list, tuple)):
+        if not delta_h:
+            raise ValueError("delta_h no puede ser una lista vacia")
+        return float(sum(delta_h)) / len(delta_h)
+    return float(delta_h)
+
+
 def build_inputs(peaks, formula, norm_cfg):
-    """peaks: lista de {delta_c, delta_h|None, mult}. formula: dict de parse_formula.
+    """peaks: lista de {delta_c, delta_h|None, mult}. delta_h admite un float o
+    una lista/tupla de floats (protones diastereotopicos del mismo carbono; se
+    promedian, ver _mean_delta_h). formula: dict de parse_formula.
     Devuelve (peaks_ch, mask_ch, peaks_13c, mask_13c, cond), todos np.float32.
     Sin padding (batch=1): mascaras todo-1 sobre los picos reales."""
     if not peaks:
@@ -79,7 +93,7 @@ def build_inputs(peaks, formula, norm_cfg):
         phase = -1.0 if mult == 2 else 1.0
         amp_ch0 = phase * mult
         amp_ch1 = mult / 3.0
-        dh = float(p["delta_h"])
+        dh = _mean_delta_h(p["delta_h"])
         ch_rows.append([
             (dc - c_min) / (c_max - c_min),
             (dh - h_min) / (h_max - h_min),
