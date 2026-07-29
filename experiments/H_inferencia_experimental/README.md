@@ -87,10 +87,24 @@ Edita la tabla directamente en la GUI. Cada fila es un carbono.
   - Datos crudos del espectro editado.
   - `mult` es inferido del HSQC/DEPT (Fase 1b).
 
-- **Evaluación (opcional):** `clase`
-  - Solo si conoces la clase verdadera de esa posición (moléculas de referencia).
-  - Si todas las filas tienen `clase`, el app evalúa: ¿el vector predicho coincide con el verdadero?
-  - Sin `clase` → modo predicción pura (no hay evaluación).
+- **Evaluación (opcional, dos formas):**
+  - **SMILES (recomendado para inferencia controlada — molécula conocida):** un campo
+    de texto arriba de la tabla. Si lo completás, el vector verdadero se **calcula
+    automáticamente** desde la estructura (`smiles_classifier.py`, puerto fiel de
+    `Gen_vector.py`, el mismo clasificador que generó las labels de entrenamiento) —
+    no hace falta anotar `clase` fila por fila. Tiene prioridad sobre la columna `clase`.
+  - **Columna `clase`** (respaldo si no tenés el SMILES a mano): anotás la clase
+    verdadera de cada fila a mano. Solo se usa si el campo SMILES está vacío y
+    **todas** las filas tienen `clase`.
+  - Sin ninguna de las dos → modo predicción pura (no hay evaluación).
+
+**Nota de fidelidad de `smiles_classifier.py`:** el clasificador original cuenta como
+heteroátomo (para las clases C-2X/C-3X) *cualquier* vecino no-carbono, no solo N/O
+(incluiría halógenos y S). El dataset de entrenamiento es CHON puro así que esa rama
+nunca se ejerce en la práctica, pero si probás una molécula fuera de ese espacio químico
+(con Cl, Br, S) el `y_true` calculado por SMILES puede no coincidir con lo que el
+oráculo v2 asume (que solo mira N+O) — es una diferencia real entre "cómo se generaron
+las labels" y "qué restricciones usa el oráculo para inferencia", no un bug de esta app.
 
 ### Parámetros de control
 
@@ -115,22 +129,25 @@ Edita la tabla directamente en la GUI. Cada fila es un carbono.
 
 ## Tests
 
-### Ejecutar los 15 tests del adaptador
+### Ejecutar los tests
 
 ```bash
 python experiments/H_inferencia_experimental/tests/test_adapter.py
+python experiments/H_inferencia_experimental/tests/test_smiles_classifier.py
 ```
 
-Salida esperada:
-```
->>> 15 TESTS OK <<<
-```
+Salida esperada: `>>> 15 TESTS OK <<<` y `>>> 9 TESTS OK <<<` respectivamente.
 
-Los tests verifican:
+`test_adapter.py` verifica:
 - Parseo de fórmula molecular.
 - Construcción de inputs (normalización, amplitudes, máscaras).
 - Histogramas de clase (true_vector).
 - Rechazo de entrada inválida.
+
+`test_smiles_classifier.py` verifica el puerto de `Gen_vector.py` (clasificador de 19
+clases desde SMILES, usado para el `y_true` automático): orden de clases alineado con
+`classes_19v` de `db.yaml`, colapso por simetría (benceno → 1 solo entorno aromático),
+las ramas Aldeh/Imina/C-2X/C-3X, y rechazo de SMILES inválido.
 
 ---
 
@@ -153,6 +170,13 @@ El test verifica que `build_inputs()` + `true_vector()` reproducen estos valores
 ```bash
 python experiments/H_inferencia_experimental/tests/test_adapter.py
 ```
+
+### Vía GUI (rápido, con el campo SMILES)
+
+Confirmado en esta sesión con el checkpoint real: en la GUI, dejando `clase` vacío,
+poné la fórmula `C2H6O`, cargá los dos picos del etanol (CH3 18.0/1.2, CH2 58.0/3.7) y
+el SMILES `CCO` en el campo de arriba. El `y_true` se calcula solo (CH3 + CH2-O) y el
+candidato 0 (ancla v2) lo reproduce exactamente — `y_true CUBIERTO en K ✅`.
 
 ### Vía GUI (con datos de validación)
 

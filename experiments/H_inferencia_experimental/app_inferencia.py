@@ -21,6 +21,7 @@ if _HERE not in sys.path:
 
 import adapter  # noqa: E402
 import predict_core  # noqa: E402
+import smiles_classifier  # noqa: E402
 
 # Ruta al checkpoint local (scp desde Clementina). Portable: hardcodeada si
 # existe, si no relativa al repo.
@@ -54,12 +55,17 @@ class_names, norm, model = _load()
 col1, col2 = st.columns([1, 1])
 with col1:
     formula = st.text_input("Fórmula molecular (ej. C10H12N2O)", value="C2H6O")
+    smiles_gt = st.text_input(
+        "SMILES (opcional -- inferencia controlada, molécula conocida)",
+        value="", placeholder="ej. CCO",
+        help="Si lo completás, el vector verdadero se calcula automáticamente "
+             "desde la estructura (no hace falta llenar la columna 'clase').")
 with col2:
     tau = st.slider("τ (Fase 1b)", 0.0, 3.0, 1.5, 0.25)
     k_max = st.slider("K_max", 1, 10, 6, 1)
 
 st.caption("Una fila por carbono. δH vacío si es Cq. 'clase' es opcional "
-           "(solo para evaluar moléculas conocidas).")
+           "(solo para evaluar moléculas conocidas sin SMILES).")
 plantilla = pd.DataFrame([
     {"delta_c": 18.0, "delta_h": 1.2, "mult": "CH3", "clase": "CH3"},
     {"delta_c": 58.0, "delta_h": 3.7, "mult": "CH2", "clase": "CH2-O"},
@@ -92,6 +98,11 @@ if st.button("Predecir", type="primary"):
         raw = predict_core.predict_raw(model, inp)
         total, ch2 = int(inp[4][0]), int(inp[4][1])
         cands = predict_core.candidatos(raw, fm, total, ch2, tau, k_max)
+        yt = None
+        if smiles_gt.strip():
+            yt = smiles_classifier.true_vector_from_smiles(smiles_gt.strip())
+        elif all(p["clase"] for p in peaks):
+            yt = adapter.true_vector(peaks, class_names)
     except ValueError as e:
         st.error(f"Entrada inválida: {e}")
         st.stop()
@@ -104,9 +115,9 @@ if st.button("Predecir", type="primary"):
     st.dataframe(df.T, use_container_width=True)
     st.caption(f"crudo (redondeado): {list(np.round(raw, 2))}")
 
-    have_clase = all(p["clase"] for p in peaks)
-    if have_clase:
-        yt = adapter.true_vector(peaks, class_names)
+    if yt is not None:
+        fuente = "SMILES" if smiles_gt.strip() else "columna 'clase'"
+        st.caption(f"y_true calculado desde: {fuente}")
         cubierto = any(np.array_equal(yt, c) for c in cands)
         st.success("y_true CUBIERTO en K ✅") if cubierto else st.warning(
             "y_true NO cubierto en K ❌")
@@ -115,4 +126,5 @@ if st.button("Predecir", type="primary"):
         if confus:
             st.write("Diferencia ancla v2 vs verdadero (qué confunde):", confus)
     else:
-        st.info("Sin columna 'clase' -> modo predicción real (sin evaluación).")
+        st.info("Sin SMILES ni columna 'clase' completa -> modo predicción real "
+                "(sin evaluación).")
