@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import yaml
+from rdkit import Chem
+from rdkit.Chem import Draw
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _REPO = os.path.abspath(os.path.join(_HERE, "..", ".."))
@@ -60,6 +62,12 @@ with col1:
         value="", placeholder="ej. CCO",
         help="Si lo completás, el vector verdadero se calcula automáticamente "
              "desde la estructura (no hace falta llenar la columna 'clase').")
+    if smiles_gt.strip():
+        mol_preview = Chem.MolFromSmiles(smiles_gt.strip())
+        if mol_preview:
+            st.image(Draw.MolToImage(mol_preview, size=(350, 280)))
+        else:
+            st.error("RDKit no pudo parsear ese SMILES.")
 with col2:
     tau = st.slider("τ (Fase 1b)", 0.0, 3.0, 1.5, 0.25)
     k_max = st.slider("K_max", 1, 10, 6, 1)

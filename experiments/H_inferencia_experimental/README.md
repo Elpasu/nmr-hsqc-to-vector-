@@ -100,6 +100,9 @@ entrenamiento — sigue siendo UN carbono, UNA fila.
     automáticamente** desde la estructura (`smiles_classifier.py`, puerto fiel de
     `Gen_vector.py`, el mismo clasificador que generó las labels de entrenamiento) —
     no hace falta anotar `clase` fila por fila. Tiene prioridad sobre la columna `clase`.
+    Si el SMILES es válido, además se muestra la estructura 2D debajo del campo
+    (RDKit `Draw.MolToImage`, igual que `src/gui/gui_inspector.py`) — útil como guía
+    visual mientras cargás los picos.
   - **Columna `clase`** (respaldo si no tenés el SMILES a mano): anotás la clase
     verdadera de cada fila a mano. Solo se usa si el campo SMILES está vacío y
     **todas** las filas tienen `clase`.
