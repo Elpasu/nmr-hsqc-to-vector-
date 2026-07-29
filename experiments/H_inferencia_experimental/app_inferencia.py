@@ -119,8 +119,10 @@ if st.button("Predecir", type="primary"):
         fuente = "SMILES" if smiles_gt.strip() else "columna 'clase'"
         st.caption(f"y_true calculado desde: {fuente}")
         cubierto = any(np.array_equal(yt, c) for c in cands)
-        st.success("y_true CUBIERTO en K ✅") if cubierto else st.warning(
-            "y_true NO cubierto en K ❌")
+        if cubierto:
+            st.success("y_true CUBIERTO en K ✅")
+        else:
+            st.warning("y_true NO cubierto en K ❌")
         diff = yt - cands[0]
         confus = [(class_names[i], int(diff[i])) for i in range(19) if diff[i] != 0]
         if confus:
