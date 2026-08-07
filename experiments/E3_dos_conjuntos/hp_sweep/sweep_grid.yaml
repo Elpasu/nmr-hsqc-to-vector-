@@ -1,0 +1,54 @@
+# sweep_grid.yaml -- el DISENO del estudio de hiperparametros (Exp I).
+#
+# Fuente unica de verdad: para cambiar el estudio se edita ESTE archivo y se
+# corre `python make_configs.py`. Los YAML de configs/ son GENERADOS -- editarlos
+# a mano se pierde en la proxima regeneracion.
+#
+# Spec: docs/superpowers/specs/2026-08-07-estudio-hiperparametros-e3-design.md
+
+# El baseline real (no una copia): la config del checkpoint congelado.
+baseline_config: "../config_settransformer.yaml"
+prefix: "nmr_202k_e3_hp"
+
+# --- OFAT: una dimension a la vez desde el baseline (16 corridas) -------------
+# 'path' es la ruta de la clave dentro del YAML, separada por puntos.
+ofat:
+  - name: dmodel
+    path: model.d_model
+    values: [32, 128, 256]
+  - name: layers
+    path: model.n_layers
+    values: [1, 3, 4]
+  - name: heads
+    path: model.n_heads
+    values: [2, 8]
+  - name: pma                      # n_seeds = semillas del pooling PMA
+    path: model.n_seeds
+    values: [2, 4]
+  - name: lr
+    path: hyperparameters.learning_rate
+    values: [0.0003, 0.003]
+  - name: bs
+    path: hyperparameters.batch_size
+    values: [32, 128]
+  - name: fusion
+    path: model.fusion_hidden
+    values: [[64, 32], [256, 128]]
+
+# --- Grid 2D capacidad x profundidad (4 corridas nuevas) ---------------------
+# Producto cartesiano de los dos ejes. make_configs.py descarta automaticamente
+# las celdas que ya cubren el baseline (64x2) o el OFAT (32x2, 128x2, 64x1,
+# 64x4) -- no hay que listarlas a mano.
+grid2d:
+  name: grid
+  axes:
+    model.d_model: [32, 64, 128]
+    model.n_layers: [1, 2, 4]
+
+# --- Replicas del baseline para medir el piso de ruido (3 corridas) ----------
+# Misma config exacta, distinta semilla de RNG. Da la media +- desvio con la que
+# se decide si una diferencia de EMA es senal o azar.
+noise:
+  name: rep
+  path: hyperparameters.seed
+  values: [42, 43, 44]

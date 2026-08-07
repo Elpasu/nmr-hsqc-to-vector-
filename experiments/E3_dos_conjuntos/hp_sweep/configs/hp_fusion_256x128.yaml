@@ -1,0 +1,38 @@
+# ARCHIVO GENERADO por hp_sweep/make_configs.py -- NO editar a mano.
+# Para cambiar el estudio: editar hp_sweep/sweep_grid.yaml y regenerar.
+# Exp I -- estudio de hiperparametros del Set Transformer (E3).
+experiment_name: nmr_202k_e3_hp_fusion_256x128
+paths:
+  base_dir: ${NMR_DATA_DIR:-/home/lpassaglia.iquir/DB_200k}
+  peaks_ch_filename: peaks_pkl_202465.npz
+  peaks_13c_filename: peaks_13c_202465.npz
+  labels_filename: vectors_13c_19v_202465.npy
+  smiles_filename: smiles_202465.npy
+  checkpoint_dir: checkpoints_E3_hp_fusion_256x128
+  val_indices_filename: val_indices_frozen.npy
+model:
+  arch: settransformer
+  d_model: 64
+  n_heads: 4
+  n_layers: 2
+  n_seeds: 1
+  fusion_hidden:
+  - 256
+  - 128
+normalization:
+  c13_ppm_min: 0
+  c13_ppm_max: 220
+  h1_ppm_min: -1
+  h1_ppm_max: 15
+  amp_ch0_scale: 3.0
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  scheduler:
+    patience: 8
+    factor: 0.7
+system:
+  device: ${NMR_DEVICE:-auto}
+  num_workers: 0
+  pin_memory: true
