@@ -49,7 +49,7 @@ experiments/E3_dos_conjuntos/
   hp_sweep/
     sweep_grid.yaml            # el DISEÑO del estudio: baseline + ejes + valores. Fuente única.
     make_configs.py            # genera los config_hp_*.yaml desde sweep_grid.yaml (yaml puro)
-    configs/                   # los 22 configs generados, COMMITEADOS (auditables)
+    configs/                   # los 23 configs generados, COMMITEADOS (auditables)
     collect_results.py         # parsea los .out de SLURM -> tabla markdown + CSV
     make_plot.py               # figura OFAT con banda de ruido
     tests/test_make_configs.py
@@ -104,10 +104,17 @@ baseline y el OFAT (64×2 = baseline; 32×2, 128×2 del eje 1; 64×1, 64×4 del 
 Responde a la objeción específica: *"¿probaron que `d_model=128` no ayuda **con más profundidad**?"* —
 que el OFAT puro, por construcción, no puede contestar.
 
-### 3.3 Piso de ruido (2 corridas)
+### 3.3 Piso de ruido (3 corridas)
 
-Baseline reentrenado con `seed = 43` y `seed = 44`. La `seed = 42` ya existe: es la corrida A10
-original del Exp E Fase 3 (EMA asistida 91.35 %), que se reutiliza como tercera réplica.
+Baseline reentrenado con `seed = 42`, `seed = 43` y `seed = 44` — **3 corridas nuevas**.
+
+Nota sobre un cambio respecto de la versión original de este spec: inicialmente se planeó reutilizar
+la corrida histórica de seed 42 (A10, Exp E Fase 3, EMA asistida 91.35 %) como tercera réplica. Se
+descartó al escribir el plan de implementación: la §6 modifica `train.py` y
+`model_e3_settransformer.py`, y aunque los cambios son aditivos y preservan el comportamiento por
+default, la corrida histórica se hizo con la versión anterior del código y tres semanas antes. Poder
+afirmar *"tres réplicas, mismo código, mismo cluster, misma semana"* es materialmente más fuerte ante
+un revisor, y cuesta 39 minutos de GPU.
 
 Sin esto no hay forma de decirle a un revisor si un +0.6 pp es señal o azar. Evidencia previa que
 motiva la medición: la **misma config exacta** dio 91.35 % en A10 y 92.14 % en XPU — ~0.8 pp de
@@ -117,17 +124,17 @@ limpio.
 
 ### 3.4 Presupuesto
 
-**22 corridas nuevas** × ~39 min (A10, 100 épocas) ≈ **14 h de GPU**, más `evaluate.py` por corrida
+**23 corridas nuevas** × ~39 min (A10, 100 épocas) ≈ **15 h de GPU**, más `evaluate.py` por corrida
 (~2–3 min cada una, incluida en el mismo job SLURM).
 
 ---
 
-## 4. Invariantes — lo que NO cambia en ninguna de las 22
+## 4. Invariantes — lo que NO cambia en ninguna de las 23
 
 Si algo de esta lista varía entre corridas, las EMAs dejan de ser comparables (regla dura 8) y el
 estudio no vale nada:
 
-- **Val set congelado:** `val_indices_frozen.npy` (Exp D), 14 428 moléculas, en las 22.
+- **Val set congelado:** `val_indices_frozen.npy` (Exp D), 14 428 moléculas, en las 23.
 - **Épocas:** 100 en todas. Sin screening corto — a 39 min/corrida el ahorro es marginal y meter
   presupuestos distintos introduce un confound: un modelo más grande podría necesitar más épocas y
   perdería injustamente.
@@ -136,7 +143,7 @@ estudio no vale nada:
 - **`num_workers: 0`** — regla dura 1.
 - **19 clases en el orden de `config/db.yaml`** — regla dura 7.
 - **Dataset:** los mismos `.npz` / `.npy` de 202 465 moléculas, `train_fraction = 1.0`.
-- **Un solo cluster para las 22.** Recomendado: **login-1 / A10**, porque es donde vive toda la serie
+- **Un solo cluster para las 23.** Recomendado: **login-1 / A10**, porque es donde vive toda la serie
   histórica (incluida la corrida seed=42 que se reutiliza) y es 1.8× más rápido que XPU. El
   checkpoint desplegado sigue siendo el de Clementina; este estudio es sobre la *elección de
   arquitectura*, no sobre qué checkpoint se sirve.
@@ -202,7 +209,7 @@ código Python.
 ### 7.2 `make_configs.py` — generador
 
 Lee `sweep_grid.yaml` + `config_settransformer.yaml` (el baseline real, no una copia) y escribe los
-22 YAML en `configs/`. Deriva `experiment_name` y `checkpoint_dir` de forma determinística y única.
+23 YAML en `configs/`. Deriva `experiment_name` y `checkpoint_dir` de forma determinística y única.
 Valida `d_model % n_heads == 0` y falla fuerte si no se cumple. Sin torch: corre y se testea en la PC
 local.
 
@@ -214,7 +221,7 @@ Toma el config como argumento y corre **`train.py` y después `evaluate.py` en e
 sbatch run_sweep.sh hp_sweep/configs/hp_dmodel_128.yaml
 ```
 
-Que sean un solo job (y no dos) es deliberado: 22 `sbatch` en vez de 44, y elimina la clase de error
+Que sean un solo job (y no dos) es deliberado: 23 `sbatch` en vez de 46, y elimina la clase de error
 "evalué un checkpoint que todavía no terminó de entrenarse". `#SBATCH --time=01:30:00` cubre
 39 min de train + eval con margen. Usa `--gres=gpu:1` (regla dura 2).
 
@@ -239,25 +246,25 @@ Todo local, en CPU, **antes** de gastar cola de GPU (regla dura 5).
 
 ### 8.1 `tests/test_make_configs.py`
 
-- Se generan exactamente 22 configs.
+- Se generan exactamente 23 configs.
 - Cada config OFAT difiere del baseline en **exactamente una** clave (comparación recursiva de dicts).
   Las claves de identidad `experiment_name` y `paths.checkpoint_dir` se excluyen de esta comparación:
-  son únicas por construcción en las 22 y no forman parte del diseño experimental.
-- `d_model % n_heads == 0` en las 22.
-- `experiment_name` único en las 22; `checkpoint_dir` único en las 22.
+  son únicas por construcción en las 23 y no forman parte del diseño experimental.
+- `d_model % n_heads == 0` en las 23.
+- `experiment_name` único en las 23; `checkpoint_dir` único en las 23.
 - Los invariantes de §4 (épocas, scheduler, `num_workers`, `val_indices_filename`, `train_fraction`,
-  paths del dataset) son idénticos en las 22.
+  paths del dataset) son idénticos en las 23.
 - Las corridas del grid 2D tienen los `(d_model, n_layers)` esperados y no duplican celdas del OFAT.
 - Las corridas de ruido difieren del baseline **solo** en `seed` (con la misma exclusión de las claves
   de identidad).
 
 ### 8.2 `tests/test_all_archs_forward.py`
 
-Instancia el modelo de **cada uno de los 22 configs** y hace un forward en CPU con shapes reales
+Instancia el modelo de **cada uno de los 23 configs** y hace un forward en CPU con shapes reales
 (batch pequeño, máscaras mixtas, incluida una molécula totalmente enmascarada). Verifica que la
 salida sea `(B, 19)` y no contenga NaN.
 
-Cumple la regla dura 5 para las 22 de una sola vez: un mismatch de dimensiones se descubre en
+Cumple la regla dura 5 para las 23 de una sola vez: un mismatch de dimensiones se descubre en
 segundos en la PC local, no después de 40 minutos de cola.
 
 ---
@@ -265,7 +272,7 @@ segundos en la PC local, no después de 40 minutos de cola.
 ## 9. Entregables
 
 1. Sección nueva en `docs/Runs/RESULTS.md`: **"Exp I — estudio de hiperparámetros del Set
-   Transformer"**, con la tabla de 22 filas (eje, valor, nº de parámetros, best val loss, EMA cruda,
+   Transformer"**, con la tabla de 23 filas (eje, valor, nº de parámetros, best val loss, EMA cruda,
    EMA asistida v2, minutos) y la banda de ruido medida explícita.
 2. `experiments/E3_dos_conjuntos/plots/hp_sweep_ofat.png`.
 3. Un párrafo de conclusión honesta, incluyendo el resultado tal como salga.
@@ -275,7 +282,7 @@ segundos en la PC local, no después de 40 minutos de cola.
 ## 10. Alcance
 
 **Dentro:**
-- Generación de los 22 configs, el `.sh`, el recolector, la figura y los tests.
+- Generación de los 23 configs, el `.sh`, el recolector, la figura y los tests.
 - Los tres cambios aditivos de código de §6.
 - La sección de `RESULTS.md` (con las celdas de resultados vacías hasta que Lucas corra los jobs).
 
@@ -297,7 +304,7 @@ segundos en la PC local, no después de 40 minutos de cola.
 
 El estudio es exitoso si, al terminar, se puede responder a un revisor con una tabla y una figura:
 
-1. Se probaron **7 dimensiones de hiperparámetros** con 22 corridas controladas, mismo val congelado,
+1. Se probaron **7 dimensiones de hiperparámetros** con 23 corridas controladas, mismo val congelado,
    mismo presupuesto de épocas, mismo cluster.
 2. Se **midió** cuánta variación produce el azar (3 réplicas del baseline), y se fijó *antes* de mirar
    los resultados que las diferencias por debajo de esa banda no se interpretan.

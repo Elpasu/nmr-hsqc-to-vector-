@@ -21,6 +21,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Migración XPU — Exp E Fase 3 Set Transformer en Intel XPU (Clementina) | n/a (sin imagen) | 19 | 202k | none | **0.0086 (99)** | 1.71% | **92.12% (v1) / 92.14% (v2)** | **mismo codigo/config que la fila de arriba, corrido en Intel XPU en vez de NVIDIA A10** — paridad confirmada (val loss y EMA dentro de la varianza esperada, incluso mejores). Ver seccion y `docs/MIGRACION_XPU_Clementina_XXI.md` |
 | Exp G Fase 1 — multi-vector (cobertura@K, mismo ckpt XPU) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | cobertura@K: 92.14 (K1) / 95.89 (K2) / 96.75 (K3) / 97.39 (K5) | métrica NUEVA (cobertura@K, no EMA). Sanity: coverage@1==EMA v2. Techo intra-nH ~98.7%; ranking L1 débil + sin especificidad → Fase 1b guiada por incertidumbre. Ver seccion |
 | Exp G Fase 1b — multi-vector guiada por incertidumbre (τ) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | K ADAPTATIVO: misma cobertura que Fase 1 con ~40% menos vectores (96.75% a K prom 1.78 vs K=3; 95.6% a 1.23 vs K=2). Punto sugerido τ=1.5. Ver seccion |
+| Exp I — estudio de hiperparametros (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | PENDIENTE | PENDIENTE | PENDIENTE | 23 corridas (16 OFAT + 4 grid 2D d_model x n_layers + 3 replicas de seed), val congelado y 100 epocas en las 23. **Jobs NO lanzados todavia.** Ver seccion |
 
 ---
 
@@ -587,6 +588,45 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 - **Punto de operación sugerido:** τ ≈ 1.5 → 96.75% de cobertura a 1.78 vec/molécula. Ajustable
   según cuánta cobertura exija el generador de estructuras aguas abajo vs presupuesto de generación.
   Spec/plan: `docs/superpowers/{specs,plans}/2026-07-24-exp-g-fase1b-guiada-incertidumbre*.md`.
+
+---
+
+## Exp I — estudio de hiperparámetros del Set Transformer
+
+- **Fecha:** 2026-08-07 (preparación) · **SLURM train+eval:** PENDIENTE ·
+  **Config:** `experiments/E3_dos_conjuntos/hp_sweep/configs/*.yaml` (23) ·
+  **Diseño:** `experiments/E3_dos_conjuntos/hp_sweep/sweep_grid.yaml`.
+- **Estado: los jobs NO se lanzaron todavía.** Esta sección está preparada; los números se completan
+  con `python hp_sweep/collect_results.py --out-dir <ruta>`, que emite la tabla con estas mismas
+  columnas.
+- **Qué es:** 23 corridas controladas que varían hiperparámetros de arquitectura y optimización sobre
+  el Set Transformer de Fase 3. **No busca reemplazar el checkpoint congelado** — busca poder
+  justificar la arquitectura elegida ante un revisor.
+- **Diseño:** 16 corridas OFAT (una dimensión a la vez desde el baseline: `d_model` {32,128,256},
+  `n_layers` {1,3,4}, `n_heads` {2,8}, `n_seeds` {2,4}, `lr` {3e-4,3e-3}, `batch_size` {32,128},
+  cabeza de fusión {64→32, 256→128}), 4 celdas del grid 2D `d_model × n_layers` que el OFAT no
+  cubre, y 3 réplicas del baseline (seeds 42/43/44) para **medir el piso de ruido**.
+- **Invariantes en las 23 (regla dura 8):** val congelado (`val_indices_frozen.npy`, 14 428),
+  100 épocas, `ConstrainedMSELoss(λ=0.5)`, scheduler `patience=8/factor=0.7`, `num_workers=0`,
+  19 clases, dataset completo, y **un solo cluster** (login-1/A10).
+- **Métrica de decisión (fijada ANTES de ver los resultados):** EMA asistida v2 como primaria, best
+  val loss como desempate. La EMA cruda se reporta pero no decide (ya documentado más arriba: es
+  ruidosa, 0.9–2.3 % sin tendencia monótona en el scaling study). **Una diferencia menor a la banda
+  de ruido de las 3 réplicas se declara no significativa.**
+
+| Corrida | Params | Best Val Loss | EMA cruda | EMA asist v2 | min |
+|---|---|---|---|---|---|
+| (23 filas — completar con `collect_results.py`) | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE |
+
+- **Predicción registrada de antemano (para que no se pueda ajustar después):** lo más probable es
+  una **meseta**. El Exp F ya mostró que el cuello no es de optimización (cabeza Poisson + 250
+  épocas con el scheduler llegando a saturación real, LR 0.001 → 0.00002, no mejoró) y el estudio de
+  escalado mostró meseta de datos (75 % → 100 % = −0.20 pp). Si el sweep también da meseta, las tres
+  evidencias convergen: el límite es de información/dominio, no de modelo.
+- **Takeaway:** PENDIENTE. Spec:
+  `docs/superpowers/specs/2026-08-07-estudio-hiperparametros-e3-design.md`. Plan:
+  `docs/superpowers/plans/2026-08-07-estudio-hiperparametros-e3.md`. Código y cómo correrlo:
+  `experiments/E3_dos_conjuntos/hp_sweep/README.md`.
 
 ---
 
