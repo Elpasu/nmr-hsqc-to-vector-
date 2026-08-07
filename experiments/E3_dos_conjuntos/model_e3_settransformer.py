@@ -69,7 +69,8 @@ class PMA(nn.Module):
 
 
 class NMR_SetTransformer(nn.Module):
-    def __init__(self, num_classes=19, d_model=64, n_heads=4, n_layers=2, n_seeds=1):
+    def __init__(self, num_classes=19, d_model=64, n_heads=4, n_layers=2, n_seeds=1,
+                 fusion_hidden=(128, 64)):
         super().__init__()
         self.proj_ch = nn.Linear(4, d_model)
         self.proj_13c = nn.Linear(1, d_model)
@@ -77,10 +78,15 @@ class NMR_SetTransformer(nn.Module):
         self.encoder = nn.ModuleList([SAB(d_model, n_heads) for _ in range(n_layers)])
         self.pma = PMA(d_model, n_heads, n_seeds)
 
+        # fusion_hidden parametrizable (Exp I, estudio de hiperparametros). El
+        # default (128, 64) reproduce EXACTAMENTE las dimensiones con las que se
+        # entreno el checkpoint congelado: su state_dict sigue cargando igual.
+        # Llega como lista desde YAML, por eso el int() explicito.
+        h1, h2 = int(fusion_hidden[0]), int(fusion_hidden[1])
         fusion_dim = d_model * n_seeds + 8
-        self.fc_fusion1 = nn.Linear(fusion_dim, 128)
-        self.fc_fusion2 = nn.Linear(128, 64)
-        self.fc_out = nn.Linear(64, num_classes)
+        self.fc_fusion1 = nn.Linear(fusion_dim, h1)
+        self.fc_fusion2 = nn.Linear(h1, h2)
+        self.fc_out = nn.Linear(h2, num_classes)
 
     def forward(self, peaks_ch, mask_ch, peaks_13c, mask_13c, cond):
         B = peaks_ch.size(0)

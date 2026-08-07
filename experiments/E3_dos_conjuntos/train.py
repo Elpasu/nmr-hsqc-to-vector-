@@ -57,6 +57,7 @@ def build_model(cfg, num_classes=19):
             n_heads=int(m.get('n_heads', 4)),
             n_layers=int(m.get('n_layers', 2)),
             n_seeds=int(m.get('n_seeds', 1)),
+            fusion_hidden=tuple(m.get('fusion_hidden', (128, 64))),
         )
     raise ValueError(f"model.arch desconocido: {arch!r} (usar 'deepsets' o 'settransformer')")
 
@@ -102,9 +103,13 @@ def validate(model, loader, criterion, device):
 
 
 def train(config_path):
-    set_seed(42)
     cfg = load_config(config_path)
+    # La seed sale del config (default 42 = comportamiento historico). El Exp I
+    # la varia para medir cuanta EMA se mueve por puro azar, sin cambiar nada mas.
+    seed = int(cfg['hyperparameters'].get('seed', 42))
+    set_seed(seed)
     print(f"--- ENTRENAMIENTO EXP E FASE 3 ({cfg['model']['arch']}): {cfg['experiment_name']} ---")
+    print(f"[INFO] Seed: {seed}")
 
     base_dir = Path(cfg['paths']['base_dir'])
     peaks_ch = base_dir / cfg['paths']['peaks_ch_filename']
