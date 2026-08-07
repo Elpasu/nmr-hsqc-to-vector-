@@ -24,6 +24,13 @@ _BANNER = (
     "# Exp I -- estudio de hiperparametros del Set Transformer (E3).\n"
 )
 
+# Ejes que legitimamente introducen una clave AUSENTE del baseline (tienen
+# default en el codigo, no en el YAML): model.fusion_hidden y
+# hyperparameters.seed, agregados en la Task 1. Cualquier otra ruta de
+# sweep_grid.yaml debe apuntar a una clave que YA EXISTE en el baseline, o
+# es un typo silencioso.
+_ALLOWED_NEW_LEAF_KEYS = {"model.fusion_hidden", "hyperparameters.seed"}
+
 
 def slug(value):
     """Convierte un valor a un fragmento de nombre de archivo seguro:
@@ -54,8 +61,9 @@ def load_baseline(path):
 
 def _set_path(cfg, dotted, value):
     """Escribe cfg['a']['b'] = value a partir de 'a.b'. Falla si el tramo
-    intermedio no existe: un typo en sweep_grid.yaml debe romper fuerte, no
-    crear una clave nueva que train.py ignoraria en silencio."""
+    intermedio no existe, o si la clave final no existe en el baseline y no
+    esta en _ALLOWED_NEW_LEAF_KEYS: un typo en sweep_grid.yaml debe romper
+    fuerte, no crear una clave nueva que train.py ignoraria en silencio."""
     parts = dotted.split(".")
     node = cfg
     for p in parts[:-1]:
@@ -63,7 +71,15 @@ def _set_path(cfg, dotted, value):
             raise KeyError(f"Ruta invalida en sweep_grid.yaml: {dotted!r} "
                            f"(no existe la seccion {p!r} en el baseline)")
         node = node[p]
-    node[parts[-1]] = value
+    leaf = parts[-1]
+    if leaf not in node and dotted not in _ALLOWED_NEW_LEAF_KEYS:
+        raise KeyError(
+            f"Ruta invalida en sweep_grid.yaml: {dotted!r} -- la clave "
+            f"{leaf!r} no existe en el baseline y no esta en "
+            f"_ALLOWED_NEW_LEAF_KEYS (typo probable). Si es una clave nueva "
+            f"legitima (con default en el codigo), agregarla a "
+            f"_ALLOWED_NEW_LEAF_KEYS explicitamente.")
+    node[leaf] = value
 
 
 def _get_path(cfg, dotted):

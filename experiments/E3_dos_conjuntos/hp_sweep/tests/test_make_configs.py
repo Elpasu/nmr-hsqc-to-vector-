@@ -187,6 +187,32 @@ def test_written_configs_on_disk_match_generated():
     print("[OK] los 23 configs en disco coinciden con el generador")
 
 
+def test_set_path_rejects_typo_in_existing_leaf():
+    """Un typo en una clave que YA EXISTE en el baseline (ej. 'learing_rate' en
+    vez de 'learning_rate') debe fallar fuerte, no crear una clave nueva
+    ignorada en silencio por train.py."""
+    baseline = {"hyperparameters": {"learning_rate": 0.001}}
+    try:
+        make_configs._set_path(baseline, "hyperparameters.learing_rate", 0.003)
+    except KeyError:
+        pass
+    else:
+        raise AssertionError("se esperaba KeyError por typo en la clave final")
+    print("[OK] _set_path rechaza un typo en una clave final existente")
+
+
+def test_set_path_allows_explicitly_whitelisted_new_leaf():
+    """model.fusion_hidden y hyperparameters.seed son claves nuevas legitimas
+    (default en el codigo, no en el YAML) y deben poder escribirse aunque no
+    esten en el baseline."""
+    baseline = {"model": {"d_model": 64}, "hyperparameters": {"batch_size": 64}}
+    make_configs._set_path(baseline, "model.fusion_hidden", [64, 32])
+    make_configs._set_path(baseline, "hyperparameters.seed", 43)
+    assert baseline["model"]["fusion_hidden"] == [64, 32]
+    assert baseline["hyperparameters"]["seed"] == 43
+    print("[OK] _set_path permite las claves nuevas explicitamente permitidas")
+
+
 if __name__ == "__main__":
     test_exactly_23_configs_with_expected_names()
     test_experiment_name_and_checkpoint_dir_unique()
@@ -198,4 +224,6 @@ if __name__ == "__main__":
     test_base_dir_env_var_not_expanded()
     test_slug_formats()
     test_written_configs_on_disk_match_generated()
+    test_set_path_rejects_typo_in_existing_leaf()
+    test_set_path_allows_explicitly_whitelisted_new_leaf()
     print("\n>>> MAKE_CONFIGS OK <<<")
