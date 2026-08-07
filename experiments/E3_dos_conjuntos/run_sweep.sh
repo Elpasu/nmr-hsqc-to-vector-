@@ -6,7 +6,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --mem=16G
-#SBATCH --time=01:30:00
+#SBATCH --time=03:00:00
 #SBATCH --gres=gpu:1
 
 # Exp I -- una corrida del estudio de hiperparametros: entrena Y evalua el

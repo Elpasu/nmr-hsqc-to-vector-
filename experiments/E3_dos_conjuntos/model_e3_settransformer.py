@@ -82,6 +82,10 @@ class NMR_SetTransformer(nn.Module):
         # default (128, 64) reproduce EXACTAMENTE las dimensiones con las que se
         # entreno el checkpoint congelado: su state_dict sigue cargando igual.
         # Llega como lista desde YAML, por eso el int() explicito.
+        if len(fusion_hidden) != 2:
+            raise ValueError(
+                f"fusion_hidden debe tener exactamente 2 valores (ancho de las "
+                f"dos capas de fusion), recibido: {fusion_hidden!r}")
         h1, h2 = int(fusion_hidden[0]), int(fusion_hidden[1])
         fusion_dim = d_model * n_seeds + 8
         self.fc_fusion1 = nn.Linear(fusion_dim, h1)

@@ -57,6 +57,22 @@ def test_small_fusion_hidden_applies():
     print("[OK] fusion_hidden=(64, 32) aplicado y forward OK")
 
 
+def test_fusion_hidden_wrong_length_raises():
+    try:
+        NMR_SetTransformer(num_classes=N_CLASSES, fusion_hidden=(64,))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("se esperaba ValueError con fusion_hidden de 1 elemento")
+    try:
+        NMR_SetTransformer(num_classes=N_CLASSES, fusion_hidden=(64, 32, 16))
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("se esperaba ValueError con fusion_hidden de 3 elementos")
+    print("[OK] fusion_hidden con longitud != 2 falla fuerte")
+
+
 def _cfg(model_extra=None):
     m = {"arch": "settransformer", "d_model": 64, "n_heads": 4,
          "n_layers": 2, "n_seeds": 1}
@@ -93,6 +109,7 @@ if __name__ == "__main__":
     test_default_param_count_unchanged()
     test_custom_fusion_hidden_applies()
     test_small_fusion_hidden_applies()
+    test_fusion_hidden_wrong_length_raises()
     test_build_model_default_fusion()
     test_build_model_reads_fusion_hidden_from_config()
     test_train_reads_seed_from_config()

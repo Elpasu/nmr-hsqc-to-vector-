@@ -12,6 +12,7 @@ import argparse
 import csv
 import os
 import statistics
+import sys
 
 import matplotlib
 matplotlib.use("Agg")            # sin display: corre igual en el cluster
@@ -74,20 +75,32 @@ def group_by_axis(rows):
     Excluye rep_* (son la banda de ruido) y grid_* (van en su propia tabla).
     Las corridas sin EMA todavia (pendientes) se omiten del panel. Las entradas
     se ordenan por el VALOR del hiperparametro barrido (usando _tag_sort_key),
-    no por el EMA, para reflejar la relacion real entre parametro y desempeno."""
+    no por el EMA, para reflejar la relacion real entre parametro y desempeno.
+    Un eje que no esta en AXIS_TITLES (ej. si se agrego uno nuevo a
+    sweep_grid.yaml y no a este diccionario) genera un warning en vez de
+    desaparecer del grafico en silencio."""
     groups = {}
+    unknown_axes = set()
     for r in rows:
         run = r.get("run") or ""
         if "_" not in run:
             continue
         axis, tag = run.split("_", 1)
-        if axis in ("rep", "grid") or axis not in AXIS_TITLES:
+        if axis in ("rep", "grid"):
+            continue
+        if axis not in AXIS_TITLES:
+            unknown_axes.add(axis)
             continue
         if r["ema_assist_v2"] is None:
             continue
         groups.setdefault(axis, []).append((tag, r["ema_assist_v2"]))
     for axis in groups:
         groups[axis].sort(key=lambda t: _tag_sort_key(t[0]))
+    if unknown_axes:
+        print(f"[WARN] eje(s) no reconocido(s) en results.csv, sin panel en la "
+              f"figura: {sorted(unknown_axes)} -- si agregaste un eje nuevo a "
+              f"sweep_grid.yaml, agregalo tambien a AXIS_TITLES en make_plot.py",
+              file=sys.stderr)
     return groups
 
 

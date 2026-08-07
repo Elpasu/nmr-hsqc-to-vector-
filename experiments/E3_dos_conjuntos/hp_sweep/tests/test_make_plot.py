@@ -101,10 +101,32 @@ def test_group_by_axis_sorts_by_hyperparameter_value_not_by_score():
     print("[OK] group_by_axis ordena por el VALOR del hiperparametro, no por el score")
 
 
+def test_group_by_axis_warns_on_unknown_axis():
+    import io
+    import contextlib
+    rows = [
+        {"run": "newaxis_5", "ema_assist_v2": "90.0", "n_params": "10000", "best_val_loss": "0.01"},
+    ]
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "results.csv"
+        with open(p, "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=["run", "n_params", "best_val_loss", "ema_assist_v2"])
+            w.writeheader()
+            for r in rows:
+                w.writerow(r)
+        buf = io.StringIO()
+        with contextlib.redirect_stderr(buf):
+            groups = make_plot.group_by_axis(make_plot.read_rows(p))
+    assert "newaxis" not in groups
+    assert "newaxis" in buf.getvalue(), buf.getvalue()
+    print("[OK] eje desconocido genera warning en vez de desaparecer en silencio")
+
+
 if __name__ == "__main__":
     test_read_rows_parses_and_skips_empty()
     test_group_by_axis_splits_ofat_axes()
     test_make_figure_writes_png()
     test_make_figure_survives_empty_csv()
     test_group_by_axis_sorts_by_hyperparameter_value_not_by_score()
+    test_group_by_axis_warns_on_unknown_axis()
     print("\n>>> MAKE_PLOT OK <<<")

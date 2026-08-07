@@ -44,6 +44,10 @@ python hp_sweep/tests/test_make_configs.py
 python hp_sweep/tests/test_all_archs_forward.py
 ```
 
+`test_all_archs_forward.py` necesita `torch` instalado — correrlo en el env `NMR_env`
+(en el login node alcanza: es CPU-only, no hace falta GPU). `test_make_configs.py` en
+cambio solo necesita PyYAML y corre en cualquier lado, incluida una PC Windows sin torch.
+
 **2. Lanzar las 23 (desde `experiments/E3_dos_conjuntos/` en el cluster):**
 
 ```bash
@@ -59,13 +63,25 @@ python hp_sweep/collect_results.py --out-dir ruta/a/los/out
 ```
 
 Escribe `hp_sweep/results.csv` e imprime la tabla markdown lista para pegar en
-`docs/Runs/RESULTS.md`.
+`docs/Runs/RESULTS.md`. Notas:
+
+- Si un job murió o fue matado (ej. TIME LIMIT), el traceback de Python o el mensaje
+  de cancelación de SLURM va al `expE3_hp_<jobid>.err`, **no** al `.out` que lee
+  `collect_results.py`. Una corrida que queda PENDIENTE indefinidamente se
+  diagnostica revisando su `.err`.
+- Si relanzás un job que falló, borrá su `.out` viejo antes de volver a recolectar —
+  si no, `collect_results.py` tira un error (dos `.out` para la misma corrida).
+- `collect_results.py` ahora completa PENDIENTE las corridas de las 23 que todavía no
+  tienen `.out` (lee `hp_sweep/configs/` por default), así que la tabla siempre tiene
+  exactamente 23 filas.
 
 **4. Generar la figura:**
 
 ```bash
 python hp_sweep/make_plot.py
 ```
+
+Escribe `experiments/E3_dos_conjuntos/plots/hp_sweep_ofat.png`.
 
 ## Cómo se cambia el diseño
 
@@ -90,3 +106,12 @@ monótona pese a que la asistida subía monótonamente).
 
 **Regla fijada antes de ver los resultados:** una diferencia menor a la banda de ruido de las 3
 réplicas se declara **no significativa**.
+
+## Tests
+
+| Archivo | Qué verifica | Requiere |
+|---|---|---|
+| `tests/test_make_configs.py` | Invariantes del diseño experimental (23 configs, nombres únicos, un solo eje por corrida OFAT, etc.) | PyYAML, corre en cualquier lado |
+| `tests/test_all_archs_forward.py` | Regla dura 5: smoke test de forward pass de las 23 configs reales | `torch`, env `NMR_env` |
+| `tests/test_collect_results.py` | Parsing de los `.out` de SLURM a filas de resultado | Python puro |
+| `tests/test_make_plot.py` | Generación de la figura OFAT | `matplotlib` |

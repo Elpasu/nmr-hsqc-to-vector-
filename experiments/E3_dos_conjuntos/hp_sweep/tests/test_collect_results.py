@@ -1,12 +1,16 @@
 # coding: ascii
 """Parsing de los .out de SLURM. El .out sintetico de abajo copia LITERALMENTE
 el formato que imprimen train.py y evaluate.py --oraculo all (verificado contra
-train.py:134/175 y evaluate.py:171-181)."""
+train.py:111/139/180 y evaluate.py:175/212)."""
+import os
 import sys
+import tempfile
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE.parent))
+
+import yaml
 
 import collect_results
 
@@ -52,6 +56,9 @@ TRUNCATED_OUT = """--- ENTRENAMIENTO EXP E FASE 3 (settransformer): nmr_202k_e3_
 [EPOCH 3] Train: 0.4001 | Val: 0.2010 | LR: 0.001000 | Time: 40.2s
 slurmstepd: error: *** JOB 2377999 CANCELLED AT 2026-08-08T04:00:00 DUE TO TIME LIMIT ***
 """
+
+UNRELATED_OUT = ("--- ENTRENAMIENTO EXP E FASE 3 (settransformer): "
+                  "nmr_202k_v10_2ch_fm_19v ---\n")
 
 
 def test_parses_complete_run():
@@ -116,6 +123,57 @@ def test_noise_band_none_without_replicas():
     print("[OK] sin replicas -> None (no se inventa una banda)")
 
 
+def test_expected_runs_reads_configs_dir():
+    with tempfile.TemporaryDirectory() as td:
+        for name, exp in [("a.yaml", "nmr_202k_e3_hp_dmodel_32"),
+                           ("b.yaml", "nmr_202k_e3_hp_rep_43")]:
+            with open(os.path.join(td, name), "w", encoding="utf-8") as f:
+                yaml.safe_dump({"experiment_name": exp}, f)
+        runs = collect_results.expected_runs(td)
+    assert sorted(runs) == ["dmodel_32", "rep_43"], runs
+    print("[OK] expected_runs lee los experiment_name de configs/*.yaml")
+
+
+def test_collect_fills_pending_for_missing_run():
+    with tempfile.TemporaryDirectory() as out_dir, tempfile.TemporaryDirectory() as cfg_dir:
+        with open(os.path.join(out_dir, "expE3_hp_1.out"), "w", encoding="utf-8") as f:
+            f.write(FAKE_OUT)   # experiment_name = nmr_202k_e3_hp_dmodel_128
+        for name, exp in [("a.yaml", "nmr_202k_e3_hp_dmodel_128"),
+                           ("b.yaml", "nmr_202k_e3_hp_dmodel_256")]:
+            with open(os.path.join(cfg_dir, name), "w", encoding="utf-8") as f:
+                yaml.safe_dump({"experiment_name": exp}, f)
+        rows = collect_results.collect(out_dir, config_dir=cfg_dir)
+    by_run = {r["run"]: r for r in rows}
+    assert set(by_run) == {"dmodel_128", "dmodel_256"}, by_run
+    assert by_run["dmodel_128"]["ema_assist_v2"] == 91.50
+    assert by_run["dmodel_256"]["ema_assist_v2"] is None   # nunca corrio -> PENDIENTE
+    print("[OK] collect() completa PENDIENTE una corrida esperada sin .out")
+
+
+def test_collect_raises_on_duplicate_run():
+    with tempfile.TemporaryDirectory() as out_dir:
+        with open(os.path.join(out_dir, "expE3_hp_1.out"), "w", encoding="utf-8") as f:
+            f.write(FAKE_OUT)
+        with open(os.path.join(out_dir, "expE3_hp_2.out"), "w", encoding="utf-8") as f:
+            f.write(FAKE_OUT)   # mismo experiment_name -> relanzamiento sin limpiar
+        try:
+            collect_results.collect(out_dir)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("se esperaba ValueError por .out duplicados")
+    print("[OK] collect() rechaza dos .out para la misma corrida (relanzamiento)")
+
+
+def test_collect_ignores_unrelated_out():
+    with tempfile.TemporaryDirectory() as out_dir:
+        with open(os.path.join(out_dir, "otro.out"), "w", encoding="utf-8") as f:
+            f.write(UNRELATED_OUT)
+        rows = collect_results.collect(out_dir)
+    assert rows == [], rows
+    print("[OK] collect() ignora un .out de otro experimento (prefijo distinto)")
+
+
 if __name__ == "__main__":
     test_parses_complete_run()
     test_truncated_run_gives_none_not_crash()
@@ -123,4 +181,8 @@ if __name__ == "__main__":
     test_markdown_marks_missing_runs_as_pending()
     test_noise_band_from_replicas()
     test_noise_band_none_without_replicas()
+    test_expected_runs_reads_configs_dir()
+    test_collect_fills_pending_for_missing_run()
+    test_collect_raises_on_duplicate_run()
+    test_collect_ignores_unrelated_out()
     print("\n>>> COLLECT_RESULTS OK <<<")

@@ -273,7 +273,7 @@ segundos en la PC local, no después de 40 minutos de cola.
 ## 9. Entregables
 
 1. Sección nueva en `docs/Runs/RESULTS.md`: **"Exp I — estudio de hiperparámetros del Set
-   Transformer"**, con la tabla de 23 filas (eje, valor, nº de parámetros, best val loss, EMA cruda,
+   Transformer"**, con la tabla de 23 filas (corrida, nº de parámetros, best val loss, EMA cruda,
    EMA asistida v2, minutos) y la banda de ruido medida explícita.
 2. `experiments/E3_dos_conjuntos/plots/hp_sweep_ofat.png`.
 3. Un párrafo de conclusión honesta, incluyendo el resultado tal como salga.

@@ -213,6 +213,37 @@ def test_set_path_allows_explicitly_whitelisted_new_leaf():
     print("[OK] _set_path permite las claves nuevas explicitamente permitidas")
 
 
+def test_check_ignores_non_yaml_files_in_configs_dir():
+    """Un archivo suelto en configs/ que no sea .yaml (ej. un .gitkeep o un
+    README) no debe tratarse como una config 'que sobra': --check compara
+    solo contra los .yaml en disco."""
+    import tempfile
+    import yaml
+    built, _ = _built()
+    with tempfile.TemporaryDirectory() as td:
+        cfg_dir = Path(td)
+        for fname, cfg in built.items():
+            with open(cfg_dir / fname, "w", encoding="utf-8") as f:
+                yaml.safe_dump(cfg, f)
+        (cfg_dir / "README.md").write_text("not a config", encoding="utf-8")
+        on_disk_yaml = {f.name for f in cfg_dir.glob("*.yaml")}
+        extra = sorted(on_disk_yaml - set(built))
+        assert extra == [], f"README.md no deberia contar como 'sobra': {extra}"
+    print("[OK] --check filtra por extension .yaml, ignora archivos sueltos")
+
+
+def test_insert_raises_on_filename_collision():
+    out = {}
+    make_configs._insert(out, "hp_dmodel_32.yaml", {"a": 1})
+    try:
+        make_configs._insert(out, "hp_dmodel_32.yaml", {"a": 2})
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("se esperaba ValueError por nombre de archivo duplicado")
+    print("[OK] _insert rechaza un nombre de archivo repetido")
+
+
 if __name__ == "__main__":
     test_exactly_23_configs_with_expected_names()
     test_experiment_name_and_checkpoint_dir_unique()
@@ -226,4 +257,6 @@ if __name__ == "__main__":
     test_written_configs_on_disk_match_generated()
     test_set_path_rejects_typo_in_existing_leaf()
     test_set_path_allows_explicitly_whitelisted_new_leaf()
+    test_check_ignores_non_yaml_files_in_configs_dir()
+    test_insert_raises_on_filename_collision()
     print("\n>>> MAKE_CONFIGS OK <<<")

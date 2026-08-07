@@ -89,6 +89,16 @@ def _get_path(cfg, dotted):
     return node
 
 
+def _insert(out, fname, cfg):
+    """out[fname] = cfg, pero fuerte: dos variantes que generan el MISMO nombre
+    de archivo se pisarian entre si en silencio -- una config real
+    desaparecera del estudio sin ningun aviso."""
+    if fname in out:
+        raise ValueError(f"Nombre de config duplicado: {fname!r} -- dos variantes "
+                         f"del sweep generan el mismo archivo, se pisarian entre si.")
+    out[fname] = cfg
+
+
 def _make_variant(baseline, prefix, name, tag, overrides):
     """Copia del baseline con los overrides aplicados y una identidad unica."""
     cfg = copy.deepcopy(baseline)
@@ -112,7 +122,7 @@ def build_all(grid, baseline):
         for value in axis["values"]:
             fname, cfg = _make_variant(baseline, prefix, axis["name"],
                                        slug(value), {axis["path"]: value})
-            out[fname] = cfg
+            _insert(out, fname, cfg)
 
     # --- Grid 2D ------------------------------------------------------------
     g = grid["grid2d"]
@@ -138,14 +148,14 @@ def build_all(grid, baseline):
                 continue
             fname, cfg = _make_variant(baseline, prefix, g["name"],
                                        f"{slug(va)}x{slug(vb)}", {pa: va, pb: vb})
-            out[fname] = cfg
+            _insert(out, fname, cfg)
 
     # --- Replicas (piso de ruido) -------------------------------------------
     n = grid["noise"]
     for value in n["values"]:
         fname, cfg = _make_variant(baseline, prefix, n["name"], slug(value),
                                    {n["path"]: value})
-        out[fname] = cfg
+        _insert(out, fname, cfg)
 
     # --- Validaciones globales ----------------------------------------------
     for fname, cfg in out.items():
@@ -182,7 +192,8 @@ def main():
             with open(path, "r", encoding="utf-8") as f:
                 if yaml.safe_load(f) != cfg:
                     stale.append(f"{fname} (distinto)")
-        extra = sorted(set(os.listdir(OUT_DIR)) - set(built)) if os.path.isdir(OUT_DIR) else []
+        on_disk_yaml = {f for f in os.listdir(OUT_DIR) if f.endswith(".yaml")} if os.path.isdir(OUT_DIR) else set()
+        extra = sorted(on_disk_yaml - set(built))
         if stale or extra:
             print("[FAIL] configs/ desactualizado:")
             for s in stale + [f"{e} (sobra)" for e in extra]:
