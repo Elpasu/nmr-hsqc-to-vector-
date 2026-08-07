@@ -80,9 +80,31 @@ def test_make_figure_survives_empty_csv():
     print("[OK] CSV vacio -> figura vacia, sin excepcion")
 
 
+def test_group_by_axis_sorts_by_hyperparameter_value_not_by_score():
+    """d_model=128 anotada a proposito con la PEOR EMA de las tres, para que un
+    sort por score (el bug original) la deje primera en vez de en el medio."""
+    rows = [
+        {"run": "dmodel_32", "ema_assist_v2": "91.00", "n_params": "20000", "best_val_loss": "0.012"},
+        {"run": "dmodel_128", "ema_assist_v2": "85.00", "n_params": "240000", "best_val_loss": "0.015"},
+        {"run": "dmodel_256", "ema_assist_v2": "92.00", "n_params": "800000", "best_val_loss": "0.009"},
+    ]
+    with tempfile.TemporaryDirectory() as td:
+        p = Path(td) / "results.csv"
+        with open(p, "w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=["run", "n_params", "best_val_loss", "ema_assist_v2"])
+            w.writeheader()
+            for r in rows:
+                w.writerow(r)
+        groups = make_plot.group_by_axis(make_plot.read_rows(p))
+    tags_in_order = [tag for tag, _ in groups["dmodel"]]
+    assert tags_in_order == ["32", "128", "256"], f"esperaba ['32', '128', '256'] pero got {tags_in_order}"
+    print("[OK] group_by_axis ordena por el VALOR del hiperparametro, no por el score")
+
+
 if __name__ == "__main__":
     test_read_rows_parses_and_skips_empty()
     test_group_by_axis_splits_ofat_axes()
     test_make_figure_writes_png()
     test_make_figure_survives_empty_csv()
+    test_group_by_axis_sorts_by_hyperparameter_value_not_by_score()
     print("\n>>> MAKE_PLOT OK <<<")

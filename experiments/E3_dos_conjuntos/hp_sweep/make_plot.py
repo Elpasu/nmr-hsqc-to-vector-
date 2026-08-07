@@ -54,10 +54,27 @@ def read_rows(csv_path=CSV_PATH):
     return rows
 
 
+def _tag_sort_key(tag):
+    """Convierte un tag slug-eado (ver make_configs.slug) de vuelta a un valor
+    ordenable: '0p0003' -> 0.0003, '64x32' -> (64.0, 32.0), '128' -> (128.0,).
+    El eje x de cada panel tiene que reflejar el VALOR del hiperparametro
+    barrido, nunca el ranking de desempeno (EMA) -- ordenar por EMA baria un
+    patron artificial en el grafico."""
+    nums = []
+    for part in tag.split("x"):
+        try:
+            nums.append(float(part.replace("p", ".").replace("m", "-")))
+        except ValueError:
+            return (float("inf"), tag)   # tag no numerico: al final, estable
+    return tuple(nums)
+
+
 def group_by_axis(rows):
     """{'dmodel': [('32', 90.1), ('128', 91.5)], ...} solo con los ejes OFAT.
     Excluye rep_* (son la banda de ruido) y grid_* (van en su propia tabla).
-    Las corridas sin EMA todavia (pendientes) se omiten del panel."""
+    Las corridas sin EMA todavia (pendientes) se omiten del panel. Las entradas
+    se ordenan por el VALOR del hiperparametro barrido (usando _tag_sort_key),
+    no por el EMA, para reflejar la relacion real entre parametro y desempeno."""
     groups = {}
     for r in rows:
         run = r.get("run") or ""
@@ -70,7 +87,7 @@ def group_by_axis(rows):
             continue
         groups.setdefault(axis, []).append((tag, r["ema_assist_v2"]))
     for axis in groups:
-        groups[axis].sort(key=lambda t: t[1])
+        groups[axis].sort(key=lambda t: _tag_sort_key(t[0]))
     return groups
 
 
