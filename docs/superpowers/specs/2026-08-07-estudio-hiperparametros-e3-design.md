@@ -144,9 +144,10 @@ estudio no vale nada:
 - **19 clases en el orden de `config/db.yaml`** — regla dura 7.
 - **Dataset:** los mismos `.npz` / `.npy` de 202 465 moléculas, `train_fraction = 1.0`.
 - **Un solo cluster para las 23.** Recomendado: **login-1 / A10**, porque es donde vive toda la serie
-  histórica (incluida la corrida seed=42 que se reutiliza) y es 1.8× más rápido que XPU. El
-  checkpoint desplegado sigue siendo el de Clementina; este estudio es sobre la *elección de
-  arquitectura*, no sobre qué checkpoint se sirve.
+  histórica de este proyecto y es 1.8× más rápido que XPU (las 3 réplicas de seed, incluida la
+  seed=42, se reentrenan de cero en esta corrida — ver §3.3, ninguna se reutiliza). El checkpoint
+  desplegado sigue siendo el de Clementina; este estudio es sobre la *elección de arquitectura*, no
+  sobre qué checkpoint se sirve.
 
 **Excepción explícita:** en las corridas del piso de ruido (§3.3) la seed **sí** varía — es la
 variable bajo estudio de esa sub-medición.
