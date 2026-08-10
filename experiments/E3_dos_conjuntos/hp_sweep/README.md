@@ -30,7 +30,12 @@ fusion=128→64`.
 Todo lo demás es invariante en las 23 (regla dura 8): val congelado, 100 épocas,
 `ConstrainedMSELoss`, scheduler `patience=8/factor=0.7`, `num_workers=0`, 19 clases, dataset completo.
 
-**Correr las 23 en el mismo cluster.** Recomendado login-1/A10 (~39 min por corrida ⇒ ~15 h de GPU).
+**Correr las 23 en el mismo cluster** (login-1/A10 O Clementina XXI/XPU, no mezclados): la banda de
+ruido mide variación de semilla, y mezclar hardware la confunde con la variación A10-vs-XPU (~0.8pp,
+ver `RESULTS.md`, sección de migración XPU). Recomendado login-1/A10 (~39 min por corrida ⇒ ~15 h de
+GPU) por ser el histórico del proyecto, pero el checkpoint resultó igual de bueno en Clementina —
+`run_sweep_clementina.sh` es el equivalente para XPU (mismo config, mismo `train.py`/`evaluate.py`,
+solo cambia el `.sh`: partición `gpunode`, env `/data/contrib/pci_78/envs/nmr_xpu`).
 
 ## Cómo se corre
 
@@ -51,10 +56,15 @@ cambio solo necesita PyYAML y corre en cualquier lado, incluida una PC Windows s
 **2. Lanzar las 23 (desde `experiments/E3_dos_conjuntos/` en el cluster):**
 
 ```bash
+# login-1 / A10:
 for cfg in hp_sweep/configs/*.yaml; do sbatch run_sweep.sh "$cfg"; done
+
+# Clementina XXI / XPU (elegir UNO de los dos, no mezclar):
+for cfg in hp_sweep/configs/*.yaml; do sbatch run_sweep_clementina.sh "$cfg"; done
 ```
 
-Cada job entrena Y evalúa el mismo config, y deja todo en un `expE3_hp_<jobid>.out`.
+Cada job entrena Y evalúa el mismo config, y deja todo en un `expE3_hp_<jobid>.out`
+(`expE3_hp_xpu_<jobid>.out` en Clementina).
 
 **3. Bajar los `.out` a la PC local y recolectar:**
 
@@ -113,5 +123,5 @@ réplicas se declara **no significativa**.
 |---|---|---|
 | `tests/test_make_configs.py` | Invariantes del diseño experimental (23 configs, nombres únicos, un solo eje por corrida OFAT, etc.) | PyYAML, corre en cualquier lado |
 | `tests/test_all_archs_forward.py` | Regla dura 5: smoke test de forward pass de las 23 configs reales | `torch`, env `NMR_env` |
-| `tests/test_collect_results.py` | Parsing de los `.out` de SLURM a filas de resultado | Python puro |
+| `tests/test_collect_results.py` | Parsing de los `.out` de SLURM a filas de resultado | PyYAML, corre en cualquier lado |
 | `tests/test_make_plot.py` | Generación de la figura OFAT | `matplotlib` |
