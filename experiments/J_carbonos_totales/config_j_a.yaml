@@ -1,0 +1,50 @@
+# experiments/J_carbonos_totales/config_j_a.yaml
+#
+# Exp J-A: corrida EXPERIMENTAL. Vector de carbonos totales + degeneracion
+# (derivada de la integracion de protones) como 5a feature del crosspeak.
+#
+# Su par de control es config_j_0.yaml, que lee EXACTAMENTE los mismos datos
+# y difiere solo en peak_features: 4. Todo lo demas tiene que ser identico
+# entre los dos o la comparacion no mide lo que dice medir (regla dura 8).
+experiment_name: "nmr_202k_j_carbonos_deg"
+
+paths:
+  base_dir: "${NMR_DATA_DIR:-/home/lpassaglia.iquir/DB_200k}"
+  peaks_ch_filename: "peaks_pkl_deg_202465.npz"
+  peaks_13c_filename: "peaks_13c_202465.npz"
+  labels_filename: "vectors_19v_totales_202465.npy"
+  smiles_filename: "smiles_202465.npy"
+  checkpoint_dir: "checkpoints_J_carbonos_deg"
+  val_indices_filename: "val_indices_frozen.npy"
+
+model:
+  arch: "settransformer"
+  peak_features: 5          # <-- lo unico que distingue esta corrida del control
+  d_model: 64
+  n_heads: 4
+  n_layers: 2
+  n_seeds: 1
+
+normalization:
+  c13_ppm_min: 0
+  c13_ppm_max: 220
+  h1_ppm_min: -1
+  h1_ppm_max: 15
+  amp_ch0_scale: 3.0
+  # Degeneracion medida: 80.5% vale 1, 18.1% vale 2, maximo observado 12.
+  # Escala 4.0 deja los valores comunes en 0.25 y 0.5.
+  degeneracion_scale: 4.0
+
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  seed: 42
+  scheduler:
+    patience: 8
+    factor: 0.7
+
+system:
+  device: "${NMR_DEVICE:-auto}"
+  num_workers: 0
+  pin_memory: true

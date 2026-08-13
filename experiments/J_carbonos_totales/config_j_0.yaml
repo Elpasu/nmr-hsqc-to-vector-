@@ -1,0 +1,50 @@
+# experiments/J_carbonos_totales/config_j_0.yaml
+#
+# Exp J-0: corrida de CONTROL. Mismo vector de carbonos totales, mismos
+# archivos de datos, pero SIN la degeneracion (peak_features: 4 recorta la 5a
+# columna en el dataset).
+#
+# Sin este control, si J-A funciona no se puede afirmar que la integracion fue
+# necesaria: podria ser que la restriccion de suma de la FM -- que en el
+# esquema de carbonos totales es exacta -- ya alcanzara sola.
+experiment_name: "nmr_202k_j_carbonos_ctrl"
+
+paths:
+  base_dir: "${NMR_DATA_DIR:-/home/lpassaglia.iquir/DB_200k}"
+  peaks_ch_filename: "peaks_pkl_deg_202465.npz"
+  peaks_13c_filename: "peaks_13c_202465.npz"
+  labels_filename: "vectors_19v_totales_202465.npy"
+  smiles_filename: "smiles_202465.npy"
+  checkpoint_dir: "checkpoints_J_carbonos_ctrl"
+  val_indices_filename: "val_indices_frozen.npy"
+
+model:
+  arch: "settransformer"
+  peak_features: 4          # <-- control: sin degeneracion
+  d_model: 64
+  n_heads: 4
+  n_layers: 2
+  n_seeds: 1
+
+normalization:
+  c13_ppm_min: 0
+  c13_ppm_max: 220
+  h1_ppm_min: -1
+  h1_ppm_max: 15
+  amp_ch0_scale: 3.0
+  degeneracion_scale: 4.0   # sin efecto con peak_features 4; se deja para que
+                            # los dos configs sean diffeables linea por linea
+
+hyperparameters:
+  batch_size: 64
+  learning_rate: 0.001
+  epochs: 100
+  seed: 42
+  scheduler:
+    patience: 8
+    factor: 0.7
+
+system:
+  device: "${NMR_DEVICE:-auto}"
+  num_workers: 0
+  pin_memory: true
