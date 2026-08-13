@@ -22,6 +22,7 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp G Fase 1 — multi-vector (cobertura@K, mismo ckpt XPU) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | cobertura@K: 92.14 (K1) / 95.89 (K2) / 96.75 (K3) / 97.39 (K5) | métrica NUEVA (cobertura@K, no EMA). Sanity: coverage@1==EMA v2. Techo intra-nH ~98.7%; ranking L1 débil + sin especificidad → Fase 1b guiada por incertidumbre. Ver seccion |
 | Exp G Fase 1b — multi-vector guiada por incertidumbre (τ) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | K ADAPTATIVO: misma cobertura que Fase 1 con ~40% menos vectores (96.75% a K prom 1.78 vs K=3; 95.6% a 1.23 vs K=2). Punto sugerido τ=1.5. Ver seccion |
 | Exp I — estudio de hiperparametros (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | PENDIENTE | PENDIENTE | PENDIENTE | 23 corridas (16 OFAT + 4 grid 2D d_model x n_layers + 3 replicas de seed), val congelado y 100 epocas en las 23. **Jobs NO lanzados todavia.** Ver seccion |
+| Exp J — vector de carbonos totales (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | PENDIENTE | PENDIENTE | PENDIENTE | **TARGET NUEVO, EMA NO comparable con las filas de arriba**: el vector cuenta carbonos, no senales (benceno = 6, no 1). 2 corridas: J-A (con degeneracion de la integracion) y J-0 (control). Techo medido 97.7%. **Jobs NO lanzados todavia.** Ver seccion |
 
 ---
 
@@ -627,6 +628,71 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
   `docs/superpowers/specs/2026-08-07-estudio-hiperparametros-e3-design.md`. Plan:
   `docs/superpowers/plans/2026-08-07-estudio-hiperparametros-e3.md`. Código y cómo correrlo:
   `experiments/E3_dos_conjuntos/hp_sweep/README.md`.
+
+---
+
+## Exp J — vector de carbonos totales (simetría resuelta por integración)
+
+- **Fecha:** 2026-08-12 (preparación) · **SLURM:** PENDIENTE ·
+  **Configs:** `experiments/J_carbonos_totales/config_j_{a,0}.yaml` ·
+  **Cluster:** login-1 / A10.
+- **Estado: los jobs NO se lanzaron todavía.** Los números se completan cuando corran.
+
+### ⚠️ Estos EMA no son comparables con el resto de la tabla
+
+El target cambió. Hasta el Exp I, el vector de 19 clases contaba **señales** (carbonos equivalentes
+por simetría colapsados: benceno = 1 en `=CH/Ar`). Exp J cuenta **carbonos totales** (benceno = 6),
+así que `sum(vector) == C` de la fórmula molecular. Es un problema más difícil por construcción: la
+suma promedio pasa de 11,4 a 13,3 y hay que acertar la degeneración además de la clase.
+
+**El punto de comparación de J-A es J-0, no el 92,14 % del checkpoint congelado.**
+
+### Por qué
+
+El vector de señales choca con la FM: dice 1 donde la fórmula dice C6, y el generador de estructuras
+aguas abajo necesita el conteo real de carbonos. Medido sobre 20 000 moléculas: **62 % del dataset
+tiene simetría**, con 3 carbonos escondidos en promedio (máximo 26).
+
+La integración de protones revela la degeneración — en el tolueno, 3 señales aromáticas CH que
+integran 2H / 2H / 1H son 5 carbonos.
+
+### Techo del experimento: 97,7 %
+
+| Caso | Fracción | Por qué |
+|---|---|---|
+| Sin cuaternarios escondidos | 90,3 % | La integración resuelve toda la simetría |
+| Cuaternarios escondidos, una sola clase Cq | 7,4 % | La suma de la FM los ubica igual |
+| Cuaternarios escondidos en varias clases Cq | 2,3 % | Ambigüedad real |
+
+De los carbonos escondidos, el **91,4 %** está en carbonos protonados (alcanzables por integración).
+Los cuaternarios no tienen integración: en un ¹³C real las intensidades no son cuantitativas.
+
+### Las dos corridas
+
+| Corrida | `peak_features` | Best Val Loss | EMA cruda | EMA asist v2 | min |
+|---|---|---|---|---|---|
+| J-A (con degeneración) | 5 | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE |
+| J-0 (control, sin) | 4 | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE |
+
+Los dos configs leen los mismos archivos de datos y difieren **solo** en `peak_features` (verificado
+por `tests/test_configs_j.py`). Invariantes: val congelado, 100 épocas, `ConstrainedMSELoss`,
+scheduler `patience=8/factor=0.7`, `num_workers=0`, seed 42, mismo cluster.
+
+### Lecturas posibles (fijadas antes de ver los resultados)
+
+| Resultado | Conclusión |
+|---|---|
+| J-A ≫ J-0 | La integración es la que hace el trabajo. Diseño validado. |
+| J-A ≈ J-0 | La suma exacta de la FM ya alcanzaba; la integración es redundante. Ahorra pedirla en el laboratorio. |
+| Ambas bajas | El vector de carbonos es genuinamente más difícil. Se documenta y se para. |
+
+- **Verificado antes de entrenar:** el clasificador portado reproduce los labels históricos al
+  **100,000 %** sobre 5 000 moléculas (0 discrepancias), y el vector sin colapso suma exactamente C
+  también al 100 %.
+- **Takeaway:** PENDIENTE. Spec:
+  `docs/superpowers/specs/2026-08-12-vector-carbonos-totales-design.md`. Plan:
+  `docs/superpowers/plans/2026-08-12-vector-carbonos-totales.md`. Cómo correrlo:
+  `experiments/J_carbonos_totales/README.md`.
 
 ---
 
