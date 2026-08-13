@@ -100,6 +100,30 @@ No hay script para Clementina: el cupo QOS del grupo está trabado ahí, y Exp I
 > difícil por construcción: la suma promedio pasa de 11,4 a 13,3 y hay que acertar la degeneración
 > además de la clase. El punto de comparación es **J-0**, no el modelo viejo.
 
+## Multi-vector / cobertura@K (Exp G) sobre este target
+
+Pendiente, no evaluado en el experimento inicial (J-A vs J-0). `candidates.py`/`coverage.py`
+(`experiments/G_multivector/`) son agnósticos al target — trabajan sobre el vector de 19 clases y el
+oráculo, sin importar si los conteos son señales o carbonos totales — así que reusarlos no exige
+tocarlos. Lo único que faltaba era el puente: `dump_predictions.py` (agregado acá, copia del de
+`E3_dos_conjuntos/` con `dataset_j`/`peak_features` en vez de `dataset_e3`).
+
+Para correrlo sobre el checkpoint de J-A, en el cluster:
+
+```bash
+python dump_predictions.py --config config_j_a.yaml
+```
+
+Bajar el parquet resultante (`predictions_nmr_202k_j_carbonos_deg.parquet`) y en la PC local:
+
+```bash
+cd ../G_multivector
+python coverage.py --parquet /ruta/al/predictions_nmr_202k_j_carbonos_deg.parquet --uncertainty
+```
+
+Candidato natural para el ~2,3 % de ambigüedad residual (cuaternarios escondidos repartidos en varias
+clases) que ni la integración ni la FM resuelven solas.
+
 ## Tests
 
 | Archivo | Qué verifica | Requiere |
