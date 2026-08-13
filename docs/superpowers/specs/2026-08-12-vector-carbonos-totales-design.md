@@ -103,11 +103,16 @@ experiments/J_carbonos_totales/
   split_utils.py, config_utils.py, device_utils.py   # copias sin cambios
   config_j_a.yaml                # corrida J-A (con degeneracion)
   config_j_0.yaml                # corrida J-0 (control, sin degeneracion)
-  run_train_j.sh                 # login-1 / A10
-  run_train_j_clementina.sh      # Clementina XXI / XPU
+  run_train_j.sh                 # login-1 / A10 (train + eval en un job)
   tests/...
   README.md · RATIONALE.md
 ```
+
+**Cluster objetivo: login-1 / A10 ("capitán")**, `lpassaglia.iquir`, env `NMR_env`, partición
+`gpua10_hi`. Es el que el diseño ya recomendaba (§8.1) y donde vive toda la serie histórica. No se
+genera script para Clementina XXI: el cupo QOS del grupo está trabado ahí y sumar un `.sh` que no se
+va a usar es código muerto. Si en algún momento hace falta, se clona el patrón ya probado de
+`run_train_settransformer_clementina.sh`.
 
 ---
 
@@ -263,7 +268,7 @@ Las tres lecturas posibles, todas válidas:
 - `num_workers: 0` (regla dura 1), `seed = 42`.
 - 19 clases en el orden de `config/db.yaml` (regla dura 7).
 - Dataset completo de 202 465, `train_fraction = 1.0`.
-- **El mismo cluster para las dos.**
+- **El mismo cluster para las dos: login-1 / A10.**
 
 ### 8.2 Dentro de alcance
 
@@ -325,14 +330,13 @@ Todo local, en CPU, **antes** de gastar cola de GPU (regla dura 5).
 | Regeneración local de labels + crosspeaks | ~5 min de CPU |
 | J-A + J-0 | 2 × ~40 min ≈ **80 min de GPU** |
 
-**Dos pasos manuales de Lucas:**
+**Un paso manual de Lucas:** subir los datos nuevos al cluster.
+`vectors_19v_totales_202465.npy` y `peaks_pkl_deg_202465.npz` se generan en la PC local y hay que
+copiarlos por `scp` a `/home/lpassaglia.iquir/DB_200k/` en login-1 (el `base_dir` del config).
 
-1. **Subir los datos nuevos al cluster.** `vectors_19v_totales_202465.npy` y
-   `peaks_pkl_deg_202465.npz` se generan en la PC local y hay que copiarlos por `scp` al `base_dir`
-   del cluster elegido.
-2. **Decidir el orden en la cola.** Las 2 corridas de J van a quedar detrás de los 23 jobs del Exp I
-   en Clementina, con el cupo QOS (`QOSGrpCPUMinutesLimit`) trabado. Si Exp J va primero, hay que
-   reordenar o cancelar/reencolar Exp I.
+Exp J corre en **login-1 / A10**, así que no compite por la cola con los 23 jobs del Exp I, que están
+encolados en Clementina esperando cupo QOS. Los dos experimentos avanzan en paralelo sin
+interferirse.
 
 ---
 
