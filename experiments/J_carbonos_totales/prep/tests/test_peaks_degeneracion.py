@@ -97,6 +97,40 @@ def test_smiles_invalido_da_lista_vacia():
     print("[OK] SMILES invalido -> lista vacia (mismo contrato que Fase 1b)")
 
 
+def test_carbono_sin_ningun_H_shifteado_se_descarta():
+    """Un carbono con delta_c pero sin NINGUN H shifteado se descarta entero
+    (rama `if not h_shifts: continue`). Es el unico caso en que el pkl
+    incompleto produce un deficit real de H."""
+    from rdkit import Chem
+    mol = Chem.AddHs(Chem.MolFromSmiles("CO"))
+    shifts = {a.GetIdx(): 50.0 for a in mol.GetAtoms() if a.GetAtomicNum() == 6}
+    # ningun H recibe shift
+    peaks = extract_peaks_deg_from_pkl_molecule("CO", shifts)
+    assert peaks == [], peaks
+    print("[OK] carbono sin ningun H shifteado -> se descarta entero")
+
+
+def test_mult_sale_de_la_conectividad_no_de_los_shifts():
+    """Clave para leer bien la validacion de H: con 1 solo de los 3 H de un
+    CH3 shifteado, mult sigue valiendo 3 (sale de RDKit, no del pkl). Por eso
+    un 100% de reconstruccion NO prueba que el pkl este completo a nivel de H."""
+    from rdkit import Chem
+    mol = Chem.AddHs(Chem.MolFromSmiles("CO"))
+    shifts = {}
+    h_del_carbono = []
+    for a in mol.GetAtoms():
+        if a.GetAtomicNum() == 6:
+            shifts[a.GetIdx()] = 50.0
+            h_del_carbono = [n.GetIdx() for n in a.GetNeighbors()
+                             if n.GetAtomicNum() == 1]
+    shifts[h_del_carbono[0]] = 3.3          # UN solo H de los tres
+    peaks = extract_peaks_deg_from_pkl_molecule("CO", shifts)
+    assert len(peaks) == 1, peaks
+    mult = round(peaks[0][3] * 3)
+    assert mult == 3, mult                  # los 3 H, no 1
+    print("[OK] mult sale de la conectividad (3), no de los shifts presentes (1)")
+
+
 if __name__ == "__main__":
     test_agrupar_cuenta_en_vez_de_descartar()
     test_agrupar_conserva_el_orden_de_aparicion()
@@ -106,4 +140,6 @@ if __name__ == "__main__":
     test_build_padded_arrays_cinco_columnas()
     test_molecula_sin_shifts_da_lista_vacia()
     test_smiles_invalido_da_lista_vacia()
+    test_carbono_sin_ningun_H_shifteado_se_descarta()
+    test_mult_sale_de_la_conectividad_no_de_los_shifts()
     print("\n>>> PEAKS DEGENERACION OK <<<")

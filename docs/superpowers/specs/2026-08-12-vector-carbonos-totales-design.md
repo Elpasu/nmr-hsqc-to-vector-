@@ -301,11 +301,11 @@ Todo local, en CPU, **antes** de gastar cola de GPU (regla dura 5).
 2. `sum(vector nuevo) == C` de la FM, para las 202 465.
 3. `sum(vector nuevo) >= sum(vector viejo)`, y la diferencia == carbonos escondidos por simetría.
 4. Consistencia de la degeneración: `Σ(degeneracion × mult)` sobre los crosspeaks **≤** nº de H sobre
-   carbono de la molécula, con igualdad en las moléculas que tienen shift DFT para todos sus H.
-   No es igualdad universal a propósito: `extract_peaks_from_pkl_molecule` descarta los carbonos sin
-   shift en el pkl, así que un pkl incompleto da estrictamente menos. El test reporta **qué fracción
-   cumple la igualdad** — si esa fracción es baja, hay un problema de datos que hay que mirar antes
-   de entrenar, no un test que haya que relajar.
+   carbono. `mult` sale de la conectividad de RDKit, no de cuántos H tienen shift, así que la
+   condición para la igualdad es más débil de lo que parece: alcanza con que cada carbono protonado
+   tenga su δC y **al menos un** H shifteado. Un 100 % **no** prueba que el pkl esté completo a nivel
+   de H — solo que ningún carbono protonado quedó afuera entero. El test reporta la fracción; si es
+   baja, hay un problema de datos que mirar antes de entrenar, no un test que relajar.
 5. Alineación fila-por-fila de picos / labels / SMILES, reusando `verify_smiles_alignment` de
    `extract_peaks_pkl.py` (ya probada en Fase 1b).
 6. `n_picos_13C <= sum(label)` en las 202 465 (§5.3).

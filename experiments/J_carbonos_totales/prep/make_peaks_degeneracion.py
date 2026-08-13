@@ -163,18 +163,33 @@ def main(config_path):
     print(f"-> senales con degeneracion > 1: "
           f"{100.0 * (deg_validas > 1).mean():.1f}%")
 
-    # Validacion: Sum(degeneracion x mult) <= H sobre carbono. Igualdad solo si
-    # el pkl tiene shift para TODOS los H (ver spec 9.1.4): un pkl incompleto da
-    # estrictamente menos, y eso no es un test que haya que relajar sino un dato
-    # sobre la calidad de los datos.
+    # Validacion: Sum(degeneracion x mult) <= H sobre carbono.
+    #
+    # Que dice exactamente la igualdad: mult sale de la conectividad de RDKit
+    # (get_ch_connectivity_with_multiplicity), NO de cuantos H tienen shift en
+    # el pkl. Un CH3 con 1 solo de sus 3 H shifteado acredita igual los 3 H.
+    # Asi que la condicion necesaria para que de 100% es mas debil de lo que
+    # parece: cada carbono protonado necesita SU delta_c y AL MENOS UN H
+    # shifteado -- no todos sus H. Un 100% NO prueba que el pkl este completo
+    # a nivel de H, solo que ningun carbono protonado quedo afuera entero.
+    #
+    # h_reales se calcula con un recorrido independiente de RDKit (no filtrado
+    # por ninguna condicion de la extraccion), asi que la comparacion no es
+    # tautologica: un carbono protonado sin ningun shift produce un deficit real.
     mult = np.rint(peaks_array[:, :, 3] * 3.0)
     h_reconstruidos = (deg * mult * mask_array).sum(axis=1)
 
     h_reales = np.zeros(n_total, dtype=np.float64)
     for i, s in enumerate(smiles_local):
-        mol = Chem.MolFromSmiles(str(s))       # una sola vez por molecula:
-        if mol is None:                        # parsear dos veces sobre 202465
-            continue                           # cuesta varios minutos de mas
+        # Un solo MolFromSmiles por vuelta (no dos, como saldria de parsear
+        # tambien dentro de la condicion): sobre 202465 moleculas la diferencia
+        # son varios minutos. La extraccion de arriba ya parseo una vez, asi
+        # que en total el script parsea dos veces por molecula -- es el precio
+        # de calcular h_reales de forma independiente de la extraccion, que es
+        # justamente lo que hace que la validacion no sea tautologica.
+        mol = Chem.MolFromSmiles(str(s))
+        if mol is None:
+            continue
         mol = Chem.AddHs(mol)
         h_reales[i] = sum(
             1 for a in mol.GetAtoms()
