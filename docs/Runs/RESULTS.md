@@ -22,7 +22,8 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 | Exp G Fase 1 — multi-vector (cobertura@K, mismo ckpt XPU) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | cobertura@K: 92.14 (K1) / 95.89 (K2) / 96.75 (K3) / 97.39 (K5) | métrica NUEVA (cobertura@K, no EMA). Sanity: coverage@1==EMA v2. Techo intra-nH ~98.7%; ranking L1 débil + sin especificidad → Fase 1b guiada por incertidumbre. Ver seccion |
 | Exp G Fase 1b — multi-vector guiada por incertidumbre (τ) | n/a (sin imagen) | 19 | 202k | none | — (no retrain) | — | K ADAPTATIVO: misma cobertura que Fase 1 con ~40% menos vectores (96.75% a K prom 1.78 vs K=3; 95.6% a 1.23 vs K=2). Punto sugerido τ=1.5. Ver seccion |
 | Exp I — estudio de hiperparametros (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | PENDIENTE | PENDIENTE | PENDIENTE | 23 corridas (16 OFAT + 4 grid 2D d_model x n_layers + 3 replicas de seed), val congelado y 100 epocas en las 23. **Jobs NO lanzados todavia.** Ver seccion |
-| Exp J — vector de carbonos totales (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | PENDIENTE | PENDIENTE | PENDIENTE | **TARGET NUEVO, EMA NO comparable con las filas de arriba**: el vector cuenta carbonos, no senales (benceno = 6, no 1). 2 corridas: J-A (con degeneracion de la integracion) y J-0 (control). Techo medido 97.7%. **Jobs NO lanzados todavia.** Ver seccion |
+| Exp J-A — vector de carbonos totales, con degeneracion (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.0126 (40.6min) | 0.94% | **90.35%** | **TARGET NUEVO, EMA NO comparable con las filas de arriba**: cuenta carbonos, no senales (benceno=6, no 1). J-A gana a J-0 por +5.31pp -> la degeneracion (integracion) aporta. Techo medido 97.7%. Ver seccion |
+| Exp J-0 — vector de carbonos totales, control sin degeneracion (Set Transformer) | n/a (sin imagen) | 19 | 202k | none | 0.0195 (40.6min) | 1.07% | 85.04% | **control de J-A** (mismos datos, sin la 5a feature) — mide cuanto se pierde sin integracion. Ver seccion |
 
 ---
 
@@ -633,10 +634,10 @@ One entry per run. Raw logs live in `docs/runs/<name>_train.out`.
 
 ## Exp J — vector de carbonos totales (simetría resuelta por integración)
 
-- **Fecha:** 2026-08-12 (preparación) · **SLURM:** PENDIENTE ·
+- **Fecha:** 2026-08-13 (corrido) · **SLURM:** `2387654` (J-A), `2387655` (J-0) ·
   **Configs:** `experiments/J_carbonos_totales/config_j_{a,0}.yaml` ·
   **Cluster:** login-1 / A10.
-- **Estado: los jobs NO se lanzaron todavía.** Los números se completan cuando corran.
+- **Estado: corrido.** ~40,6 min cada corrida.
 
 ### ⚠️ Estos EMA no son comparables con el resto de la tabla
 
@@ -669,20 +670,31 @@ Los cuaternarios no tienen integración: en un ¹³C real las intensidades no so
 
 ### Las dos corridas
 
-| Corrida | `peak_features` | Best Val Loss | EMA cruda | EMA asist v2 | min |
-|---|---|---|---|---|---|
-| J-A (con degeneración) | 5 | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE |
-| J-0 (control, sin) | 4 | PENDIENTE | PENDIENTE | PENDIENTE | PENDIENTE |
+| Corrida | `peak_features` | Best Val Loss | EMA cruda | EMA asist v1 | EMA asist v2 | min |
+|---|---|---|---|---|---|---|
+| J-A (con degeneración) | 5 | 0,0126 | 0,94 % | 90,32 % | **90,35 %** | 40,6 |
+| J-0 (control, sin) | 4 | 0,0195 | 1,07 % | 85,02 % | **85,04 %** | 40,6 |
+| **Δ (J-A − J-0)** | | −0,0069 | −0,13 pp | **+5,30 pp** | **+5,31 pp** | |
 
 Los dos configs leen los mismos archivos de datos y difieren **solo** en `peak_features` (verificado
 por `tests/test_configs_j.py`). Invariantes: val congelado, 100 épocas, `ConstrainedMSELoss`,
 scheduler `patience=8/factor=0.7`, `num_workers=0`, seed 42, mismo cluster.
 
+Por entorno (asistida v2), J-A vs J-0: Alifáticos 95,67 % vs 92,53 %, Heteroatómicos O/N 93,55 % vs
+91,25 %, sp2 (Olef/Arom/C=O) 95,71 % vs 91,58 %, X-múltiples 97,86 % vs 97,63 % — la degeneración
+ayuda en las cuatro familias, más marcado en sp2 (+4,13 pp), donde vive la mayor parte de la simetría
+del dataset (anillos aromáticos).
+
+Confusiones que quedan en J-A (mapa completo en el `.out`): concentradas en `=CH/Ar` ↔ `Cqsp2`
+(28,8 % / 47,7 % cruzado) y en pares con/sin heteroátomo vecino (`CH2`↔`CH2-N`, `CH`↔`CH-N`,
+`Cq`↔`Cq-N`) — la misma familia de confusiones ya documentada en el modelo de señales, ahora un
+poco más marcada porque hay más carbonos por resolver por molécula (11,4 → 13,3 en promedio).
+
 ### Lecturas posibles (fijadas antes de ver los resultados)
 
 | Resultado | Conclusión |
 |---|---|
-| J-A ≫ J-0 | La integración es la que hace el trabajo. Diseño validado. |
+| **J-A ≫ J-0 ← ESTE** | **La integración es la que hace el trabajo. Diseño validado.** |
 | J-A ≈ J-0 | La suma exacta de la FM ya alcanzaba; la integración es redundante. Ahorra pedirla en el laboratorio. |
 | Ambas bajas | El vector de carbonos es genuinamente más difícil. Se documenta y se para. |
 
@@ -690,7 +702,15 @@ scheduler `patience=8/factor=0.7`, `num_workers=0`, seed 42, mismo cluster.
   **100,0000 %** sobre las 202 465 moléculas del dataset completo (corrida real de
   `make_labels_totales.py`), 0 discrepancias, y el vector sin colapso suma exactamente C también al
   100 %.
-- **Takeaway:** PENDIENTE. Spec:
+- **Takeaway:** J-A le gana a J-0 por **+5,31 pp** de EMA asistida v2 (90,35 % vs 85,04 %) — la
+  degeneración derivada de la integración de protones aporta información real, no redundante con la
+  restricción de suma de la FM. El 90,35 % **no es comparable** con el 92,14 % del checkpoint
+  congelado (target distinto, más difícil por construcción); contra el techo físico medido para este
+  target (97,7 %) deja un margen de ~7,3 pp, del mismo orden que el margen del modelo de señales
+  respecto de su propio techo. Los errores que quedan se concentran en aromáticos (`=CH/Ar`↔`Cqsp2`)
+  y en pares con/sin heteroátomo — candidatos naturales para el multi-vector guiado por incertidumbre
+  (τ, Exp G Fase 1b) aplicado a este target, que queda **pendiente para una siguiente iteración**, no
+  evaluado en este experimento. Spec:
   `docs/superpowers/specs/2026-08-12-vector-carbonos-totales-design.md`. Plan:
   `docs/superpowers/plans/2026-08-12-vector-carbonos-totales.md`. Cómo correrlo:
   `experiments/J_carbonos_totales/README.md`.
