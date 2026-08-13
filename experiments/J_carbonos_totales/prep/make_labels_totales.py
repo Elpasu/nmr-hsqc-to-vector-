@@ -158,8 +158,24 @@ def main(config_path, solo_verificar=False):
     print(f"-> carbonos escondidos por simetria: promedio {escondidos.mean():.2f}, "
           f"max {escondidos.max()}")
     print(f"-> moleculas con simetria: {100.0 * (escondidos > 0).mean():.1f}%")
+
+    # Las tres condiciones de abajo tienen que valer 100% o el archivo NO se
+    # escribe: son la misma propiedad "fail loud" que el GATE de arriba, un
+    # escalon mas adelante. Sin esto, un cambio futuro en classify_carbon que
+    # deje de reconocer algun entorno, o un SMILES invalido, producirian filas
+    # incorrectas (subcontadas o directamente en cero) que se guardarian igual
+    # como si fueran labels validos.
+    if n_invalidos != 0:
+        print(f"\n[ABORT] {n_invalidos} SMILES invalidos produjeron filas en cero "
+              f"que no son un label real. No se escribe el archivo.")
+        sys.exit(1)
+    if n_suma_ok != len(smiles):
+        print(f"\n[ABORT] sum(vector) != C de la formula en "
+              f"{len(smiles) - n_suma_ok} moleculas -- el vector nuevo no es "
+              f"confiable. No se escribe el archivo.")
+        sys.exit(1)
     if int((escondidos < 0).sum()) != 0:
-        print("[ABORT] hay moleculas con MENOS carbonos que senales: imposible.")
+        print("\n[ABORT] hay moleculas con MENOS carbonos que senales: imposible.")
         sys.exit(1)
 
     out = base_202k / p["labels_totales_output"]

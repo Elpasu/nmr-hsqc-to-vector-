@@ -687,8 +687,9 @@ scheduler `patience=8/factor=0.7`, `num_workers=0`, seed 42, mismo cluster.
 | Ambas bajas | El vector de carbonos es genuinamente más difícil. Se documenta y se para. |
 
 - **Verificado antes de entrenar:** el clasificador portado reproduce los labels históricos al
-  **100,000 %** sobre 5 000 moléculas (0 discrepancias), y el vector sin colapso suma exactamente C
-  también al 100 %.
+  **100,0000 %** sobre las 202 465 moléculas del dataset completo (corrida real de
+  `make_labels_totales.py`), 0 discrepancias, y el vector sin colapso suma exactamente C también al
+  100 %.
 - **Takeaway:** PENDIENTE. Spec:
   `docs/superpowers/specs/2026-08-12-vector-carbonos-totales-design.md`. Plan:
   `docs/superpowers/plans/2026-08-12-vector-carbonos-totales.md`. Cómo correrlo:

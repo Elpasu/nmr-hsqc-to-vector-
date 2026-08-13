@@ -41,6 +41,9 @@ Los cuaternarios no tienen integración: en un ¹³C real las intensidades no so
 
 **1. Generar los datos (local, en la PC de Lucas — no en el cluster):**
 
+Requiere que `vectors_13c_19v_202465.npy` (el ground truth existente, usado por el gate de
+verificación) ya esté presente en `202K_suma/`.
+
 ```bash
 python prep/make_labels_totales.py --config prep/config_prep.yaml
 ```

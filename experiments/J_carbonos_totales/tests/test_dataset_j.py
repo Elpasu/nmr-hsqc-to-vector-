@@ -89,6 +89,25 @@ def test_cond_cuenta_carbonos_ch2():
     print("[OK] cond[1] == 3 carbonos CH2 (2 CH2 + 1 CH2-O)")
 
 
+def test_columnas_0_a_3_identicas_entre_peak_features_4_y_5():
+    """Toda la comparacion J-A (5 features) vs J-0 (4 features) depende de que
+    las columnas 0-3 (delta_c, delta_h, amp_ch0, amp_ch1) sean IDENTICAS entre
+    ambas variantes -- solo la 5a columna (degeneracion) debe diferir. Esto
+    vale por estructura del codigo (las columnas 0-3 se normalizan sin
+    depender de peak_features), pero nada lo aseveraba directamente."""
+    with tempfile.TemporaryDirectory() as tmp:
+        paths = _fixture(tmp)
+        ds5 = NMRTwoSetsDatasetJ(*paths, NORM, peak_features=5)
+        ds4 = NMRTwoSetsDatasetJ(*paths, NORM, peak_features=4)
+        (pch5, _, _, _, _), _ = ds5[0]
+        (pch4, _, _, _, _), _ = ds4[0]
+    assert pch5.shape == (2, 5), pch5.shape
+    assert pch4.shape == (2, 4), pch4.shape
+    import torch
+    assert torch.allclose(pch5[:, :4], pch4), (pch5[:, :4], pch4)
+    print("[OK] columnas 0-3 identicas entre peak_features=5 y peak_features=4")
+
+
 def test_peak_features_cinco_con_npz_de_cuatro_falla():
     """Pedir 5 features sobre un .npz que solo tiene 4 columnas tiene que
     romper fuerte: si no, entrenaria con una columna de ceros haciendose pasar
@@ -122,6 +141,7 @@ if __name__ == "__main__":
     test_cuatro_features_recorta_la_columna()
     test_cond_usa_carbonos_totales()
     test_cond_cuenta_carbonos_ch2()
+    test_columnas_0_a_3_identicas_entre_peak_features_4_y_5()
     test_peak_features_cinco_con_npz_de_cuatro_falla()
     test_falta_degeneracion_scale_falla()
     print("\n>>> DATASET J OK <<<")

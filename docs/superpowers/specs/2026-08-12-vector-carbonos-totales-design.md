@@ -72,6 +72,8 @@ Los tres se comprobaron ejecutando código contra los datos reales, no se asumie
    vs `vectors_13c_19v_202465.npy`: **100,000 % de coincidencia exacta sobre 5 000 moléculas, 0
    discrepancias.** Sin esto, quitarle el colapso de simetría sería construir sobre arena (regla
    dura 7: un desalineamiento de labels entrena basura en silencio).
+   (Confirmado despues, en la corrida real de `make_labels_totales.py`: 100,0000 % sobre las
+   202 465 moleculas completas, 0 discrepancias — ver RATIONALE.md.)
 2. **El vector sin colapso suma exactamente C.** 100,000 % sobre 5 000 moléculas, 0 fallos.
 3. **Casos conocidos dan lo esperado:**
    - benceno `c1ccccc1` (C6) → `=CH/Ar: 6`

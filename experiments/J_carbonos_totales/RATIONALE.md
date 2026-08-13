@@ -44,7 +44,8 @@ dataset, no usa otro archivo.
 
 Sin ese gate, un clasificador sutilmente distinto produciría un ground truth nuevo corrupto sin
 tirar ningún error — el modo de falla exacto que la regla dura 7 existe para prevenir. Verificado:
-100,000 % sobre 5 000 moléculas, 0 discrepancias.
+100,0000 % sobre las 202 465 moléculas del dataset completo (corrida real de
+`make_labels_totales.py`), 0 discrepancias.
 
 ## Por qué `oraculo.py` se copia sin cambios
 

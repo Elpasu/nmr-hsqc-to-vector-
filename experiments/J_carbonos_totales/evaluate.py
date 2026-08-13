@@ -1,14 +1,15 @@
 # coding: ascii
 """
-Evaluacion Exp E Fase 3 (dos conjuntos de picos: crosspeaks C-H + 13C, split
-CONGELADO) sobre el checkpoint de este experimento (entrenado por train.py).
-Mismo patron que experiments/E2_deepsets/evaluate.py: Subset sobre
-val_indices_frozen.npy. El modelo se instancia segun model.arch del config
-(deepsets | settransformer).
+Evaluacion Exp J (vector de carbonos totales, split CONGELADO) sobre el
+checkpoint de este experimento (entrenado por train.py). Mismo patron que
+experiments/E3_dos_conjuntos/evaluate.py: Subset sobre val_indices_frozen.npy.
+El modelo se instancia via build_model() de train.py (solo 'settransformer').
 
-  --oraculo on   -> ajustar_conteo_doble_exacto (EMA ASISTIDA).
-  --oraculo off  -> np.clip(np.floor(pred_raw), 0, None) (EMA CRUDA).
-  --oraculo both -> corre ambos e imprime la tabla comparativa (DEFAULT).
+  --oraculo off  -> crude_predict (EMA CRUDA).
+  --oraculo on   -> ajustar_conteo_doble_exacto (EMA ASISTIDA v1).
+  --oraculo v2   -> ajustar_conteo_hetero (EMA ASISTIDA v2, zeroing por N/O).
+  --oraculo both -> corre off+on e imprime la tabla comparativa (2 vias).
+  --oraculo all  -> corre off+on+v2 e imprime la tabla comparativa (3 vias, DEFAULT).
 
 NO ejecutar hasta tener el checkpoint _best.pth de este experimento.
 """
@@ -293,9 +294,9 @@ def evaluate(config_path, oraculo, eval_batch_size):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Eval Exp E Fase 3 (split congelado)")
-    parser.add_argument("--config", type=str, default="config_deepsets.yaml",
-                        help="Config del experimento (deepsets o settransformer).")
+    parser = argparse.ArgumentParser(description="Eval Exp J (carbonos totales, split congelado)")
+    parser.add_argument("--config", type=str, default="config_j_a.yaml",
+                        help="Config del experimento.")
     parser.add_argument("--oraculo", choices=["on", "off", "both", "v2", "all"],
                         default="all",
                         help="off=cruda, on=asistida v1, v2=asistida hetero, "
