@@ -100,7 +100,7 @@ def main(parquet_path, Ks=(1, 2, 3, 4, 5), max_swaps=2):
     return res
 
 
-def main_uncertainty(parquet_path, taus=(0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0), K_max=6):
+def main_uncertainty(parquet_path, taus=(0.0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0), K_max=10):
     import pandas as pd
     df = pd.read_parquet(parquet_path)
     yt = np.vstack(df["y_true"].apply(lambda v: np.array(v, dtype=int)))
@@ -126,8 +126,11 @@ if __name__ == "__main__":
     ap.add_argument("--max-swaps", type=int, default=2)
     ap.add_argument("--uncertainty", action="store_true",
                     help="Corre el barrido de tau (Fase 1b) en vez de la curva de K (Fase 1).")
+    ap.add_argument("--k-max", type=int, default=6,
+                    help="Techo de candidatos emitidos por molecula en --uncertainty "
+                         "(default 6, el usado en Exp G Fase 1b original).")
     args = ap.parse_args()
     if args.uncertainty:
-        main_uncertainty(args.parquet, K_max=6)
+        main_uncertainty(args.parquet, K_max=args.k_max)
     else:
         main(args.parquet, max_swaps=args.max_swaps)

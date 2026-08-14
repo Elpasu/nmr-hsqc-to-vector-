@@ -698,6 +698,41 @@ poco más marcada porque hay más carbonos por resolver por molécula (11,4 → 
 | J-A ≈ J-0 | La suma exacta de la FM ya alcanzaba; la integración es redundante. Ahorra pedirla en el laboratorio. |
 | Ambas bajas | El vector de carbonos es genuinamente más difícil. Se documenta y se para. |
 
+### Multi-vector guiado por incertidumbre (Exp G Fase 1b) sobre este target
+
+Corrido **después** de las dos corridas, sin reentrenar: `dump_predictions.py` (agregado en
+`experiments/J_carbonos_totales/`) vuelca `y_pred_raw` del checkpoint sobre el val congelado, y
+`experiments/G_multivector/coverage.py --uncertainty` genera candidatos por swaps unitarios
+intra-grupo-nH. `candidates.py`/`oraculo.py` no se tocaron: son agnósticos al target (trabajan sobre
+el vector de 19 clases, no sobre qué cuenta).
+
+Cobertura (fracción de moléculas con el vector verdadero entre los K candidatos), 14 428 moléculas:
+
+| τ | J-A cobertura | J-A K prom | J-0 cobertura | J-0 K prom | Δ cobertura |
+|---|---|---|---|---|---|
+| 0,00 | 90,35 % | 1,00 | 85,05 % | 1,00 | +5,30 pp |
+| 0,25 | 91,48 % | 1,04 | 86,63 % | 1,05 | +4,85 pp |
+| 0,50 | 92,64 % | 1,09 | 87,91 % | 1,12 | +4,73 pp |
+| 0,75 | 93,53 % | 1,18 | 89,06 % | 1,25 | +4,47 pp |
+| 1,00 | **94,17 %** | **1,37** | 90,01 % | 1,51 | +4,16 pp |
+| 1,50 | 95,61 % | 2,31 | 91,30 % | 2,69 | +4,31 pp |
+| 2,00 | 96,78 % | 9,24 | 91,95 % | 5,88 | +4,83 pp |
+
+(J-A con `--k-max 10`; J-0 con `--k-max 6`. τ = 0 reproduce exactamente la EMA asistida v2 de cada
+corrida — chequeo de sanidad del puente.)
+
+Tres lecturas:
+
+1. **La ventaja de la integración no se diluye al abrir candidatos.** Se mantiene en ~+4 pp a
+   cualquier τ. J-0 no "llega más tarde al mismo lado": su techo práctico es ~92 % gastando 5,9
+   vectores por molécula, y ahí ya está saturado contra el `K_max`. J-A **sin ningún multi-vector**
+   (90,35 % a K = 1) ya supera a J-0 en su mejor punto barato (90,01 % a K = 1,51).
+2. **τ ≈ 1,0 es el punto operativo.** 94,17 % de cobertura con 1,37 vectores promedio — la mayoría
+   de las moléculas emite uno solo. Eso sí es acoplable a un generador de estructuras.
+3. **τ = 2,0 no es utilizable.** Sube 1,2 pp de cobertura sobre τ = 1,5 y cuadruplica el K promedio
+   (2,31 → 9,24): ahí el criterio de incertidumbre deja de discriminar y emite todo lo que entra en
+   el presupuesto. La zona sana es τ ∈ [1,0 · 1,5].
+
 - **Verificado antes de entrenar:** el clasificador portado reproduce los labels históricos al
   **100,0000 %** sobre las 202 465 moléculas del dataset completo (corrida real de
   `make_labels_totales.py`), 0 discrepancias, y el vector sin colapso suma exactamente C también al
@@ -708,9 +743,10 @@ poco más marcada porque hay más carbonos por resolver por molécula (11,4 → 
   congelado (target distinto, más difícil por construcción); contra el techo físico medido para este
   target (97,7 %) deja un margen de ~7,3 pp, del mismo orden que el margen del modelo de señales
   respecto de su propio techo. Los errores que quedan se concentran en aromáticos (`=CH/Ar`↔`Cqsp2`)
-  y en pares con/sin heteroátomo — candidatos naturales para el multi-vector guiado por incertidumbre
-  (τ, Exp G Fase 1b) aplicado a este target, que queda **pendiente para una siguiente iteración**, no
-  evaluado en este experimento. Spec:
+  y en pares con/sin heteroátomo. El multi-vector guiado por incertidumbre (τ, Exp G Fase 1b) sobre
+  este target **sí se evaluó** (sección de arriba): lleva J-A a **94,17 % de cobertura con 1,37
+  vectores por molécula** a τ = 1,0, y confirma que la ventaja de la integración no es recuperable
+  con más candidatos. Ese es el output que se acopla al generador de estructuras. Spec:
   `docs/superpowers/specs/2026-08-12-vector-carbonos-totales-design.md`. Plan:
   `docs/superpowers/plans/2026-08-12-vector-carbonos-totales.md`. Cómo correrlo:
   `experiments/J_carbonos_totales/README.md`.
